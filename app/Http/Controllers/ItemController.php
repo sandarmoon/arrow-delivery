@@ -101,7 +101,12 @@ class ItemController extends Controller
         $item->expired_date=$request->expired_date;
         $item->deposit=$request->deposit;
         $item->amount =$request->amount;
-        $item->delivery_fees=$request->delivery_fees;
+        if($request->othercharges!=null){
+          $item->delivery_fees=$request->delivery_fees+$request->othercharges;
+        }else{
+          $item->delivery_fees=$request->delivery_fees;
+        }
+        
         $item->receiver_name=$request->receiver_name;
         $item->receiver_address=$request->receiver_address;
         $item->receiver_phone_no=$request->receiver_phoneno;
