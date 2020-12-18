@@ -134,6 +134,12 @@
                 </div>
 
                 <div class="form-group">
+                  <label for="other">{{ __("Other Charges")}}:</label>
+                  <input class="form-control" id="other" type="number" name="othercharges">
+                 
+                </div>
+
+                <div class="form-group">
                   <label for="InputAmount">{{ __("Amount")}}: ({{ __("deposit+delivery fees+others")}})</label>
                   <input class="form-control" id="InputAmount" type="number" name="amount" value="{{ old('amount') }}">
                   <div class="form-control-feedback text-danger"> {{$errors->first('amount') }} </div>
@@ -444,16 +450,29 @@
     $("#InputAmount").focus(function(){
       var deposit=parseInt($('#InputDeposit').val());
       var depositamount=$(".depositamountforcheck").val();
+      var other=Number($("#other").val());
+      console.log(deposit);
+      //alert(other);
       var delivery_fees=parseInt($("#InputDeliveryFees").val());
       if(deposit>depositamount){
         alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
         $("#InputDeposit").val(0);
         $("#InputDeposit").focus();
       }else{
-        var amount=deposit+delivery_fees;
+        var amount=deposit+delivery_fees+other;
       $(this).val(amount);
       }
      
+    })
+
+    $("#other").change(function(){
+      //alert("ok");
+      var deposit=parseInt($('#InputDeposit').val());
+      var depositamount=$(".depositamountforcheck").val();
+      var other=Number($("#other").val());
+      var delivery_fees=parseInt($("#InputDeliveryFees").val());
+     // alert(deposit+delivery_fees+other);
+      $("#InputAmount").val(deposit+delivery_fees+other);
     })
 
     $("#InputDeposit").change(function(){
