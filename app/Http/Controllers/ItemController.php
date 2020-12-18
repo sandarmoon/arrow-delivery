@@ -94,8 +94,7 @@ class ItemController extends Controller
       ]);
 
       if($validator){
-
-            //dd('c');
+        //dd('c');
         //dd($request->deposit);
         $item=new Item;
         $item->codeno=$request->codeno;
@@ -110,12 +109,15 @@ class ItemController extends Controller
         $item->paystatus=$request->amountstatus;
         $item->pickup_id=$request->pickup_id;
         $item->township_id=$request->receiver_township;
+
         if($request->mygate!=null){
-              $item->sender_gate_id=$request->mygate;
-            }
-            if($request->myoffice!=null){
-              $item->sender_postoffice_id=$request->myoffice;
-            }
+          $item->sender_gate_id=$request->mygate;
+        }
+
+        if($request->myoffice!=null){
+          $item->sender_postoffice_id=$request->myoffice;
+        }
+
         $role=Auth::user()->roles()->first();
         $rolename=$role->name;
         if($rolename=="staff"){
@@ -126,66 +128,66 @@ class ItemController extends Controller
         $item->save();
 
         if($qty==1){
-
+          $allpaiditemsamount = Item::where('pickup_id',$request->pickup_id)->where('paystatus',2)->sum('delivery_fees');
+          // dd($allpaiditemsamount);
           $checkitems = Item::orderBy('id', 'desc')->take($myqty)->get();
           //dd($checkitems->sum('deposit'));
+          // amount မကိုက်တဲ့ အခြေအနေ
           if($checkitems->sum('deposit')!=$damount){
-                //dd("hi");
-
+            //dd("hi");
             //foreach ($checkitems as $value) {
-              $pickup=Pickup::find($checkitems[0]->pickup_id);
-              $pickup->status=2;
-              $pickup->save();
-              
+            $pickup=Pickup::find($checkitems[0]->pickup_id);
+            $pickup->status=2;
+            $pickup->save();
             //}
             return redirect()->route('checkitem',$pickup->id); 
-
           }else{
             if($request->paidamount!=null){
               $expense=new Expense;
               $expense->amount=$request->paidamount;
               $expense->client_id=$request->client_id;
               if($rolename=="staff"){
-              $user=Auth::user();
-              $staffid=$user->staff->id;
-              $expense->staff_id=$staffid;
-               }
-             $expense->status=$request->paystatus;
-            $expense->description="Client Deposit";
-            $expense->city_id=1;
-            $expense->expense_type_id=1;
-            $expense->save();
+                $user=Auth::user();
+                $staffid=$user->staff->id;
+                $expense->staff_id=$staffid;
+              }
+              $expense->status=$request->paystatus;
+              $expense->description="Client Deposit";
+              $expense->city_id=1;
+              $expense->expense_type_id=1;
+              $expense->save();
 
-             $expense=new Expense;
-             $unexpenseamount=$request->depositamount-$request->paidamount;
+              $expense=new Expense;
+              $unexpenseamount=$request->depositamount-$request->paidamount;
               $expense->amount=$unexpenseamount;
               $expense->client_id=$request->client_id;
               if($rolename=="staff"){
-              $user=Auth::user();
-              $staffid=$user->staff->id;
-              $expense->staff_id=$staffid;
-               }
-             $expense->status=2;
-            $expense->description="Client Deposit";
-            $expense->city_id=1;
-            $expense->expense_type_id=1;
-            $expense->save();
+                $user=Auth::user();
+                $staffid=$user->staff->id;
+                $expense->staff_id=$staffid;
+              }
+              $expense->status=2;
+              $expense->description="Client Deposit";
+              $expense->city_id=1;
+              $expense->expense_type_id=1;
+              $expense->save();
             }else{
               $expense=new Expense;
-            $expense->amount=$damount;
-            $expense->client_id=$request->client_id;
-            if($rolename=="staff"){
-              $user=Auth::user();
-              $staffid=$user->staff->id;
-              $expense->staff_id=$staffid;
+              $expense->amount=$damount;
+              $expense->guest_amount=$damount-$allpaiditemsamount;
+              $expense->client_id=$request->client_id;
+              if($rolename=="staff"){
+                $user=Auth::user();
+                $staffid=$user->staff->id;
+                $expense->staff_id=$staffid;
+              }
+              $expense->status=$request->paystatus;
+              $expense->description="Client Deposit";
+              $expense->city_id=1;
+              $expense->expense_type_id=1;
+              $expense->save();
             }
-            $expense->status=$request->paystatus;
-            $expense->description="Client Deposit";
-            $expense->city_id=1;
-            $expense->expense_type_id=1;
-            $expense->save();
-            }
-           // insert into transaction if paid
+            // insert into transaction if paid
             if($request->paystatus == 1){
               $transaction = new Transaction;
               $transaction->bank_id = $request->payment_method;
@@ -207,7 +209,6 @@ class ItemController extends Controller
                }
               $bank->save();
             }
-
           }
         }
 

@@ -275,7 +275,8 @@
                 <input type="hidden" name="incomes" value='${JSON.stringify(incomes)}'>
                 <input type="hidden" name="carryfees" value='${JSON.stringify(carryfees)}'>
                 <p>ပေးရန် => ${thousands_separators(totalexpenses)}</p>
-                <p>ရရန် => ${thousands_separators(totalincomes)}</p>`;
+                <p>ရရန် => ${thousands_separators(totalincomes)}</p>
+                <p>ရှင်းရန်ငွေ => ${thousands_separators(Math.abs(totalexpenses-totalincomes))}`;
         $('.checked_debt_list').html(html);
         $('#fixDebitModal').modal('show');
       }else{
@@ -316,19 +317,25 @@
           var html = "";
           let total = 0;
           for(let row of response.expenses){
+            let showamount;
+            if (response.incomes.length > 0 || response.rejects.length > 0 || response.carryfees.length > 0){
+              showamount = row.amount;
+            }else{
+              showamount = row.guest_amount;
+            }
             html +=`<tr>
                     <td>
                       <div class="animated-checkbox">
                         <label class="mb-0">
-                          <input type="checkbox" name="expenses[]" value="${row.id}" data-amount="${row.amount}"><span class="label-text"> </span>
+                          <input type="checkbox" name="expenses[]" value="${row.id}" data-amount="${showamount}"><span class="label-text"> </span>
                         </label>
                       </div>
                     </td>
                     <td>${row.description}</td>
                     <td>${row.expense_type.name}</td>
-                    <td>${thousands_separators(row.amount)} Ks</td>
+                    <td>${thousands_separators(showamount)} Ks</td>
                   </tr>`;
-                  total += Number(row.amount);
+                  total += Number(showamount);
           }
           html +=`<tr>
                     <td colspan="3">Total: </td>
