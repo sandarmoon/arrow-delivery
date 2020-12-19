@@ -79,6 +79,7 @@
                 <p class="card-text">{{ __("Deposit")}}: {{number_format($row->schedule->amount)}} Ks</p>
                 <p class="card-text">{{ __("Quantity")}}: {{$row->schedule->quantity}}</p>
                 @endif
+                @if($row->schedule->remark != null)<p class="card-text">{{ __("Remark")}}: {{$row->schedule->remark}}</p>@endif
                 @if($row->status==0)
                   <a href="#" class="btn btn-primary">{{ __("Pending")}}</a>
                   <a href="{{route('pickupdone',['id' => $row->id, 'qty' => $row->schedule->quantity])}}" class="btn btn-success">{{ __("Done")}}</a>

@@ -159,7 +159,7 @@
           console.log(response.ways)
           for(let row of response.ways){
             console.log(row);
-            total+=row.item.item_amount;
+            total+=Number(row.item.item_amount);
             html +=`
               <tr>
                     <td>${i++}</td>
