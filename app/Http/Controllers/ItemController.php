@@ -32,17 +32,14 @@ class ItemController extends Controller
       //$items=Item::doesntHave('way')->get();
       $items=Item::whereHas('pickup',function($query){
               $query->where('status',1);
-            })
-            ->doesntHave('way')
-            ->get();
-  
+            })->doesntHave('way')->get();
       // dd($myitems);
-      
+    
       $deliverymen = DeliveryMan::with(['townships'=> function($q){
                      $q->orderBy('name','asc');
                       }])->get();
 
-        //dd($deliverymen);
+      //dd($deliverymen);
       $ways = Way::orderBy('id', 'desc')->get();
       $notifications=DB::table('notifications')->select('data')->where('notifiable_type','App\Way')->get();
       $data=[];
@@ -98,22 +95,18 @@ class ItemController extends Controller
         //dd($request->deposit);
         $item=new Item;
         $item->codeno=$request->codeno;
-        $item->expired_date=$request->expired_date;
-        $item->deposit=$request->deposit;
-        $item->amount =$request->amount;
-        if($request->othercharges!=null){
-          $item->delivery_fees=$request->delivery_fees+$request->othercharges;
-        }else{
-          $item->delivery_fees=$request->delivery_fees;
-        }
-        
         $item->receiver_name=$request->receiver_name;
         $item->receiver_address=$request->receiver_address;
         $item->receiver_phone_no=$request->receiver_phoneno;
-        $item->remark=$request->remark;
-        $item->paystatus=$request->amountstatus;
-        $item->pickup_id=$request->pickup_id;
         $item->township_id=$request->receiver_township;
+        $item->expired_date=$request->expired_date;
+        $item->deposit=$request->deposit;
+        $item->delivery_fees=$request->delivery_fees;
+        $item->other_fees=$request->othercharges;
+        $item->amount =$request->amount;
+        $item->paystatus=$request->amountstatus;
+        $item->remark=$request->remark;
+        $item->pickup_id=$request->pickup_id;
 
         if($request->mygate!=null){
           $item->sender_gate_id=$request->mygate;
@@ -224,8 +217,6 @@ class ItemController extends Controller
         }else{
           return redirect()->route('items.index')->with("successMsg",'New Item is ADDED in your data');
         }
-
-
       }
       else
       {
@@ -270,50 +261,49 @@ class ItemController extends Controller
      */
     public function update(Request $request, Item $item)
     {
-          $validator = $request->validate([
-            'receiver_name'  => ['required','string'],
-            'receiver_phoneno'=>['required','string'],
-            'receiver_address'=>['required','string'],
-            'receiver_township'=>['required'],
-            'expired_date'=>['required','date'],
-            'deposit'=>['required'],
-            'delivery_fees'=>['required'],
-            'amount'=>['required'],
-        ]);
+      $validator = $request->validate([
+        'receiver_name'  => ['required','string'],
+        'receiver_phoneno'=>['required','string'],
+        'receiver_address'=>['required','string'],
+        'receiver_township'=>['required'],
+        'expired_date'=>['required','date'],
+        'deposit'=>['required'],
+        'delivery_fees'=>['required'],
+        'amount'=>['required'],
+      ]);
 
-         if($validator){
-            $item=$item;
-            $item->codeno=$request->codeno;
-            $item->expired_date=$request->expired_date;
-            $item->deposit=$request->deposit;
-            $item->amount =$request->amount;
-            $item->delivery_fees=$request->delivery_fees;
-            $item->receiver_name=$request->receiver_name;
-            $item->receiver_address=$request->receiver_address;
-            $item->receiver_phone_no=$request->receiver_phoneno;
-            $item->remark=$request->remark;
-            $item->paystatus=$request->amountstatus;
-            $item->township_id=$request->receiver_township;
-           if($request->mygate!=null){
-              $item->sender_gate_id=$request->mygate;
-            }
-            if($request->myoffice!=null){
-              $item->sender_postoffice_id=$request->myoffice;
-            }
-             $role=Auth::user()->roles()->first();
-             $rolename=$role->name;
-              if($rolename=="staff"){
-                $user=Auth::user();
-                 $staffid=$user->staff->id;
-                $item->staff_id=$staffid;
-            }
-            $item->save();
-           return redirect()->route('items.index')->with("successMsg",'Updatesuccessfully');
+      if($validator){
+        $item->codeno=$request->codeno;
+        $item->receiver_name=$request->receiver_name;
+        $item->receiver_address=$request->receiver_address;
+        $item->receiver_phone_no=$request->receiver_phoneno;
+        $item->township_id=$request->receiver_township;
+        $item->expired_date=$request->expired_date;
+        $item->deposit=$request->deposit;
+        $item->delivery_fees=$request->delivery_fees;
+        $item->other_fees=$request->othercharges;
+        $item->amount =$request->amount;
+        $item->paystatus=$request->amountstatus;
+        $item->remark=$request->remark;
+
+        if($request->mygate!=null){
+          $item->sender_gate_id=$request->mygate;
         }
-        else
-        {
-            return redirect::back()->withErrors($validator);
+        if($request->myoffice!=null){
+          $item->sender_postoffice_id=$request->myoffice;
         }
+        $role=Auth::user()->roles()->first();
+        $rolename=$role->name;
+        if($rolename=="staff"){
+          $user=Auth::user();
+          $staffid=$user->staff->id;
+          $item->staff_id=$staffid;
+        }
+        $item->save();
+        return redirect()->route('items.index')->with("successMsg",'Updatesuccessfully');
+      }else{
+        return redirect::back()->withErrors($validator);
+      }
     }
 
     /**

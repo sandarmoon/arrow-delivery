@@ -24,13 +24,13 @@
         @endif
         <div class="tile">
           <h3 class="tile-title d-inline-block">{{ __("Item List")}}</h3>
-          <a href="#" class="btn btn-primary float-right wayassign" id="submit_assign">{{ __("Way Assign")}}</a>
+          <a href="#" class="btn btn-sm btn-primary float-right wayassign" id="submit_assign">{{ __("Way Assign")}}</a>
 
           <div class="bs-component">
             <ul class="nav nav-tabs">
               <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#collect">{{ __("In Stock")}}</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#way">{{ __("On Way")}}</a></li>
-              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#print">{{ __("print way")}}</a></li>
+              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#way">{{ __("On Ways")}}</a></li>
+              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#print">{{ __("Print Ways")}}</a></li>
             </ul>
             <div class="tab-content mt-3" id="myTabContent">
               <div class="tab-pane fade active show" id="collect">
@@ -44,40 +44,44 @@
                         <th>{{ __("Township")}}</th>
                         <th>{{ __("Receiver Info")}}</th>
                         <th>{{ __("Expired Date")}}</th>
-                        <th>{{ __("Amount")}}</th>
+                        <th>{{ __("Deposit")}}</th>
+                        <th>{{ __("Deli Fees")}}</th>
+                        <th>{{ __("Other Charges")}}</th>
                         <th>{{ __("Actions")}}</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         @foreach($items as $row)
-                        <td>
+                        <td class="align-middle">
                           <div class="animated-checkbox">
                             <label class="mb-0">
                               <input type="checkbox" name="assign[]" value="{{$row->id}}" data-codeno="{{$row->codeno}}"><span class="label-text"> </span>
                             </label>
                           </div>
                         </td>
-                        <td>{{$row->codeno}}</td>
-                        <td>{{$row->pickup->schedule->client->user->name}}</td>
-                        <td class="text-danger">{{$row->township->name}}</td>
-                        <td>
+                        <td class="align-middle">{{$row->codeno}}</td>
+                        <td class="align-middle">{{$row->pickup->schedule->client->user->name}}</td>
+                        <td class="text-danger align-middle">{{$row->township->name}}</td>
+                        <td class="align-middle">
                           {{$row->receiver_name}} <span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
                         </td>
-                        <td>
+                        <td class="align-middle">
                           {{$row->expired_date}}
                           @if($row->error_remark !== null)
                             <span class="badge badge-warning">{{ __("date changed")}}</span>
                           @endif
                         </td>
-                        <td>{{number_format($row->amount)}}</td>
-                        <td class="mytd">
-                          <a href="#" class="btn btn-primary detail" data-id="{{$row->id}}">{{ __("Detail")}}</a>
-                          <a href="{{route('items.edit',$row->id)}}" class="btn btn-warning">{{ __("Edit")}}</a>
+                        <td class="align-middle">{{number_format($row->deposit)}}</td>
+                        <td class="align-middle">{{number_format($row->delivery_fees)}}</td>
+                        <td class="align-middle">{{number_format($row->other_fees)}}</td>
+                        <td class="mytd align-middle">
+                          <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$row->id}}">{{ __("Detail")}}</a>
+                          <a href="{{route('items.edit',$row->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
                           <form action="{{ route('items.destroy',$row->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger">{{ __("Delete")}}</button>
+                            <button type="submit" class="btn btn-sm btn-danger">{{ __("Delete")}}</button>
                           </form>
                         </td>
                       </tr>
@@ -96,7 +100,9 @@
                         <th>{{ __("Township")}}</th>
                         <th>{{ __("Delivery Man")}}</th>
                         <th>{{ __("Expired Date")}}</th>
-                        <th>{{ __("Amount")}}</th>
+                        <th>{{ __("Deposit")}}</th>
+                        <th>{{ __("Deli Fees")}}</th>
+                        <th>{{ __("Other Charges")}}</th>
                         <th>{{ __("Actions")}}</th>
                       </tr>
                     </thead>
@@ -106,10 +112,10 @@
                       @foreach($ways as $way) 
                       @php $amount=number_format($way->item->amount) ;  @endphp
                       <tr>
-                        <td>
+                        <td class="align-middle">
                           {{$i++}}
                         </td>
-                        <td>{{$way->item->codeno}}  
+                        <td class="align-middle">{{$way->item->codeno}}  
                           @if($way->status_code == '001')
                             <span class="badge badge-info">{{'success'}}</span>
                           @elseif($way->status_code == '002')
@@ -118,8 +124,8 @@
                             <span class="badge badge-danger">{{'reject'}}</span>
                           @endif
                         </td>
-                        <td>{{$way->item->township->name}}</td>
-                        <td class="text-danger">
+                        <td class="align-middle">{{$way->item->township->name}}</td>
+                        <td class="text-danger align-middle">
                           {{$way->delivery_man->user->name}} 
                             @foreach($data as $dd)
                             @if($dd->id==$way->id)
@@ -128,12 +134,16 @@
 
                            @endforeach
                         </td>
-                        <td>{{$way->item->expired_date}}</td>
-                        <td>{{$amount}}</td>
-                        <td class="mytd">
-                          <a href="#" class="btn btn-primary detail" data-id="{{$way->item->id}}">{{ __("Detail")}}</a>
-                          <a href="#" class="btn btn-warning wayedit" data-id="{{$way->id}}">{{ __("Edit")}}</a>
-                          <a href="{{route('deletewayassign',$way->id)}}" class="btn btn-danger" onclick="return confirm('Are you sure?')">{{ __("Delete")}}</a>
+                        <td class="align-middle">{{$way->item->expired_date}}</td>
+                        <td class="align-middle">{{number_format($way->item->deposit)}}</td>
+                        <td class="align-middle">{{number_format($way->item->delivery_fees)}}</td>
+                        <td class="align-middle">{{number_format($way->item->other_fees)}}</td>
+                        <td class="mytd align-middle">
+                          <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$way->item->id}}">{{ __("Detail")}}</a>
+                          @if($way->status_code == '005')
+                            <a href="#" class="btn btn-sm btn-warning wayedit" data-id="{{$way->id}}">{{ __("Edit")}}</a>
+                            <a href="{{route('deletewayassign',$way->id)}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">{{ __("Delete")}}</a>
+                          @endif
                         </td>
                       </tr>
                       

@@ -18,8 +18,9 @@ class CreateItemsTable extends Migration
             $table->string('codeno');
             $table->date('expired_date');
             $table->integer('deposit')->default(0);
-            $table->integer('amount');
-            $table->string('delivery_fees');
+            $table->integer('amount')->default(0);
+            $table->integer('delivery_fees')->default(0);
+            $table->integer('other_fees')->default(0);
             $table->string('receiver_name');
             $table->text('receiver_address');
             $table->string('receiver_phone_no');

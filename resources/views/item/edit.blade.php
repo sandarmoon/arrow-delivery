@@ -135,6 +135,11 @@
                 </div>
 
                 <div class="form-group">
+                  <label for="other">{{ __("Other Charges")}}:</label>
+                  <input class="form-control" id="other" type="number" name="othercharges" value="{{$item->other_fees}}">
+                </div>
+
+                <div class="form-group">
                   <label for="InputAmount">Amount: (deposit+delivery fees+others)</label>
                   <input class="form-control" id="InputAmount" type="number" name="amount" value="{{$item->amount}}">
                   <div class="form-control-feedback text-danger"> {{$errors->first('amount') }} </div>
