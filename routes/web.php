@@ -14,14 +14,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/','Auth\LoginController@showLoginForm');
+
 //language
 Route::get('lang/{locale}', 'LocalizationController@index')->name('lang');
 
+
 Route::middleware('auth')->group(function () {
   Route::get('dashboard','MainController@dashboard')->name('dashboard');
-
   Route::get('getways', 'MainController@getways')->name('getways');
-  
+
   Route::prefix('settings')->group(function () {
     // Settings => (cities, townships, statuses, expense_types, payment_types, banks)
     Route::resource('cities','CityController');
@@ -34,14 +35,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('senderoffice','SenderOfficeController');
   });
 
-Route::post('expensebytype','ExpenseController@expensebytype')->name('expensebytype');
+  Route::post('expensebytype','ExpenseController@expensebytype')->name('expensebytype');
   // Success List
   Route::get('success_list','MainController@success_list')->name('success_list');
 
   // Reject List
   Route::get('reject_list','MainController@reject_list')->name('reject_list');
   Route::post('rejectitem','MainController@rejectitem')->name('rejectitem');
-
 
   // Return List
   Route::get('return_list','MainController@return_list')->name('return_list');
@@ -53,7 +53,6 @@ Route::post('expensebytype','ExpenseController@expensebytype')->name('expensebyt
 
   // Financial Statement
   Route::get('statements','MainController@financial_statements')->name('statements');
-
   Route::post('successreport','MainController@successreport')->name('successreport');
 
   // Debt List
@@ -84,12 +83,13 @@ Route::post('expensebytype','ExpenseController@expensebytype')->name('expensebyt
   //amounta ad qty edit
   Route::post('editamountandqty','MainController@editamountandqty')->name('editamountandqty');
 
-//normal
+  //normal
   Route::get('normal/{id}','MainController@normal')->name('normal');
+
   // staff
   Route::resource('staff','StaffController');
 
-  //  For Staff
+  // Pickup Schedule By Staff
   Route::resource('schedules', 'ScheduleController');
 
   // client
@@ -140,8 +140,6 @@ Route::post('expensebytype','ExpenseController@expensebytype')->name('expensebyt
   Route::post('makeDelivered','MainController@makeDeliver')->name('makeDeliver');
   Route::post('retuenDeliver','MainController@retuenDeliver')->name('retuenDeliver');
   Route::post('rejectDeliver','MainController@rejectDeliver')->name('rejectDeliver');
-  
-
 });
 
 Route::resource('profiles','ProfileController');

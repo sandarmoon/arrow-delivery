@@ -104,7 +104,7 @@
                   <div class="form-control-feedback text-danger"> {{$errors->first('receiver_township') }} </div>
                </div>
 
-            <div class="form-group township">
+              <div class="form-group township">
                   <label for="InputReceiverTownship">{{ __("Receiver Township")}}:</label><br>
                   <select class="js-example-basic-single  mytownship" id="InputReceiverTownship" name="receiver_township"  >
                     <option value="null">{{ __("Choose township")}}</option>
@@ -443,7 +443,6 @@
         });
       $.post("/delichargebytown",{id:id},function(res){
         $("#InputDeliveryFees").val(res);
-
       })
     })
 
@@ -572,7 +571,7 @@
         }
         });
       $.post("/townshipbystatus",{id:id},function(res){
-       // console.log(res);
+       // console.log(id);
         var html="";
         html+=`<option>Choose township</option>`
         $.each(res,function(i,v){

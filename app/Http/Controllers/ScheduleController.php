@@ -37,14 +37,12 @@ class ScheduleController extends Controller
         $notifications=DB::table('notifications')->select('data')->where('notifiable_type','App\Pickup')->get();
         //dd($notifications);
         $data=[];
-
         foreach ($notifications as $noti) {
-         $notipickup=json_decode($noti->data);
-       // dd($notipickup->pickup);
-            array_push($data, $notipickup->pickup);
-          
+            $notipickup=json_decode($noti->data);
+            // dd($notipickup->pickup);
+            array_push($data, $notipickup->pickup); 
         }
-       // dd($data);
+        // dd($data);
         $deliverymen=DeliveryMan::all();
         return view('schedule.index',compact('schedules','deliverymen','pickups','data'));
     }

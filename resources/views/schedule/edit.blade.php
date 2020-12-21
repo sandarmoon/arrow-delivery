@@ -26,7 +26,7 @@
               <select class="form-control" name="client" id="InputClient">
                 <optgroup label="Choose Client">
                   @foreach($clients as $row)
-                  <option value="{{$row->id}}" @if($row->id==$schedule->client_id) {{'selected'}} @endif>{{$row->clientname}}</option>
+                  <option value="{{$row->id}}" @if($row->id==$schedule->client_id) {{'selected'}} @endif>{{$row->clientname}} ({{$row->address}})</option>
                   @endforeach
                 </optgroup>
               </select>
@@ -45,39 +45,55 @@
               <div class="form-control-feedback text-danger"> {{$errors->first('remark') }} </div>
             </div>
 
-
-             <nav>
-              <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <a class="nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">{{ __("New file")}}</a>
-                <a class="nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">{{ __("Old file")}}</a>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">{{ __("New file")}}</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">{{ __("Old file")}}</a>
+              </li>
+            </ul>
+            <div class="tab-content mt-3" id="myTabContent">
+              <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="form-group">
+                  <label for="file">{{ __("File")}}:</label>
+                  <input type="file"  id="file" name="file">
+                </div>
               </div>
-            </nav>
-            <div class="tab-content" id="nav-tabContent">
-              <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-               <div class="form-group">
-              <label for="file">{{ __("File")}}:</label>
-              <input type="file"  id="file" name="file">
-            </div>
-              </div>
-              <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                 <img src="{{asset($schedule->file)}}" width="300" height="300">
               </div>
             </div>
 
-           
+            @role('staff')
+              @if($schedule->pickup->status != 0 || $schedule->quantity != 0 || $schedule->amount !=0)
+              <div class="form-group quantity">
+                <label for="quantity">{{ __("Quantity")}}:</label>
+                <input type="number"  id="quantity" class="form-control" name="quantity" value="{{$schedule->quantity}}"> 
+                <div class="form-control-feedback text-danger"> {{$errors->first('quantity') }} </div>
+              </div>
 
-            <div class="form-group quantity">
-              <label for="quantity">{{ __("Quantity")}}:</label>
-              <input type="number"  id="quantity" class="form-control" name="quantity" value="{{$schedule->quantity}}"> 
-              <div class="form-control-feedback text-danger"> {{$errors->first('quantity') }} </div>
-            </div>
+              <div class="form-group amount">
+                <label for="amount">{{ __("Amount")}}:</label>
+                <input type="number"  id="amount" class="form-control" name="amount" value="{{$schedule->amount}}">
+                <div class="form-control-feedback text-danger"> {{$errors->first('amount') }} </div>
+              </div>
+              @endif
+            @endrole
 
+            @role('client')
+              <div class="form-group quantity">
+                <label for="quantity">{{ __("Quantity")}}:</label>
+                <input type="number"  id="quantity" class="form-control" name="quantity" value="{{$schedule->quantity}}"> 
+                <div class="form-control-feedback text-danger"> {{$errors->first('quantity') }} </div>
+              </div>
 
-            <div class="form-group amount">
-              <label for="amount">{{ __("Amount")}}:</label>
-              <input type="number"  id="amount" class="form-control" name="amount" value="{{$schedule->amount}}">
-              <div class="form-control-feedback text-danger"> {{$errors->first('amount') }} </div>
-            </div>
+              <div class="form-group amount">
+                <label for="amount">{{ __("Amount")}}:</label>
+                <input type="number"  id="amount" class="form-control" name="amount" value="{{$schedule->amount}}">
+                <div class="form-control-feedback text-danger"> {{$errors->first('amount') }} </div>
+              </div>
+            @endrole
             
             @role('staff')
             <div class="form-group">
@@ -90,18 +106,11 @@
                 </optgroup>
               </select>
             </div>
-
-            <div class="form-group">
-              <button class="btn btn-primary" type="submit">{{ __("Save And Assign")}}</button>
-            </div>
             @endrole
 
-            @role('client')
-            
             <div class="form-group">
-              <button class="btn btn-primary" type="submit">{{ __("Save")}}</button>
+              <button class="btn btn-sm btn-primary" type="submit">{{ __("Update")}}</button>
             </div>
-            @endrole
           </form>
         </div>
       </div>

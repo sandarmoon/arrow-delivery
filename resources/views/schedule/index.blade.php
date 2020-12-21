@@ -24,7 +24,7 @@
         @endif
         <div class="tile">
           <h3 class="tile-title d-inline-block">{{ __("Pickup List")}}</h3>
-          <a href="{{route('schedules.create')}}" class="btn btn-primary float-right"><i class="fa fa-plus" aria-hidden="true"></i> {{ __("Add New")}}</a>
+          <a href="{{route('schedules.create')}}" class="btn btn-sm btn-primary float-right"><i class="fa fa-plus" aria-hidden="true"></i> {{ __("Add New")}}</a>
 
 
           <div class="bs-component">
@@ -52,20 +52,20 @@
                       @php $i=1; @endphp
                       @foreach($schedules as $row)
                       <tr>
-                        <td>{{$i++}}</td>
+                        <td class="align-middle">{{$i++}}</td>
                         @role('staff')
                           <td class="text-danger">{{$row->client->user->name}}</td>
                         @endrole
-                        <td>{{\Carbon\Carbon::parse($row->pickup_date)->format('d/m/Y')}}</td>
-                        <td>{{$row->remark}}</td>
-                        <td>{{$row->quantity}}</td>
-                        <td>
+                        <td class="align-middle">{{\Carbon\Carbon::parse($row->pickup_date)->format('d/m/Y')}}</td>
+                        <td class="align-middle">{{$row->remark}}</td>
+                        <td class="align-middle">{{$row->quantity}}</td>
+                        <td class="align-middle">
                           @role('staff')
-                            <a href="#" class="btn btn-primary assign" data-id="{{$row->id}}">{{ __("Assign")}}</a>
-                            <a href="#" class="btn btn-info showfile" data-file="{{$row->file}}">{{ __("show file")}}</a>
+                            <a href="#" class="btn btn-sm btn-primary assign" data-id="{{$row->id}}">{{ __("Assign")}}</a>
+                            <a href="#" class="btn btn-sm btn-info showfile" data-file="{{$row->file}}">{{ __("show file")}}</a>
                           @endrole
                           @role('client')
-                            <a href="{{route('schedules.edit',$row->id)}}" class="btn btn-warning">{{ __("Edit")}}</a>
+                            <a href="{{route('schedules.edit',$row->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
                           @endrole
                         </td>
                       </tr>
@@ -92,11 +92,11 @@
                       @php $i=1; @endphp
                       @foreach($pickups as $row)
                       <tr>
-                        <td>{{$i++}}</td>
-                        @role('staff')<td class="text-danger">{{$row->schedule->client->user->name}}</td>@endrole
-                        <td>{{\Carbon\Carbon::parse($row->schedule->pickup_date)->format('d-m-Y')}}</td>
-                        <td>{{$row->schedule->remark}}</td>
-                        <td class="text-danger">{{$row->delivery_man->user->name}}
+                        <td class="align-middle">{{$i++}}</td>
+                        @role('staff')<td class="text-danger align-middle">{{$row->schedule->client->user->name}}</td>@endrole
+                        <td class="align-middle">{{\Carbon\Carbon::parse($row->schedule->pickup_date)->format('d-m-Y')}}</td>
+                        <td class="align-middle">{{$row->schedule->remark}}</td>
+                        <td class="text-danger align-middle">{{$row->delivery_man->user->name}}
                           @foreach($data as $dd)
                             @if($dd->id==$row->id)
                             <span class="badge badge-info seen">seen</span>
@@ -104,32 +104,33 @@
 
                            @endforeach
                         </td>
-                        <td>{{$row->schedule->quantity}}</td>
-                        <td>
+                        <td class="align-middle">{{$row->schedule->quantity}}</td>
+                        <td class="align-middle">
                           @if($row->status==1 && $row->schedule->quantity > count($row->items))
                             @role('staff')
-                              <a href="{{route('items.collect',['cid'=>$row->schedule->client->id,'pid'=>$row->id])}}" class="btn btn-primary">{{ __("Collect")}}</a>
+                              <a href="{{route('items.collect',['cid'=>$row->schedule->client->id,'pid'=>$row->id])}}" class="btn btn-sm btn-primary">{{ __("Collect")}}</a>
                             @endrole
                             @role('client')
-                              <button type="button" class="btn btn-info">{{ __("Brought")}}</button>
+                              <button type="button" class="btn btn-sm btn-info">{{ __("Brought")}}</button>
                             @endrole
                           @elseif($row->status == 1 && $row->schedule->quantity == count(($row->items)))
-                            <button type="button" class="btn btn-info">{{ __("completed")}}</button>
+                            <button type="button" class="btn btn-sm btn-info">{{ __("completed")}}</button>
                           @elseif($row->status==2)
-                           <a href="{{route('checkitem',$row->id)}}" class="btn btn-danger">{{ __("fail")}}</a>
+                            <a href="{{route('checkitem',$row->id)}}" class="btn btn-sm btn-danger">{{ __("fail")}}</a>
                           @elseif($row->status==3)
-                           <a href="#" class="btn btn-secondary addamount" data-id="{{$row->schedule->id}}">{{ __("Add amount and qty")}}</a>
+                            <a href="#" class="btn btn-sm btn-secondary addamount" data-id="{{$row->schedule->id}}">{{ __("Add amount and qty")}}</a>
                           @else
-                            <button type="button" class="btn btn-danger">{{ __("pending")}}</button>
+                            <button type="button" class="btn btn-sm btn-danger">{{ __("pending")}}</button>
                           @endif
-                          <a href="{{route('schedules.edit',$row->schedule->id)}}" class="btn btn-warning">{{ __("Edit")}}</a>
+
+                          @if($row->status != 1 || $row->schedule->quantity != count(($row->items)))
+                            <a href="{{route('schedules.edit',$row->schedule->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
                             <form action="{{ route('schedules.destroy',$row->schedule->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                               @csrf
                               @method('DELETE')
-                              <button type="submit" class="btn btn-danger">{{ __("Delete")}}</button>
+                              <button type="submit" class="btn btn-sm btn-danger">{{ __("Delete")}}</button>
                             </form>
-                          {{-- <a href="#" class="btn btn-warning">Edit</a>
-                          <a href="#" class="btn btn-danger">Delete</a> --}}
+                          @endif
                         </td>
                       </tr>
                       @endforeach
