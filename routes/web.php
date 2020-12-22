@@ -104,6 +104,7 @@ Route::middleware('auth')->group(function () {
   Route::post('wayassign','ItemController@assignWays')->name('wayassign');
 
   Route::get('checkitem/{pickupid}','ItemController@checkitem')->name('checkitem');
+  Route::get('lastitem','ItemController@lastitem')->name('lastitem');
   Route::post('updateamount','ItemController@updateamount')->name('updateamount');
   
   Route::get('rejectnoti','MainController@rejectnoti')->name('rejectnoti');

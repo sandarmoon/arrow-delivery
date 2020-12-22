@@ -24,7 +24,7 @@
                 </button>
             </div>
           @endif
-          <form method="POST" action="{{route('items.store')}}">
+          <form method="POST" action="{{route('items.store')}}" id="storeform">
             @csrf
             <div class="row">
               <div class="col-md-6">
@@ -197,8 +197,8 @@
 
                     <input type="hidden" name="depositamountforcheck" value="{{$pickup->schedule->amount-$total}}" class="depositamountforcheck">
 
-                    <input type="hidden" name="qty" value={{$pickup->schedule->quantity - count($pickup->items)}}>
-                    <input type="hidden" name="myqty" value="{{$pickup->schedule->quantity}}">
+                    <input type="hidden" class="lastqty" name="qty" value={{$pickup->schedule->quantity - count($pickup->items)}}>
+                    <input type="hidden" class="totalqty" name="myqty" value="{{$pickup->schedule->quantity}}">
                     <li class="list-group-item">{{ __("Balance")}}: {{number_format($pickup->schedule->amount-$total)}} KS</li>
                   </ul>
                   @if($pickup->schedule->file)
@@ -210,7 +210,7 @@
 
             @if($pickup->schedule->quantity - count($pickup->items) == 1)
               <div class="form-group">
-                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#depositModal">{{ __("Save")}}</button>
+                <button class="btn btn-primary" type="button" id="checkbtn" >{{ __("Save")}}</button>
               </div>
             @else
               <div class="form-group">
@@ -549,6 +549,36 @@
 
 
     $('.js-example-basic-single').select2({width:'100%'});
+
+    $("#checkbtn").click(function(e){
+      //alert("ok");
+      e.preventDefault();
+     var damount=Number($(".depositamount").val());
+     var lastdepostit=Number($("#InputDeposit").val());
+     var lastqty=Number($(".lastqty").val());
+     var totalqty=Number($(".totalqty").val());
+     var myqty=totalqty-lastqty;
+     //alert(myqty);
+     var url="{{route('lastitem')}}";
+
+     $.get(url,{myqty:myqty},function(res){
+      //console.log(res);
+
+      var lastamount=Number(res);
+      var totalamount=lastamount+lastdepostit;
+      //alert(totalamount);
+      if(damount==totalamount){
+        //alert("hi")
+        $("#depositModal").modal('show');
+      }else{
+       $("#storeform").submit();
+       //alert("ok")
+      }
+
+     })
+
+    })
+
   })
 </script>
 @endsection
