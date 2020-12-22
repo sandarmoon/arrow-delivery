@@ -65,7 +65,11 @@
                             <a href="#" class="btn btn-sm btn-info showfile" data-file="{{$row->file}}">{{ __("show file")}}</a>
                           @endrole
                           @role('client')
+                            @if($row->status == 0)
                             <a href="{{route('schedules.edit',$row->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
+                            @else
+                            <button class="btn btn-sm btn-info">{{ __("Complete")}}</button>
+                            @endif
                           @endrole
                         </td>
                       </tr>
