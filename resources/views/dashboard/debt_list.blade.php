@@ -48,6 +48,8 @@
                 <thead>
                   <tr>
                     <th>#</th>
+                    <th>{{ __("Pickup Date")}}</th>
+                    <th>{{ __("Item Qty")}}</th>
                     <th>{{ __("Description")}}</th>
                     <th>{{ __("Expense Type")}}</th>
                     <th>{{ __("Amount")}}</th>
@@ -162,21 +164,30 @@
                         <tr>
                           <th>#</th>
                           <th>{{ __("Description")}}</th>
+                          <th>{{ __("Pickup Date")}}</th>
+                          <th>{{ __("Item Qty")}}</th>
                           <th>{{ __("Amount")}}</th>
                         </tr>
                       </thead>
                       <tbody>
                         @php $i=1; $etotal=0; @endphp
-                        @foreach($expenses as $expense) 
+                        @foreach($expenses as $expense)
+                        @if(count($incomes)>0 || count($rejects)>0 || count($carryfees)>0)
+                          @php $amount = $expense->amount; @endphp
+                        @else
+                          @php $amount = $expense->guest_amount; @endphp
+                        @endif
                         <tr>
                           <td>{{$i++}}</td>
                           <td>{{$expense->description}}</td>
-                          <td>{{number_format($expense->amount)}}</td>
-                          @php $etotal += $expense->amount; @endphp
+                          <td>{{\Carbon\Carbon::parse($expense->pickup->created_at)->format('d-m-Y')}}</td>
+                          <td>{{count($expense->pickup->items)}}</td>
+                          <td>{{number_format($amount)}}</td>
+                          @php $etotal += $amount; @endphp
                         </tr>
                         @endforeach
                         <tr>
-                          <td colspan="2">{{ __("Total")}}:</td>
+                          <td colspan="4">{{ __("Total")}}:</td>
                           <td>{{number_format($etotal)}} Ks</td>
                         </tr>
                       </tbody>
@@ -323,6 +334,7 @@
             }else{
               showamount = row.guest_amount;
             }
+            let mydate=new Date(row.created_at);
             html +=`<tr>
                     <td>
                       <div class="animated-checkbox">
@@ -331,6 +343,8 @@
                         </label>
                       </div>
                     </td>
+                    <td>${mydate.getDate()}-${mydate.getMonth()+1}-${mydate.getFullYear()}</td>
+                    <td>${row.pickup.items.length}</td>
                     <td>${row.description}</td>
                     <td>${row.expense_type.name}</td>
                     <td>${thousands_separators(showamount)} Ks</td>
@@ -338,7 +352,7 @@
                   total += Number(showamount);
           }
           html +=`<tr>
-                    <td colspan="3">Total: </td>
+                    <td colspan="5">Total: </td>
                     <td>${thousands_separators(total)} Ks</td>
                   </tr>`;
 

@@ -40,4 +40,9 @@ class Expense extends Model
   {
     return $this->hasOne('App\Transaction');
   }
+
+  public function pickup()
+  {
+    return $this->belongsTo('App\Pickup');
+  }
 }

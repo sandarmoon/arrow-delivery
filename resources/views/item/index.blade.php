@@ -457,7 +457,7 @@
                 <td>${v.item.receiver_address}</td>
                 <td>${v.item.receiver_phone_no}</td>
                 <td>${v.item.pickup.schedule.client.user.name}</br>(${v.item.pickup.schedule.client.phone_no})</td>
-                <td>${v.item.amount}</td>
+                <td>${thousands_separators(v.item.amount)}</td>
               </tr>`
         })
         $(".tbody").html(html);
@@ -473,7 +473,12 @@
     })
 
 
-
+    function thousands_separators(num)
+    {
+      var num_parts = num.toString().split(".");
+      num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return num_parts.join(".");
+    }
 
     })
 
