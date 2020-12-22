@@ -180,7 +180,13 @@
                         <tr>
                           <td>{{$i++}}</td>
                           <td>{{$expense->description}}</td>
-                          <td>{{\Carbon\Carbon::parse($expense->pickup->created_at)->format('d-m-Y')}}</td>
+                          <td>
+                            @if($expense->pickup)
+                              {{\Carbon\Carbon::parse($expense->pickup->created_at)->format('d-m-Y')}}
+                            @else
+                              {{'-'}}
+                            @endif
+                          </td>
                           <td>{{count($expense->pickup->items)}}</td>
                           <td>{{number_format($amount)}}</td>
                           @php $etotal += $amount; @endphp
