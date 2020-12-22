@@ -710,7 +710,36 @@ public function profit(Request $request){
         }
     }
 
-    return view('dashboard.pending_ways',compact('pending_ways'));
+    $townships= DB::table('ways')
+    ->select('townships.name as township_name','townships.id as township_id')
+    ->join('items', 'items.id', '=', 'ways.item_id')
+    ->join('townships', 'townships.id', '=', 'items.township_id')
+    ->where('ways.delivery_man_id', Auth::user()->delivery_man->id)
+    ->orderBy('townships.name','asc')
+    ->distinct()
+    ->get();
+
+   // dd($townships);
+   $gates=DB::table('ways')
+    ->select('sender_gates.name as gate_name','sender_gates.id as gate_id')
+    ->join('items', 'items.id', '=', 'ways.item_id')
+    ->join('sender_gates', 'sender_gates.id', '=', 'items.sender_gate_id')
+    ->where('ways.delivery_man_id', Auth::user()->delivery_man->id)
+    ->orderBy('sender_gates.name','asc')
+    ->distinct()
+    ->get();
+
+
+  $postoffices=DB::table('ways')
+    ->select('sender_postoffices.name as office_name','sender_postoffices.id as office_id')
+    ->join('items', 'items.id', '=', 'ways.item_id')
+    ->join('sender_postoffices', 'sender_postoffices.id', '=', 'items.sender_postoffice_id')
+    ->where('ways.delivery_man_id', Auth::user()->delivery_man->id)
+    ->orderBy('sender_postoffices.name','asc')
+    ->distinct()
+    ->get();
+
+    return view('dashboard.pending_ways',compact('pending_ways','townships','gates','postoffices'));
   }
 
   public function success_ways($value='')
@@ -1058,5 +1087,39 @@ public function profit(Request $request){
       // download PDF file with download method
       return $pdf->download( $deliname.'.pdf');
       
+  }
+
+  public function pendingwaysbytownship(Request $request){
+    $id=$request->id;
+    //dd($id);
+    $ways = Way::where('delivery_man_id',Auth::user()->delivery_man->id)->where('status_code','!=',001)->where('status_code','!=',002)->where('deleted_at',null)->orderBy('id','desc')->with('item.pickup.schedule.client.user')->with('item.SenderGate')->with('item.SenderPostoffice')->with('item.township')->whereHas('item',function ($query) use ($id){
+        $query->where('township_id', $id);
+      })->get();
+    //dd($ways);
+
+    return $ways;
+
+  }
+
+  public function pendingwaysbygate(Request $request){
+     $id=$request->id;
+    //dd($id);
+    $ways = Way::where('delivery_man_id',Auth::user()->delivery_man->id)->where('status_code','!=',001)->where('status_code','!=',002)->where('deleted_at',null)->orderBy('id','desc')->with('item.pickup.schedule.client.user')->with('item.SenderGate')->with('item.SenderPostoffice')->with('item.township')->whereHas('item',function ($query) use ($id){
+        $query->where('sender_gate_id', $id);
+      })->get();
+    //dd($ways);
+
+    return $ways;
+  }
+
+  public function pendingwaysbyoffice(Request $request){
+     $id=$request->id;
+    //dd($id);
+    $ways = Way::where('delivery_man_id',Auth::user()->delivery_man->id)->where('status_code','!=',001)->where('status_code','!=',002)->where('deleted_at',null)->orderBy('id','desc')->with('item.pickup.schedule.client.user')->with('item.SenderGate')->with('item.SenderPostoffice')->with('item.township')->whereHas('item',function ($query) use ($id){
+        $query->where('sender_postoffice_id', $id);
+      })->get();
+    //dd($ways);
+
+    return $ways;
   }
 }

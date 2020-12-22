@@ -136,9 +136,48 @@
     </div> --}}
 
     <div class="row">
+       <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group">
+              <label for="dtownship">{{ __("Select Township")}}:</label>
+                <select class="js-example-basic-single" id="dtownship" name="dtownship">
+                  <option value="">Choose Your Townships</option>
+                    @foreach($townships as $row)
+                    <option value="{{$row->township_id}}">{{$row->township_name}}</option>
+                    @endforeach
+                </select>
+          </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group">
+              <label for="dgate">{{ __("Select Gate")}}:</label>
+                <select class="js-example-basic-single" id="dgate" name="dgate">
+                  <option value="">Choose Your Gate</option>
+                    @foreach($gates as $row)
+                    <option value="{{$row->gate_id}}">{{$row->gate_name}}</option>
+                    @endforeach
+                </select>
+          </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group">
+              <label for="doffice">{{ __("Select Post Office")}}:</label>
+                <select class="js-example-basic-single" id="doffice" name="doffice">
+                  <option value="">Choose Your Post Office</option>
+                     @foreach($postoffices as $row)
+                    <option value="{{$row->office_id}}">{{$row->office_name}}</option>
+                    @endforeach
+                </select>
+          </div>
+      </div>
+    </div>
+
+    <div class="row mypendingrow">
       <div class="col-12">
             <div class="alert alert-primary alertsuccess d-none" role="alert"></div>
       </div>
+     
       @foreach($pending_ways as $row)
       <div class="col-md-4">
         <div class="card mb-3">
@@ -285,13 +324,15 @@
   <script type="text/javascript">
     $(document).ready(function () {
       // $('.delivery_actions').hide();
+     $('.js-example-basic-single').select2({width:'100%'});
+
       $.ajaxSetup({
         headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
       });
 
-      $('.detail').click(function () {
+     $(".mypendingrow").on('click','.detail',function(){
         var id=$(this).data('id');
         //console.log(id);
         $('#itemDetailModal').modal('show');
@@ -316,7 +357,7 @@
           $actions.toggle( $cbs.is(":checked") , 2000);
       });
 
-      $('.success').click(function (e) {
+      $(".mypendingrow").on('click','.success',function(e){
         var wayid = $(this).data('id');
         e.preventDefault();
         var ways = [];
@@ -343,7 +384,7 @@
         })
       })
 
-      $('.return').click(function (e) {
+      $(".mypendingrow").on('click','.return',function(e){
         e.preventDefault();
         $('#returnModal').modal('show');
         var id=$(this).data('id');
@@ -390,7 +431,7 @@
 
 
 
-       $('.reject').click(function (e) {
+     $(".mypendingrow").on('click','.reject',function(e){
         e.preventDefault();
         $('#rejectModal').modal('show');
         var id=$(this).data('id');
@@ -431,6 +472,231 @@
           }
           
 
+        })
+      })
+
+
+      $("#dtownship").change(function(){
+        var id=$(this).val();
+        //alert(id);
+        $.ajaxSetup({
+           headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+             }
+         });
+        var url="{{route('pendingwaysbytownship')}}";
+        $.post(url,{id:id},function(res){
+          console.log(res);
+          var html="";
+          $.each(res,function(i,v){
+            
+            html+=`
+            <div class="col-md-4">
+        <div class="card mb-3">
+          <h5 class="card-header">${v.item.receiver_name}`
+            if(v.status_code=='001'){
+            html+=`<span class="badge badge-info">success</span>`}
+            else if(v.status_code == '002'){
+            html+=`<span class="badge badge-warning">return</span>`}
+            else if(v.status_code == '003'){
+           html+=`<span class="badge badge-danger">reject</span>`}
+           html+= `<small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> ${v.item.expired_date}</small></h5>`
+            html+=`<div class="card-body">
+            <h5 class="card-title">Item Code: ${v.item.codeno}}</h5>
+          <h5 class="card-title">Delivered Address: `
+              if(v.item.sender_gate_id!=null){
+              html+=`${v.item.sender_gate.name}`}
+              else if(v.item.sender_postoffice_id != null){
+               html+=`${v.item.sender_postoffice.name}`
+              }
+              else{
+              html+=`${v.item.township.name}`}
+           html+=`</h5>
+          <p class="card-text">Full Address:${v.item.receiver_address}</p>
+          <p class="card-text">
+            Receiver Phone No:${v.item.receiver_phone_no}
+          </p>
+          <p class="card-text">
+           Client Name: ${v.item.pickup.schedule.client.user.name}
+          </p>
+          <p class="card-text">
+           Client Phone No: ${v.item.pickup.schedule.client.phone_no}
+          </p>
+          <p class="card-text">`
+            if(v.item.paystatus==1){
+             html+= `Amount: ${v.item.amount}Ks`
+           }
+             {{-- <span class="badge badge-success">ma shin ya thay</span> --}}
+            else
+            {
+            html+=`<span class="badge badge-success">All Paid!</span>`
+          }
+            
+          html+=`</p>`
+          
+            
+            if(v.status_code=="005"){
+           html+=`<a href="#" class="btn btn-info btn-sm success" data-id="${v.id}">Success</a>
+            <a href="#" class="btn btn-warning btn-sm return" data-id="${v.id}">Return</a>
+            <a href="#" class="btn btn-danger btn-sm reject" data-id="${v.id}">Reject</a>`
+          }
+          html+=`<a href="#" class="btn btn-sm btn-primary detail" data-id="${v.item.id}">Detail</a> 
+          </div>
+        </div>
+      </div>
+            `
+          })
+          $(".mypendingrow").html(html)
+        })
+      })
+
+
+     $("#dgate").change(function(){
+        var id=$(this).val();
+        //alert(id);
+        $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+         });
+        var url="{{route('pendingwaysbygate')}}";
+        $.post(url,{id:id},function(res){
+          console.log(res);
+          var html="";
+          $.each(res,function(i,v){
+            
+            html+=`
+            <div class="col-md-4">
+        <div class="card mb-3">
+          <h5 class="card-header">${v.item.receiver_name}`
+            if(v.status_code=='001'){
+            html+=`<span class="badge badge-info">success</span>`}
+            else if(v.status_code == '002'){
+            html+=`<span class="badge badge-warning">return</span>`}
+            else if(v.status_code == '003'){
+           html+=`<span class="badge badge-danger">reject</span>`}
+           html+= `<small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> ${v.item.expired_date}</small></h5>`
+            html+=`<div class="card-body">
+            <h5 class="card-title">Item Code: ${v.item.codeno}}</h5>
+          <h5 class="card-title">Delivered Address: `
+              if(v.item.sender_gate_id!=null){
+              html+=`${v.item.sender_gate.name}`}
+              else if(v.item.sender_postoffice_id != null){
+               html+=`${v.item.sender_postoffice.name}`
+              }
+              else{
+              html+=`${v.item.township.name}`}
+           html+=`</h5>
+          <p class="card-text">Full Address:${v.item.receiver_address}</p>
+          <p class="card-text">
+            Receiver Phone No:${v.item.receiver_phone_no}
+          </p>
+          <p class="card-text">
+           Client Name: ${v.item.pickup.schedule.client.user.name}
+          </p>
+          <p class="card-text">
+           Client Phone No: ${v.item.pickup.schedule.client.phone_no}
+          </p>
+          <p class="card-text">`
+            if(v.item.paystatus==1){
+             html+= `Amount: ${v.item.amount}Ks`
+           }
+             {{-- <span class="badge badge-success">ma shin ya thay</span> --}}
+            else
+            {
+            html+=`<span class="badge badge-success">All Paid!</span>`
+          }
+            
+          html+=`</p>`
+          
+            
+            if(v.status_code=="005"){
+           html+=`<a href="#" class="btn btn-info btn-sm success" data-id="${v.id}">Success</a>
+            <a href="#" class="btn btn-warning btn-sm return" data-id="${v.id}">Return</a>
+            <a href="#" class="btn btn-danger btn-sm reject" data-id="${v.id}">Reject</a>`
+          }
+          html+=`<a href="#" class="btn btn-sm btn-primary detail" data-id="${v.item.id}">Detail</a> 
+          </div>
+        </div>
+      </div>
+            `
+          })
+          $(".mypendingrow").html(html)
+        })
+      })
+ 
+
+     $("#doffice").change(function(){
+        var id=$(this).val();
+        //alert(id);
+        $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+         });
+        var url="{{route('pendingwaysbyoffice')}}";
+        $.post(url,{id:id},function(res){
+          console.log(res);
+          var html="";
+          $.each(res,function(i,v){
+            
+            html+=`
+            <div class="col-md-4">
+        <div class="card mb-3">
+          <h5 class="card-header">${v.item.receiver_name}`
+            if(v.status_code=='001'){
+            html+=`<span class="badge badge-info">success</span>`}
+            else if(v.status_code == '002'){
+            html+=`<span class="badge badge-warning">return</span>`}
+            else if(v.status_code == '003'){
+           html+=`<span class="badge badge-danger">reject</span>`}
+           html+= `<small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> ${v.item.expired_date}</small></h5>`
+            html+=`<div class="card-body">
+            <h5 class="card-title">Item Code: ${v.item.codeno}}</h5>
+          <h5 class="card-title">Delivered Address: `
+              if(v.item.sender_gate_id!=null){
+              html+=`${v.item.sender_gate.name}`}
+              else if(v.item.sender_postoffice_id != null){
+               html+=`${v.item.sender_postoffice.name}`
+              }
+              else{
+              html+=`${v.item.township.name}`}
+           html+=`</h5>
+          <p class="card-text">Full Address:${v.item.receiver_address}</p>
+          <p class="card-text">
+            Receiver Phone No:${v.item.receiver_phone_no}
+          </p>
+          <p class="card-text">
+           Client Name: ${v.item.pickup.schedule.client.user.name}
+          </p>
+          <p class="card-text">
+           Client Phone No: ${v.item.pickup.schedule.client.phone_no}
+          </p>
+          <p class="card-text">`
+            if(v.item.paystatus==1){
+             html+= `Amount: ${v.item.amount}Ks`
+           }
+             {{-- <span class="badge badge-success">ma shin ya thay</span> --}}
+            else
+            {
+            html+=`<span class="badge badge-success">All Paid!</span>`
+          }
+            
+          html+=`</p>`
+          
+            
+            if(v.status_code=="005"){
+           html+=`<a href="#" class="btn btn-info btn-sm success" data-id="${v.id}">Success</a>
+            <a href="#" class="btn btn-warning btn-sm return" data-id="${v.id}">Return</a>
+            <a href="#" class="btn btn-danger btn-sm reject" data-id="${v.id}">Reject</a>`
+          }
+          html+=`<a href="#" class="btn btn-sm btn-primary detail" data-id="${v.item.id}">Detail</a> 
+          </div>
+        </div>
+      </div>
+            `
+          })
+          $(".mypendingrow").html(html)
         })
       })
 

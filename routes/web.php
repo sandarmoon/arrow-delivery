@@ -132,7 +132,12 @@ Route::middleware('auth')->group(function () {
   Route::prefix('ways')->group(function () {
     Route::get('pending','MainController@pending_ways')->name('pending_ways');
     Route::get('success','MainController@success_ways')->name('success_ways');
+    Route::post('pendingwaysbytownship','MainController@pendingwaysbytownship')->name('pendingwaysbytownship');
+    Route::post('pendingwaysbygate','MainController@pendingwaysbygate')->name('pendingwaysbygate');
+    Route::post('pendingwaysbyoffice','MainController@pendingwaysbyoffice')->name('pendingwaysbyoffice');
   });
+
+
 
   Route::post('waybydeliveryman','MainController@waybydeliveryman')->name('waybydeliveryman');
   Route::post('/createpdf', 'MainController@createpdf')->name('createpdf');
