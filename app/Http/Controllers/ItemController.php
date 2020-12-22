@@ -487,4 +487,14 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
 
       return "success";
     }
+
+    public function lastitem(Request $request){
+      $myqty=$request->myqty;
+     // dd($myqty);
+      $checkitems = Item::orderBy('id', 'desc')->take($myqty)->get();
+      $lastamount=$checkitems->sum('deposit');
+
+     return $lastamount;
+
+    }
 }
