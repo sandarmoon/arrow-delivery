@@ -195,7 +195,7 @@ class MainController extends Controller
 
   public function getdebitlistbyclient($id)
   {
-    $expenses = Expense::where('client_id',$id)->where('status',2)->where('expense_type_id',1)->with('expense_type')->get();
+    $expenses = Expense::where('client_id',$id)->where('status',2)->where('expense_type_id',1)->with('expense_type')->with('pickup.items')->get();
 
     $incomes = Income::whereIn('payment_type_id',[4,5,6])->with('way.item.pickup.schedule')->with('way.item.township')->whereHas('way.item.pickup.schedule',function ($query) use ($id){
       $query->where('client_id', $id);
