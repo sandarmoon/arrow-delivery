@@ -358,9 +358,9 @@
                     <td>${mydate.getDate()}-${mydate.getMonth()+1}-${mydate.getFullYear()}</td>
                     <td>`;
               if(row.pickup != null){
-                html += ${row.pickup.items.length}
+                html += `${row.pickup.items.length}`
               }else{
-                html += ${'-'}
+                html += `${'-'}`
               }
 
               html+=`</td>
