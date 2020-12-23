@@ -187,7 +187,13 @@
                               {{'-'}}
                             @endif
                           </td>
-                          <td>{{count($expense->pickup->items)}}</td>
+                          <td>
+                            @if(isset($expense->pickup))
+                            {{count($expense->pickup->items)}}
+                            @else
+                            {{'-'}}
+                            @endif
+                          </td>
                           <td>{{number_format($amount)}}</td>
                           @php $etotal += $amount; @endphp
                         </tr>
@@ -350,7 +356,14 @@
                       </div>
                     </td>
                     <td>${mydate.getDate()}-${mydate.getMonth()+1}-${mydate.getFullYear()}</td>
-                    <td>${row.pickup.items.length}</td>
+                    <td>`;
+              if(row.pickup != null){
+                html += ${row.pickup.items.length}
+              }else{
+                html += ${'-'}
+              }
+
+              html+=`</td>
                     <td>${row.description}</td>
                     <td>${row.expense_type.name}</td>
                     <td>${thousands_separators(showamount)} Ks</td>
