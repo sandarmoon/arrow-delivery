@@ -66,7 +66,7 @@
                 @endforeach
                 <tr>
                   <td>{{$i++}}</td>
-                  <td>{{$row->schedule->pickup_date}}</td>
+                  <td>{{\Carbon\Carbon::parse($row->schedule->pickup_date)->format('d-m-Y')}}</td>
                   <td>{{$row->schedule->quantity}}</td>
                   <td>{{number_format($row->schedule->amount-$sub)}}</td>
                   

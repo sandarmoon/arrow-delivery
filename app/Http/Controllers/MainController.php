@@ -971,7 +971,7 @@ public function profit(Request $request){
       $client_id=Auth::user()->client->id;
       $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id){
         $query->where('client_id', $client_id);
-      })->where("status",1)->get();
+      })->where("status",1)->orderBy('id','desc')->get();
       //dd($pickups);
     }
       return view('dashboard.pickup_history',compact('clients','pickups'));
