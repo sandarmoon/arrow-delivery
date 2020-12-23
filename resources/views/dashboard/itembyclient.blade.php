@@ -25,49 +25,61 @@
                         <th>{{__("Receiver Name")}}</th>
                         <th>{{__("Receiver Phone No")}}</th>
                         <th>{{ __("Way State")}}</th>
-                        <th>{{ __("Amount")}}</th>
+                        <th>{{__("Deli Fees")}}</th>
+                        <th>{{ __("Item Amount")}}</th>
                       </tr>
               </thead>
               <tbody>
-                @php $i=1;$total=0; @endphp
+                @php $i=1;$total=0;$sub=0; @endphp
                 @foreach($items as $row)
-                @php $total+=$row->deposit @endphp
+                @php 
+                  $total+=$row->deposit;
+                @endphp
+                @if($row->paystatus == 2)
+                  @php $sub += $row->delivery_fees; @endphp
+                @endif
+
                 <tr>
                   <td>{{$i++}}</td>
-                  <td>{{$row->codeno}}</td>
+                  <td>{{$row->codeno}}
+                    @if($row->paystatus == 2)
+                      <span class="badge badge-info">allpaid</span>
+                    @endif
+                  </td>
                   <td>{{$row->township->name}}</td>
                   <td>{{$row->receiver_name}}</td>
                   <td>{{$row->receiver_phone_no}}</td>
                   <td>
                     @if($row->way==null)
                     <span class="badge badge-primary">
-                      delay way
+                      delay
                     </span>
                     @elseif($row->way->status_code=='001')
                     <span class="badge badge-info">
-                      success way
+                      success
                     </span>
                     @elseif($row->way->status_code=='005')
                       <span class="badge badge-primary">
-                      pending way
+                      pending
                     </span>
                     @elseif($row->way->status_code=='003')
                       <span class="badge badge-danger">
-                      reject way
+                      reject
                     </span>
                     @else
                       <span class="badge badge-warning">
-                      return way
+                      return
                     </span>
                     @endif
 
                   </td>
-                  <td>{{$row->deposit}}</td>
+                  <td>{{number_format($row->delivery_fees)}}</td>
+                  <td>{{number_format($row->deposit)}}</td>
                 </tr>
                 @endforeach
                 <tr>
                   <td colspan="6">Total Amount</td>
-                  <td>{{$total}}</td>
+                  <td colspan="2">{{number_format($total-$sub)}}</td>
                 </tr>
               </tbody>
             </table>

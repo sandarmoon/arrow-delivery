@@ -15,9 +15,6 @@
       <div class="col-md-12">
         <div class="tile">
           @php $mytime = Carbon\Carbon::now(); @endphp
-          
-
-         
       <div class="row">
               <div class="form-group col-md-3">
               <label for="InputStartDate">{{ __("Start Date")}}:</label>
@@ -60,11 +57,18 @@
                 @php $i=1; @endphp
                 @foreach($pickups as $row)
 
+                @php $sub=0; @endphp
+
+                @foreach($row->items as $item)
+                  @if($item->paystatus == 2)
+                    @php $sub += $item->delivery_fees; @endphp
+                  @endif
+                @endforeach
                 <tr>
                   <td>{{$i++}}</td>
                   <td>{{$row->schedule->pickup_date}}</td>
                   <td>{{$row->schedule->quantity}}</td>
-                  <td>{{$row->schedule->amount}}</td>
+                  <td>{{number_format($row->schedule->amount-$sub)}}</td>
                   
                   @if($row->items)
                   <td><a class="btn btn-primary btn-sm d-inline-block btnEdit " href="{{route('historydetails',$row->id)}}">Detail</a></td>
