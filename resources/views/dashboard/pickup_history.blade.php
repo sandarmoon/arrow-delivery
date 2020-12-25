@@ -92,16 +92,15 @@
 @section('script')
 <script type="text/javascript">
   $(document).ready(function(){
+    $('.js-example-basic-single').select2({width:'100%'});
 
- $('.js-example-basic-single').select2({width:'100%'});
     $.ajaxSetup({
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       }
     });
 
-    function thousands_separators(num)
-    {
+    function thousands_separators(num){
       var num_parts = num.toString().split(".");
       num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       return num_parts.join(".");
@@ -109,13 +108,13 @@
 
     $('.search_btn').click(function () {
       //alert("ok");
-        var sdate = $('#InputStartDate').val();
-        var edate = $('#InputEndDate').val();
-        var client_id=$("#InputClient").val();
-// console.log(start_date, end_date)
-        var url="{{route('pickupbyclient')}}";
-        var i=1;
-         $('#picktable').DataTable({
+      var sdate = $('#InputStartDate').val();
+      var edate = $('#InputEndDate').val();
+      var client_id=$("#InputClient").val();
+      // console.log(start_date, end_date)
+      var url="{{route('pickupbyclient')}}";
+      var i=1;
+      $('#picktable').DataTable({
         "processing": true,
         "serverSide": true,
         destroy:true,
@@ -126,25 +125,24 @@
             type: "POST",
             data:{sdate:sdate,edate:edate,client_id:client_id},
             dataType:'json',
-        },
+          },
         "columns": [
-         {"data":'DT_RowIndex'},
-        { "data": "schedule.pickup_date",},
-        { "data": "schedule.quantity" },
-        { "data": "schedule.amount" },
-        { "data": "id",
-                    sortable:false,
-                    render:function(data){
-                      var routeurl="{{route('historydetails',':id')}}";
-                      routeurl=routeurl.replace(':id',data);
-                      return `<a class="btn btn-primary btn-sm d-inline-block btnEdit " href="${routeurl}" data-id="${data}">Detail</a>`;
-                    }
-                   }
+          {"data":'DT_RowIndex'},
+          { "data": "schedule.pickup_date",},
+          { "data": "schedule.quantity" },
+          { "data": "expenses[0].guest_amount" },
+          { "data": "id",
+                      sortable:false,
+                      render:function(data){
+                        var routeurl="{{route('historydetails',':id')}}";
+                        routeurl=routeurl.replace(':id',data);
+                        return `<a class="btn btn-primary btn-sm d-inline-block btnEdit" href="${routeurl}" data-id="${data}">Detail</a>`;
+                      }
+                     }
         ],
         "info":false
-    });
-        
-      })
+      });   
+    })
   })
 </script>
 @endsection
