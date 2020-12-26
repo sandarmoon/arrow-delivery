@@ -78,8 +78,8 @@
                 </tr>
                 @endforeach
                 <tr>
-                  <td colspan="6">Total Amount</td>
-                  <td colspan="2">{{number_format($total-$sub)}}</td>
+                  <td colspan="7">Total Amount</td>
+                  <td>{{number_format($total-$sub)}}</td>
                 </tr>
               </tbody>
             </table>

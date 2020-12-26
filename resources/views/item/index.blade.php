@@ -44,7 +44,7 @@
                         <th>{{ __("Township")}}</th>
                         <th>{{ __("Receiver Info")}}</th>
                         <th>{{ __("Expired Date")}}</th>
-                        <th>{{ __("Deposit")}}</th>
+                        <th>{{ __("Item Price")}}</th>
                         <th>{{ __("Deli Fees")}}</th>
                         <th>{{ __("Other Charges")}}</th>
                         <th>{{ __("Actions")}}</th>
@@ -100,7 +100,7 @@
                         <th>{{ __("Township")}}</th>
                         <th>{{ __("Delivery Man")}}</th>
                         <th>{{ __("Expired Date")}}</th>
-                        <th>{{ __("Deposit")}}</th>
+                        <th>{{ __("Item Price")}}</th>
                         <th>{{ __("Deli Fees")}}</th>
                         <th>{{ __("Other Charges")}}</th>
                         <th>{{ __("Actions")}}</th>

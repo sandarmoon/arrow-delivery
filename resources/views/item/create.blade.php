@@ -143,7 +143,19 @@
                   <div class="form-control-feedback text-danger"> {{$errors->first('amount') }} </div>
                 </div>
 
-                <div class="form-group row">
+                <div class="form-group">
+                  <label for="other">{{ __("Delivery Type")}}:</label>
+                  <select class="form-control" name="amountstatus">
+                    <optgroup label="Choose type">
+                      <option value="1">Unpaid</option>
+                      <option value="2">Allpaid</option>
+                      <option value="3">Only Deli</option>
+                      <option value="4">Only Item Price</option>
+                    </optgroup>
+                  </select>
+                </div>
+
+                {{-- <div class="form-group row">
                   <div class="col-6">
                     <div class="form-check">
                       <input class="form-check-input" type="radio" name="amountstatus" id="amountpaid" value="1" >
@@ -163,8 +175,8 @@
                   <div class="col-md-12">
                     <div class="form-control-feedback text-danger"> {{$errors->first('paystatus') }} </div>
                   </div>
-                </div>
-                 
+                </div> --}}
+                
                 <div class="form-group">
                   <label for="InputRemark">{{ __("Remark")}}:</label>
                   <textarea class="form-control" id="InputRemark" name="remark">@if($pickupeditem){{$pickupeditem->remark}}@else{{old('remark')}}@endif</textarea>
@@ -187,19 +199,18 @@
                     <li class="list-group-item">{{ __("Left Item to collect")}}: {{$pickup->schedule->quantity - count($pickup->items)}}</li>
 
                     @php $total=0; @endphp
+
                     @foreach($pickup->items as $pickupitem)
                      @php $total+=$pickupitem->deposit @endphp
                     @endforeach
 
                     <input type="hidden" name="client_id" value="{{$client->id}}">
-
                     <input type="hidden" name="depositamount" value="{{$pickup->schedule->amount}}" class="depositamount">
-
                     <input type="hidden" name="depositamountforcheck" value="{{$pickup->schedule->amount-$total}}" class="depositamountforcheck">
-
                     <input type="hidden" class="lastqty" name="qty" value={{$pickup->schedule->quantity - count($pickup->items)}}>
                     <input type="hidden" class="totalqty" name="myqty" value="{{$pickup->schedule->quantity}}">
-                    <li class="list-group-item">{{ __("Balance")}}: {{number_format($pickup->schedule->amount-$total)}} KS</li>
+                    <li class="list-group-item">{{ __("Balance")}}: {{number_format($pickup->schedule->amount)}} KS</li>
+                    <li class="list-group-item">{{ __("Item Amount Total")}}: {{number_format($total)}} KS</li>
                   </ul>
                   @if($pickup->schedule->file)
                     <img src="{{asset($pickup->schedule->file)}}" class="img-fluid">

@@ -137,7 +137,7 @@
                     <th>Customer Name</th>
                     <th>Delivered Date</th>
                     <th>Delivery Fees</th>
-                    <th>Deposit</th>
+                    <th>Item Price</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -167,6 +167,10 @@
                       ${row.item.item_code}`
                     if(row.item.paystatus == 2){
                       html+=` <span class="badge badge-success">All Paid</span>`
+                    }else if(row.item.paystatus == 3){
+                      html+=` <span class="badge badge-success">Only Deli</span>`
+                    }else if(row.item.paystatus == 4){
+                      html+=` <span class="badge badge-success">Only Item Price</span>`
                     }
                     html+=`</td>
                     <td>${row.item.township.township_name}</td>
@@ -178,10 +182,14 @@
                     }else{
                       html+=`<td>-</td>`
                     }
-                    html+=`<td>${thousands_separators(row.item.delivery_fees)}</td><td>${thousands_separators(row.item.deposit)}</td>`
+                    html+=`<td>${thousands_separators(row.item.delivery_fees)}`
+                    if(row.item.other_fees > 0){
+                      html += `+ ${thousands_separators(row.item.other_fees)}`
+                    }
+                    html+=`</td><td>${thousands_separators(row.item.deposit)}</td>`
 
                     if(row.status_code=="001"){
-                      html+=`<td><button class="btn btn-primary btnsave" data-id="${row.id}" data-amount="${row.item.item_amount}" data-deliveryfee="${row.item.delivery_fees}" data-deposit="${row.item.deposit}" data-paystatus="${row.item.paystatus}">save</button></td>`
+                      html+=`<td><button class="btn btn-primary btnsave" data-id="${row.id}" data-amount="${row.item.item_amount}" data-deliveryfee="${row.item.delivery_fees+row.item.other_fees}" data-deposit="${row.item.deposit}" data-paystatus="${row.item.paystatus}">save</button></td>`
                       }else if(row.status_code=="002"){
                        html+= `<td><span class="badge badge-info">return way</span></td>`
                       }else if(row.status_code=="003"){
@@ -214,6 +222,16 @@
         if (paystatus == 2) {
           $("#paymenttype").val(4)
           $('#paymenttype').attr('disabled',true)
+        }else if (paystatus == 3) {
+          $("#paymenttype").val(5)
+          $('#paymenttype').attr('disabled',true)
+          $(".bankform").show();
+          $('.bankform option[value="1"]').show();
+        }else if (paystatus == 4) {
+          $("#paymenttype").val(6)
+          $('#paymenttype').attr('disabled',true)
+          $(".bankform").show();
+          $('.bankform option[value="1"]').show();
         }else{
           $('#paymenttype').attr('disabled',false)
         }
@@ -240,6 +258,7 @@
           $(".camountform").show();
         }else if(id==5 || id==6){
           $(".bankform").show();
+          $('.bankform option[value="1"]').show();
         }else{
           $(".bankform").hide();
           $(".bamountform").hide();

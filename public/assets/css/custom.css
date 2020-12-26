@@ -58,3 +58,8 @@ a {
   text-decoration: none;
   background-color: transparent;
 }
+
+.nav-link.active{
+  color: #fff !important;
+  background-color: #134f68 !important;
+}

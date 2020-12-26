@@ -162,20 +162,20 @@
 
       <div class="col-sm-12 col-md-6 col-lg-4">
         <div class="form-group">
-              <label for="doffice">{{ __("Select Post Office")}}:</label>
-                <select class="js-example-basic-single" id="doffice" name="doffice">
-                  <option value="">Choose Your Post Office</option>
-                     @foreach($postoffices as $row)
-                    <option value="{{$row->office_id}}">{{$row->office_name}}</option>
-                    @endforeach
-                </select>
-          </div>
+          <label for="doffice">{{ __("Select Post Office")}}:</label>
+          <select class="js-example-basic-single" id="doffice" name="doffice">
+            <option value="">Choose Your Post Office</option>
+            @foreach($postoffices as $row)
+              <option value="{{$row->office_id}}">{{$row->office_name}}</option>
+            @endforeach
+          </select>
+        </div>
       </div>
     </div>
 
     <div class="row mypendingrow">
       <div class="col-12">
-            <div class="alert alert-primary alertsuccess d-none" role="alert"></div>
+        <div class="alert alert-primary alertsuccess d-none" role="alert"></div>
       </div>
      
       @foreach($pending_ways as $row)
@@ -189,10 +189,11 @@
             @elseif($row->status_code == '003')
             <span class="badge badge-danger">{{'reject'}}</span>
             @endif
-            <small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> {{$row->item->expired_date}}</small></h5>
+            <small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> {{$row->item->expired_date}}</small>
+          </h5>
           <div class="card-body">
             <h5 class="card-title">{{ __("Item Code")}}: {{$row->item->codeno}}</h5>
-          <h5 class="card-title">{{ __("Delivered Address")}}: 
+            <h5 class="card-title">{{ __("Delivered Address")}}: 
               @if($row->item->sender_gate_id != null)
                 {{$row->item->SenderGate->name}}
               @elseif($row->item->sender_postoffice_id != null)
@@ -201,32 +202,36 @@
                 {{$row->item->township->name}}
               @endif
             </h5>
-          <p class="card-text">{{ __("Full Address")}}:{{$row->item->receiver_address}}</p>
-          <p class="card-text">
-            {{ __("Receiver Phone No")}}:{{$row->item->receiver_phone_no}}
-          </p>
-          <p class="card-text">
-           Client {{ __("Name")}}: {{$row->item->pickup->schedule->client->user->name}}
-          </p>
-          <p class="card-text">
-           Client {{ __("Phone No")}}: {{$row->item->pickup->schedule->client->phone_no}}
-          </p>
-          <p class="card-text">
-            @if($row->item->paystatus==1)
-              {{ __("Amount")}}: {{$row->item->amount}} Ks
-             {{-- <span class="badge badge-success">ma shin ya thay</span> --}}
-            @else
-             <span class="badge badge-success">All Paid!</span>
-            @endif
-          </p>
-          
-            
+            <p class="card-text">{{ __("Full Address")}}:{{$row->item->receiver_address}}</p>
+            <p class="card-text">
+              {{ __("Receiver Phone No")}}:{{$row->item->receiver_phone_no}}
+            </p>
+            <p class="card-text">
+             Client {{ __("Name")}}: {{$row->item->pickup->schedule->client->user->name}}
+            </p>
+            <p class="card-text">
+             Client {{ __("Phone No")}}: {{$row->item->pickup->schedule->client->phone_no}}
+            </p>
+            <p class="card-text">
+              @if($row->item->paystatus==1)
+                {{ __("Amount")}}: {{$row->item->amount}} Ks
+               {{-- <span class="badge badge-success">Unpaid!</span> --}}
+              @elseif($row->item->paystatus==3)
+                {{ __("Amount")}}: {{$row->item->delivery_fees}} Ks
+               <span class="badge badge-success">Only Deli!</span>
+              @elseif($row->item->paystatus==4)
+                {{ __("Amount")}}: {{$row->item->deposit}} Ks
+               <span class="badge badge-success">Only Item Price!</span>
+              @else
+               <span class="badge badge-success">All Paid!</span>
+              @endif
+            </p>
             @if($row->status_code == 005)
             <a href="#" class="btn btn-info btn-sm success" data-id="{{$row->id}}">{{ __("Success")}}</a>
             <a href="#" class="btn btn-warning btn-sm return" data-id="{{$row->id}}">{{ __("Return")}}</a>
             <a href="#" class="btn btn-danger btn-sm reject" data-id="{{$row->id}}">{{ __("Reject")}}</a>
             @endif
-          <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$row->item->id}}">Detail</a> 
+            <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$row->item->id}}">Detail</a> 
           </div>
         </div>
       </div>

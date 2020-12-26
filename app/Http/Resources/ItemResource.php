@@ -20,6 +20,7 @@ class ItemResource extends JsonResource
             'item_code' => $this->codeno,
             'item_amount'=> $this->amount,
             'delivery_fees' => $this->delivery_fees,
+            'other_fees' => $this->other_fees,
             'deposit' => $this->deposit,
             'receiver_name' => $this->receiver_name,
             'paystatus' => $this->paystatus,

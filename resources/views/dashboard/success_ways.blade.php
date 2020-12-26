@@ -159,21 +159,34 @@
                 {{$row->item->township->name}}
               @endif
             </h5>
-          <p class="card-text">{{ __("Full Address")}}:{{$row->item->receiver_address}}</p>
-          <p class="card-text">
-            {{ __("Receiver Phone No")}}:{{$row->item->receiver_phone_no}}
-          </p>
-          <p class="card-text">
-           Client {{ __("Name")}}: {{$row->item->pickup->schedule->client->user->name}}
-          </p>
-          <p class="card-text">
-           Client {{ __("Phone No")}}: {{$row->item->pickup->schedule->client->phone_no}}
-          </p>
-            <p class="card-text">Amount: {{$row->item->amount}}</p>
+            <p class="card-text">{{ __("Full Address")}}:{{$row->item->receiver_address}}</p>
+            <p class="card-text">
+              {{ __("Receiver Phone No")}}:{{$row->item->receiver_phone_no}}
+            </p>
+            <p class="card-text">
+             Client {{ __("Name")}}: {{$row->item->pickup->schedule->client->user->name}}
+            </p>
+            <p class="card-text">
+             Client {{ __("Phone No")}}: {{$row->item->pickup->schedule->client->phone_no}}
+            </p>
+            <p class="card-text">
+              @if($row->item->paystatus==1)
+                {{ __("Amount")}}: {{$row->item->amount}} Ks
+               {{-- <span class="badge badge-success">Unpaid!</span> --}}
+              @elseif($row->item->paystatus==3)
+                {{ __("Amount")}}: {{$row->item->delivery_fees}} Ks
+               <span class="badge badge-success">Only Deli!</span>
+              @elseif($row->item->paystatus==4)
+                {{ __("Amount")}}: {{$row->item->deposit}} Ks
+               <span class="badge badge-success">Only Item Price!</span>
+              @else
+               <span class="badge badge-success">All Paid!</span>
+              @endif
+            </p>
             @if($row->income==null)
-            <a href="{{route('normal',$row->id)}}" class="btn btn-warning">{{ __("Edit")}}</a>
+              <a href="{{route('normal',$row->id)}}" class="btn btn-warning">{{ __("Edit")}}</a>
             @endif
-            <a href="#" class="btn btn-primary detail" data-id="{{$row->item->id}}">{{ __("Detail")}}</a> 
+            <a href="#" class="btn btn-primary detail" data-id="{{$row->item->id}}">{{ __("Detail")}}</a>
           </div>
         </div>
       </div>

@@ -12,8 +12,9 @@ class SenderGateSeeder extends Seeder
      */
     public function run()
     {
-      SenderGate::create(['name'=>'Aung Min ga lar']);
-      SenderGate::create(['name'=>'Aung San']);
-      SenderGate::create(['name'=>'Hlaing thar yar']);
+      SenderGate::create(['name'=>'Aungmingalar']);
+      SenderGate::create(['name'=>'Aungsan']);
+      SenderGate::create(['name'=>'Hlaingtharyar']);
+      SenderGate::create(['name'=>'Bayintnaung']);
     }
 }

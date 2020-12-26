@@ -314,7 +314,7 @@
         $("#schedule_id").val(id);
       })
 
-         $(".amountsave").click(function(){
+      $(".amountsave").click(function(){
         var schedule_id=$("#schedule_id").val();
         var amount=$("#amount").val();
         var quantity=$("#quantity").val();

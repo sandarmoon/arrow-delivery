@@ -138,7 +138,7 @@ class ItemController extends Controller
             $pickup->status=2;
             $pickup->save();
             //}
-            return redirect()->route('checkitem',$pickup->id); 
+            return redirect()->route('checkitem',$pickup->id);
           }else{
             if($request->paidamount!=null){
               $expense=new Expense;
@@ -151,6 +151,7 @@ class ItemController extends Controller
               }
               $expense->status=$request->paystatus;
               $expense->description="Client Deposit";
+              $$expense->pickup_id = $request->pickup_id;
               $expense->city_id=1;
               $expense->expense_type_id=1;
               $expense->save();
@@ -166,6 +167,7 @@ class ItemController extends Controller
               }
               $expense->status=2;
               $expense->description="Client Deposit";
+              $$expense->pickup_id = $request->pickup_id;
               $expense->city_id=1;
               $expense->expense_type_id=1;
               $expense->save();
@@ -181,6 +183,7 @@ class ItemController extends Controller
               }
               $expense->status=$request->paystatus;
               $expense->description="Client Deposit";
+              $$expense->pickup_id = $request->pickup_id;
               $expense->city_id=1;
               $expense->expense_type_id=1;
               $expense->save();

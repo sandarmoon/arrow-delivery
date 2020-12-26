@@ -600,7 +600,7 @@ public function profit(Request $request){
       $transaction->bank_id = $request->bank;
       $transaction->income_id = $income->id;
       $transaction->amount = $request->deposit;
-      $transaction->description = "Only Deli";
+      $transaction->description = "Only Item Price";
       $transaction->save();
 
       $bank = Bank::find($request->bank);
@@ -665,21 +665,21 @@ public function profit(Request $request){
     return view('dashboard.pickups',compact('pickups'));
   }
 
-
   public function pickupdone($id,$qty){
-
-    //dd($id);
-    if($qty==0){
     $pickup=Pickup::find($id);
-    $pickup->status=3;
-    $pickup->save();
+
+    if($qty==0){  
+      $pickup->status=3;
+      $pickup->save();
     }else{
-    $pickup=Pickup::find($id);
-    $pickup->status=1;
-    $pickup->save();
-  }
-  return redirect()->route('pickups')->with("successMsg",'Pickup successfully');
+      $pickup->status=1;
+      $pickup->save();
+    }
 
+    $pickup->schedule->status = 1;
+    $pickup->schedule->save();
+
+    return redirect()->route('pickups')->with("successMsg",'Pickup successfully'); 
   }
 
   // for way page => delivery man view
@@ -901,26 +901,25 @@ public function profit(Request $request){
 
 
   public function editamountandqty(Request $request){
-     $validator = $request->validate([
-            'quantity'=>['required'],
-            'amount'=>['required']
-        ]);
-     if($validator){
-    $id=$request->schedule_id;
-    $amount=$request->amount;
-    $quantity=$request->quantity;
+    $validator = $request->validate([
+      'quantity'=>['required'],
+      'amount'=>['required']
+    ]);
+    
+    if($validator){
+      $id=$request->schedule_id;
+      $amount=$request->amount;
+      $quantity=$request->quantity;
 
-    $schedule=Schedule::find($id);
-    $schedule->amount=$amount;
-    $schedule->quantity=$quantity;
-    $schedule->save();
-    $pickup=Pickup::where('schedule_id',$id)->first();
-    $pickup->status=1;
-    $pickup->save();
-    return response()->json(['success'=>'successfully!']);
-  }
-
-
+      $schedule=Schedule::find($id);
+      $schedule->amount=$amount;
+      $schedule->quantity=$quantity;
+      $schedule->save();
+      $pickup=Pickup::where('schedule_id',$id)->first();
+      $pickup->status=1;
+      $pickup->save();
+      return response()->json(['success'=>'successfully!']);
+    }
   }
 
   public function normal($id){

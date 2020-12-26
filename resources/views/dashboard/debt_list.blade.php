@@ -67,9 +67,9 @@
                   <tr>
                     <th>{{ __("#")}}</th>
                     <th>{{ __("Name")}}</th>
-                    {{-- <th>Township</th> --}}
+                    <th>{{ __("Delivered Date")}}</th>
                     <th>{{ __("Delivery Fees")}}</th>
-                    <th>{{ __("Deposit Amount")}}</th>
+                    <th>{{ __("Item Price")}}</th>
                     <th>{{ __("Total Amount")}}</th>
                   </tr>
                 </thead>
@@ -95,8 +95,9 @@
                           <th>#</th>
                           <th>{{ __("Name")}}</th>
                           <th>{{ __("Description")}}</th>
+                          <th>{{ __("Delivered Date")}}</th>
                           <th>{{ __("Delivery Fees")}}</th>
-                          <th>{{ __("Deposit Amount")}}</th>
+                          <th>{{ __("Item Price")}}</th>
                           <th>{{ __("Total Amount")}}</th>
                         </tr>
                       </thead>
@@ -119,6 +120,7 @@
                             <td>{{$i++}}</td>
                             <td>{{$income->way->item->receiver_name}} <span class="badge badge-dark">{{$income->way->item->receiver_phone_no}}</span></td>
                             <td>{{$income->payment_type->name}}</td>
+                            <td>{{\Carbon\Carbon::parse($income->created_at)->format('d-m-Y')}}</td>
                             <td>
                               {{number_format($delifees)}}
                             </td>
@@ -150,7 +152,7 @@
                           </tr>
                         @endforeach
                         <tr>
-                          <td colspan="5">{{ __("Total")}}:</td>
+                          <td colspan="6">{{ __("Total")}}:</td>
                           <td>{{number_format($total)}} Ks</td>
                         </tr>
                       </tbody>
@@ -346,7 +348,7 @@
             }else{
               showamount = row.guest_amount;
             }
-            let mydate=new Date(row.created_at);
+            let mydate=new Date(row.pickup.created_at);
             html +=`<tr>
                     <td>
                       <div class="animated-checkbox">
@@ -395,6 +397,7 @@
                   html2 +=` <span class="badge badge-danger">reject</span>`;
           
             html2 +=`</td>
+                      <td></td>
                       <td>${thousands_separators(delivery_fees)}</td>
                       <td>${thousands_separators(row.item.deposit)}</td>
                       <td>${thousands_separators(row.item.deposit + delivery_fees)} Ks</td>
@@ -412,7 +415,7 @@
             }else if(row.payment_type_id == 6){
               delivery_fees = Number(row.way.item.delivery_fees);
             }
-
+            let delivered_date = new Date(row.created_at);
             html2 +=`<tr>
                       <td>
                         <div class="animated-checkbox">
@@ -426,12 +429,13 @@
             if(row.payment_type_id == 4){
               html2 +=` <span class="badge badge-info">All Paid</span>`;
             }else if(row.payment_type_id == 5){
-              html2 +=` <span class="badge badge-info">Only Deposit</span>`;
-            }else if(row.payment_type_id == 6){
               html2 +=` <span class="badge badge-info">Only Deli</span>`;
+            }else if(row.payment_type_id == 6){
+              html2 +=` <span class="badge badge-info">Only Item Price</span>`;
             }
 
             html2 +=`</td>
+                      <td>${delivered_date.getDate()}-${delivered_date.getMonth()+1}-${delivered_date.getFullYear()}</td>
                       <td>${thousands_separators(delivery_fees)}</td>
                       <td>${thousands_separators(deposit)}</td>
                       <td>${thousands_separators(delivery_fees+deposit)} Ks</td>
@@ -450,6 +454,7 @@
                         </div>
                       </td>
                       <td>${row.item.receiver_name} - ${row.item.township.name} <span class="badge badge-info">carryfees</span></td>
+                      <td></td>
                       <td>${0}</td>
                       <td>${thousands_separators(row.amount)}</td>
                       <td>${thousands_separators(row.amount)} Ks</td>
@@ -460,7 +465,7 @@
           total2  = Number(totalreject)+Number(totalincome)+Number(totalcarryfees);
 
           html2 +=`<tr>
-                    <td colspan="4">Total: </td>
+                    <td colspan="5">Total: </td>
                     <td>${thousands_separators(total2)} Ks</td>
                   </tr>`;
 
