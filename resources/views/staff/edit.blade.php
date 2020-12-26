@@ -34,8 +34,8 @@
             </div>
 
             <div class="form-group">
-              <label for="cpassw">{{ __("Change Password")}}</label>
               <input type="checkbox" class="mychangepsw" id="cpassw">
+              <label for="cpassw">{{ __("Change Password")}}</label>
             </div>
 
             <div class="form-group psw">

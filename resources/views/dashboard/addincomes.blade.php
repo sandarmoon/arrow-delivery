@@ -189,7 +189,7 @@
                     html+=`</td><td>${thousands_separators(row.item.deposit)}</td>`
 
                     if(row.status_code=="001"){
-                      html+=`<td><button class="btn btn-primary btnsave" data-id="${row.id}" data-amount="${row.item.item_amount}" data-deliveryfee="${row.item.delivery_fees+row.item.other_fees}" data-deposit="${row.item.deposit}" data-paystatus="${row.item.paystatus}">save</button></td>`
+                      html+=`<td><button class="btn btn-sm btn-primary btnsave" data-id="${row.id}" data-amount="${row.item.item_amount}" data-deliveryfee="${row.item.delivery_fees+row.item.other_fees}" data-deposit="${row.item.deposit}" data-paystatus="${row.item.paystatus}">save</button></td>`
                       }else if(row.status_code=="002"){
                        html+= `<td><span class="badge badge-info">return way</span></td>`
                       }else if(row.status_code=="003"){

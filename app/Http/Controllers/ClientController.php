@@ -55,8 +55,8 @@ class ClientController extends Controller
             'address'  => ['required','string'],
             'person'=>['required','string'],
             'township'=>['required'],
-            'account'=>['required'],
-            'owner'=>['required']
+            // 'account'=>['required'],
+            // 'owner'=>['required']
         ]);
         if($validator){
             
@@ -73,12 +73,11 @@ class ClientController extends Controller
             $client->owner=$request->owner;
             $client->contact_person = $request->person;
             if(!$latestdata){
-             $client->codeno=$codeno;   
-         }else{
-            
-            $latecodeno=$latestdata->codeno;
-            $client->codeno=$latecodeno+1;
-         }
+                 $client->codeno=$codeno;   
+            }else{
+                $latecodeno=$latestdata->codeno;
+                $client->codeno=$latecodeno+1;
+            }
             
             $client->township_id = $request->township;
             $client->user_id = $user->id;
@@ -132,8 +131,8 @@ class ClientController extends Controller
             'address'  => ['required','string'],
             'person'=>['required','string'],
             'township'=>['required'],
-            'account'=>['required'],
-            'owner'=>['required']
+            // 'account'=>['required'],
+            // 'owner'=>['required']
         ]);
          //dd($request);
         if($validator){

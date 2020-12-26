@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
 
   // Pickup Schedule By Staff
   Route::resource('schedules', 'ScheduleController');
+  // Route::get('getAssignedPickups', 'ScheduleController@getAssignedPickups')->name('getAssignedPickups');
 
   // client
   Route::get('cancel', 'MainController@cancel')->name('cancel.index');

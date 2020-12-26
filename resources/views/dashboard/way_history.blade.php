@@ -3,7 +3,7 @@
   <main class="app-content">
     <div class="app-title">
       <div>
-        <h1><i class="fa fa-dashboard"></i> {{ __("Debt History")}}</h1>
+        <h1><i class="fa fa-dashboard"></i> {{ __("Ways History")}}</h1>
         <!-- <p>A free and open source Bootstrap 4 admin template</p> -->
       </div>
       <ul class="app-breadcrumb breadcrumb">
@@ -101,11 +101,11 @@
         {"data":"status_code",
            render:function(data){
             if(data=="001"){
-              return "success way"
+              return "success"
             }else if(data=="002"){
-              return "return way"
+              return "return"
             }else{
-              return "reject way"
+              return "reject"
             }
            }
         },

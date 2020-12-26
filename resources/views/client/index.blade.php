@@ -24,7 +24,7 @@
         @endif
         <div class="tile">
           <h3 class="tile-title d-inline-block">Clients List</h3>
-          <a href="{{route('clients.create')}}" class="btn btn-primary float-right"><i class="fa fa-plus" aria-hidden="true"></i> Add New</a>
+          <a href="{{route('clients.create')}}" class="btn btn-sm btn-primary float-right"><i class="fa fa-plus" aria-hidden="true"></i> Add New</a>
           <div class="table-responsive">
             <table class="table" id="dataTable">
               <thead>
@@ -51,12 +51,12 @@
                   <td>{{$row->township->name}}</td>
                   <td>{{$row->owner}}({{$row->account}})</td>
                   <td>
-                    <a href="{{route('clients.edit',$row->id)}}" class="btn btn-warning">Edit</a>
+                    <a href="{{route('clients.edit',$row->id)}}" class="btn btn-sm btn-warning">Edit</a>
                     <form action="{{ route('clients.destroy',$row->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
 
                       @csrf
                       @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                   </form>
                   </td>
                 </tr>

@@ -24,7 +24,7 @@
         @endif
         <div class="tile">
           <h3 class="tile-title d-inline-block">{{ __("Expense Types List")}}</h3>
-      <a href="{{route('expense_types.create')}}" class="btn btn-primary float-right">{{ __("Add New")}}</a>
+      <a href="{{route('expense_types.create')}}" class="btn btn-sm btn-primary float-right"><i class="fa fa-plus" aria-hidden="true"></i> {{ __("Add New")}}</a>
           <div class="table-responsive">
             <table class="table dataTable">
               <thead>
@@ -41,12 +41,12 @@
                   <td>{{$i++}}</td>
                   <td>{{$row->name}}</td>
                   <td>
-                    <a href="{{route('expense_types.edit',$row->id)}}" class="btn btn-warning">{{ __("Edit")}}</a>
+                    <a href="{{route('expense_types.edit',$row->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
                     <form action="{{ route('expense_types.destroy',$row->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
 
                       @csrf
                       @method('DELETE')
-                    <button type="submit" class="btn btn-danger">{{ __("Delete")}}</button>
+                    <button type="submit" class="btn btn-sm btn-danger">{{ __("Delete")}}</button>
                   </form>
                   </td>
                 </tr>

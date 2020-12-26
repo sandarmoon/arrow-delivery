@@ -27,37 +27,47 @@
                         <th>{{ __("Township")}}</th>
                         <th>{{ __("Receiver Info")}}</th>
                         <th>{{ __("Expired Date")}}</th>
-                        <th>{{ __("Amount")}}</th>
+                        <th>{{ __("Item Price")}}</th>
+                        <th>{{ __("Deli Fees")}}</th>
+                        <th>{{ __("Other Charges")}}</th>
                         <th>{{ __("Actions")}}</th>
                       </tr>
                     </thead>
                     <tbody>
+                      @php $i=1; @endphp
+                      @foreach($delayitems as $row)
                       <tr>
-                         @php $i=1; @endphp
-                        @foreach($delayitems as $row)
-                        
-
                         @php
-                       $today=strtotime($mytime->toDateString());
-                        $expdate=strtotime($row->created_at->toDateString());
-                        $difference=$today-$expdate;
-                        $differentday=round($difference / 86400);
+                          $today=strtotime($mytime->toDateString());
+                          $expdate=strtotime($row->created_at->toDateString());
+                          $difference=$today-$expdate;
+                          $differentday=round($difference / 86400);
+                        @endphp
 
-                       @endphp
-                        <td><div class="animated-checkbox">
+                        <td class="align-middle">
+                          <div class="animated-checkbox">
                             <label class="mb-0">
                               <input type="checkbox" name="assign[]" value="{{$row->id}}" data-codeno="{{$row->codeno}}"><span class="label-text"> </span>
                             </label>
-                          </div></td>
-                        <td>@if($differentday==1)<span class="badge badge-warning">{{$row->codeno}}</span> @elseif($differentday>1)<span class="badge badge-danger">{{$row->codeno}}</span>@endif</td>
-                        <td class="text-danger">{{$row->township->name}}</td>
-                        <td>
+                          </div>
+                        </td>
+                        <td class="align-middle">
+                          @if($differentday==1)
+                            <span class="badge badge-warning">{{$row->codeno}}</span> 
+                          @elseif($differentday>1)
+                            <span class="badge badge-danger">{{$row->codeno}}</span>
+                          @endif
+                        </td>
+                        <td class="text-danger align-middle">{{$row->township->name}}</td>
+                        <td class="align-middle">
                           {{$row->receiver_name}} <span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
                         </td>
-                        <td>{{$row->expired_date}}</td>
-                        <td>{{number_format($row->amount)}}</td>
-                        <td class="mytd">
-                          <a href="#" class="btn btn-primary detail" data-id="{{$row->id}}">{{ __("Detail")}}</a>
+                        <td class="align-middle">{{$row->expired_date}}</td>
+                        <td class="align-middle">{{number_format($row->deposit)}}</td>
+                        <td class="align-middle">{{number_format($row->delivery_fees)}}</td>
+                        <td class="align-middle">{{number_format($row->other_fees)}}</td>
+                        <td class="mytd align-middle">
+                          <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$row->id}}">{{ __("Detail")}}</a>
                         </td>
                       </tr>
                       @endforeach

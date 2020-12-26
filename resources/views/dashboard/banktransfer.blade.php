@@ -82,7 +82,7 @@
                       <tr>
                         <td>{{ $i++ }}</td>
                         <td>{{$row->name}}</td>
-                        <td>{{$row->amount}}</td>
+                        <td>{{number_format($row->amount)}}</td>
                       </tr>
                       @endforeach
                     </tbody>

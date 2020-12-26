@@ -24,7 +24,7 @@
         @endif
         <div class="tile">
           <h3 class="tile-title d-inline-block">{{ __("Expense List")}}</h3>
-          <a href="{{route('expenses.create')}}" class="btn btn-primary float-right"><i class="fa fa-plus" aria-hidden="true"></i> {{ __("Add New")}}</a>
+          <a href="{{route('expenses.create')}}" class="btn btn-sm btn-primary float-right"><i class="fa fa-plus" aria-hidden="true"></i> {{ __("Add New")}}</a>
 
            <div class="row">
               <div class="form-group col-md-3">

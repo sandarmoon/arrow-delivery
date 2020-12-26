@@ -10,6 +10,7 @@ use App\Pickup;
 use App\Client;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class ScheduleController extends Controller
 {
@@ -20,32 +21,64 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $role=Auth::user()->roles()->first();
-        $rolename=$role->name;
-         
-        $schedules=Schedule::doesntHave('pickup')->get();
-        $pickups=Pickup::orderBy('id','desc')->get();
+      $role=Auth::user()->roles()->first();
+      $rolename=$role->name;
+      
+      $schedules=Schedule::doesntHave('pickup')->get();
+      $pickups=Pickup::orderBy('id','desc')->get();
 
-        if($rolename=="client"){
-            $user=Auth::user();
-            $client=$user->client->id;
-            $schedules=Schedule::where('client_id',$client)->get();
-            $pickups=Pickup::orderBy('id','desc')->with('schedule')->whereHas('schedule', function ($query) use ($client){
-                $query->where('client_id', $client);
-            })->get();
-        }
-        $notifications=DB::table('notifications')->select('data')->where('notifiable_type','App\Pickup')->get();
-        //dd($notifications);
-        $data=[];
-        foreach ($notifications as $noti) {
-            $notipickup=json_decode($noti->data);
-            // dd($notipickup->pickup);
-            array_push($data, $notipickup->pickup); 
-        }
-        // dd($data);
-        $deliverymen=DeliveryMan::all();
-        return view('schedule.index',compact('schedules','deliverymen','pickups','data'));
+      if($rolename=="client"){
+          $user=Auth::user();
+          $client=$user->client->id;
+          $schedules=Schedule::where('client_id',$client)->get();
+          $pickups=Pickup::orderBy('id','desc')->with('schedule')->whereHas('schedule', function ($query) use ($client){
+              $query->where('client_id', $client);
+          })->get();
+      }
+
+      $notifications=DB::table('notifications')->select('data')->where('notifiable_type','App\Pickup')->get();
+      //dd($notifications);
+      $data=[];
+      foreach ($notifications as $noti) {
+        $notipickup=json_decode($noti->data);
+        // dd($notipickup->pickup);
+        array_push($data, $notipickup->pickup);
+      }
+      // dd($data);
+      $deliverymen=DeliveryMan::all();
+      return view('schedule.index',compact('schedules','deliverymen','pickups','data'));
     }
+
+    // public function getAssignedPickups($value='')
+    // {
+    //   $role=Auth::user()->roles()->first();
+    //   $rolename=$role->name;
+      
+    //   $schedules=Schedule::doesntHave('pickup')->get();
+    //   $pickups=Pickup::orderBy('id','desc')->get();
+
+    //   if($rolename=="client"){
+    //       $user=Auth::user();
+    //       $client=$user->client->id;
+    //       $schedules=Schedule::where('client_id',$client)->get();
+    //       $pickups=Pickup::orderBy('id','desc')->with('schedule')->whereHas('schedule', function ($query) use ($client){
+    //           $query->where('client_id', $client);
+    //       })->get();
+    //   }
+
+    //   $notifications=DB::table('notifications')->select('data')->where('notifiable_type','App\Pickup')->get();
+    //   //dd($notifications);
+    //   $data=[];
+    //   foreach ($notifications as $noti) {
+    //     $notipickup=json_decode($noti->data);
+    //     // dd($notipickup->pickup);
+    //     array_push($data, $notipickup->pickup);
+    //   }
+    //   // dd($data);
+    //   $deliverymen=DeliveryMan::all();
+    //   $responseData = [$schedules, $deliverymen, $pickups, $data];
+    //   return Datatables::of($responseData)->addIndexColumn()->toJson();
+    // }
 
     /**
      * Show the form for creating a new resource.

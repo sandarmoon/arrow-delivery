@@ -181,8 +181,8 @@
     </div>
   </div>
 
-{{-- addfile modal --}}
- <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  {{-- addfile modal --}}
+  <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -224,67 +224,70 @@
     </div>
   </div>
 
-{{-- show file modal --}}
-<div class="modal fade" id="filedisplay" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">{{ __("File")}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <img src="" class="img-fluid stafffile" width="100%" height="100%">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __("Close")}}</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-{{--Add amount modal--}}
-<div class="modal fade" id="addamount" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">{{ __("Add Amount and Quantity")}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" name="schedule" id="schedule_id" value="">
-       <div class="form-group quantity">
-              <label for="quantity">{{ __("Quantity")}}:</label>
-              <input type="number"  id="quantity" class="form-control" name="quantity">
-              <span class="Eamount error d-block" ></span>
-            </div>
-
-
-            <div class="form-group amount">
-              <label for="amount">{{ __("Amount")}}:</label>
-              <input type="number"  id="amount" class="form-control" name="amount">
-              <span class="Equantity error d-block" ></span>
-            </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary amountsave">{{ __("Save")}}</button>
+  {{-- show file modal --}}
+  <div class="modal fade" id="filedisplay" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{ __("File")}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <img src="" class="img-fluid stafffile" width="100%" height="100%">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __("Close")}}</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
+  {{--Add amount modal--}}
+  <div class="modal fade" id="addamount" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{ __("Add Amount and Quantity")}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="schedule" id="schedule_id" value="">
+          <div class="form-group quantity">
+            <label for="quantity">{{ __("Quantity")}}:</label>
+            <input type="number"  id="quantity" class="form-control" name="quantity">
+            <span class="Eamount error d-block" ></span>
+          </div>
+          <div class="form-group amount">
+            <label for="amount">{{ __("Amount")}}:</label>
+            <input type="number"  id="amount" class="form-control" name="amount">
+            <span class="Equantity error d-block" ></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary amountsave">{{ __("Save")}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 @endsection 
 @section('script')
   <script type="text/javascript">
     $(document).ready(function () {
+      $.ajaxSetup({
+         headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
+
       $('.assign').click(function () {
         $('#assignModal').modal('show');
         var id=$(this).data(id);
-        //console.log(id);
-      $("#assignid").val(id.id);
+        $("#assignid").val(id.id);
       })
 
       $('.addfile').click(function () {
@@ -303,12 +306,10 @@
         var file=$(this).data("file");
         //console.log(file);
         $(".stafffile").attr("src",file);
-
-
       })
 
       $(".assigntbody").on('click','.addamount',function(e){
-         e.preventDefault();
+        e.preventDefault();
         $('#addamount').modal('show');
         var id=$(this).data('id');
         $("#schedule_id").val(id);
@@ -319,14 +320,8 @@
         var amount=$("#amount").val();
         var quantity=$("#quantity").val();
         var url="{{route('editamountandqty')}}";
-
-          $.ajaxSetup({
-         headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-        });
           
-         $.ajax({
+        $.ajax({
           url:url,
           type:"post",
           data:{schedule_id:schedule_id,amount:amount,quantity:quantity},
@@ -351,17 +346,12 @@
               $('.Equantity').text(quantity);
               $('span.error').addClass('text-danger');
             }
-
           }
-          
-
         })
-      })
 
+      })
 
       setTimeout(function(){ $('.myalert').hide(); showDiv2() },3000);
     })
   </script>
 @endsection
-
-

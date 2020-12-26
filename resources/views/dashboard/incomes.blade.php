@@ -16,7 +16,7 @@
         <div class="tile">
           @php $mytime = Carbon\Carbon::now(); @endphp
           <h3 class="tile-title d-inline-block">{{ __("Incomes List")}} ({{$mytime->toFormattedDateString()}})</h3>
-          <a href="{{route('incomes.create')}}" class="btn btn-primary float-right">{{ __("Add Income")}}</a>
+          <a href="{{route('incomes.create')}}" class="btn btn-sm btn-primary float-right">{{ __("Add Income")}}</a>
           <div class="table-responsive">
             <table class="table dataTable">
               <thead>

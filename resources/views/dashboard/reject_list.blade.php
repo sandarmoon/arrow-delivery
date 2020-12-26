@@ -24,7 +24,9 @@
                   <th>{{ __("Item Code")}}</th>
                   <th>{{ __("Client")}}</th>
                   <th>{{ __("Delivery Man")}}</th>
-                  <th>{{ __("Amount")}}</th>
+                  <th>{{ __("Item Price")}}</th>
+                  <th>{{ __("Deli Fees")}}</th>
+                  <th>{{ __("Other Charges")}}</th>
                   <th>{{ __("Remark")}}</th>
                   {{-- <th>Action</th> --}}
                 </tr>
@@ -32,7 +34,6 @@
               <tbody>
                 @php $i=1; @endphp
                 @foreach($rejectways as $row)
-                @php $amount=number_format($row->item->amount) @endphp
                  <tr>
                   <td>{{$i++}}</td>
                   <td><span class="btn badge badge-primary btndetail" data-itemid="{{$row->item->id}}">{{$row->item->codeno}}</span></td>
@@ -40,7 +41,9 @@
                   <td>{{$row->delivery_man->user->name}}
                       @if($row->income) ({{'ရှင်းပြီး'}}) @endif
                   </td>
-                  <td>{{$amount}} Ks</td>
+                  <td>{{number_format($row->item->deposit)}} Ks</td>
+                  <td>{{number_format($row->item->delivery_fees)}} Ks</td>
+                  <td>{{number_format($row->item->other_fees)}} Ks</td>
                   <td>{{$row->remark}}</td>
                   {{-- @foreach($row->notifications as $notification)
                     @if($notification->unread())

@@ -24,14 +24,14 @@
         @endif
         <div class="tile">
           <h3 class="tile-title d-inline-block">{{ __("Banks List")}}</h3>
-          <a href="{{route('banks.create')}}" class="btn btn-primary float-right">{{ __("Add New")}}</a>
+          <a href="{{route('banks.create')}}" class="btn btn-sm btn-primary float-right"><i class="fa fa-plus" aria-hidden="true"></i> {{ __("Add New")}}</a>
           <div class="table-responsive">
             <table class="table dataTable">
               <thead>
                 <tr>
                   <th>{{ __("#")}}</th>
                   <th>{{ __("Name")}}</th>
-                  <th>{{__("Amount")}}</th>
+                  <th>{{ __("Amount")}}</th>
                   <th>{{ __("Actions")}}</th>
                 </tr>
               </thead>
@@ -41,14 +41,14 @@
                 <tr>
                   <td>{{$i++}}</td>
                   <td>{{$row->name}}</td>
-                  <td>{{$row->amount}}</td>
+                  <td>{{number_format($row->amount)}}</td>
                   <td>
-                    <a href="{{route('banks.edit',$row->id)}}" class="btn btn-warning">{{ __("Edit")}}</a>
+                    <a href="{{route('banks.edit',$row->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
                     <form action="{{ route('banks.destroy',$row->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
 
                       @csrf
                       @method('DELETE')
-                    <button type="submit" class="btn btn-danger">{{ __("Delete")}}</button>
+                    <button type="submit" class="btn btn-sm btn-danger">{{ __("Delete")}}</button>
                   </form>
                   </td>
                 </tr>
