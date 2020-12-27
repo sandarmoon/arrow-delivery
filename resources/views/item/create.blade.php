@@ -558,8 +558,34 @@
      $(".myoffice").show();
   })
 
+    // Single select example if using params obj or configuration seen above
+    var configParamsObj = {
+        placeholder: 'Select an option...', // Place holder text to place in the select
+        // minimumResultsForSearch: 3, // Overrides default of 15 set above
+        width:'100%',
+        matcher: function (params, data) {
+            // If there are no search terms, return all of the data
+            if ($.trim(params.term) === '') {
+                return data;
+            }
+ 
+            // `params.term` should be the term that is used for searching
+            // `data.text` is the text that is displayed for the data object
+            if (data.text.toLowerCase().startsWith(params.term.toLowerCase())) {
+                var modifiedData = $.extend({}, data, true);
+                // modifiedData.text += ' (matched)';
+ 
+                // You can return modified objects from here
+                // This includes matching the `children` how you want in nested data sets
+                return modifiedData;
+            }
+ 
+            // Return `null` if the term should not be displayed
+            return null;
+        }
+    };
 
-    $('.js-example-basic-single').select2({width:'100%'});
+    $('.js-example-basic-single').select2(configParamsObj);
 
     $("#checkbtn").click(function(e){
       //alert("ok");
