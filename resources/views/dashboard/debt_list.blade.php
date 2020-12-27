@@ -348,7 +348,7 @@
             }else{
               showamount = row.guest_amount;
             }
-            let mydate=new Date(row.pickup.created_at);
+
             html +=`<tr>
                     <td>
                       <div class="animated-checkbox">
@@ -356,9 +356,14 @@
                           <input type="checkbox" name="expenses[]" value="${row.id}" data-amount="${showamount}"><span class="label-text"> </span>
                         </label>
                       </div>
-                    </td>
-                    <td>${mydate.getDate()}-${mydate.getMonth()+1}-${mydate.getFullYear()}</td>
-                    <td>`;
+                    </td>`
+                    if(row.pickup!=null){
+                      let mydate=new Date(row.pickup.created_at);
+                      html+=`<td>${mydate.getDate()}-${mydate.getMonth()+1}-${mydate.getFullYear()}</td>`
+                    }else{
+                      html +=`<td>-</td>`
+                    }
+            html+=`<td>`;
               if(row.pickup != null){
                 html += `${row.pickup.items.length}`
               }else{
