@@ -183,7 +183,7 @@ class ItemController extends Controller
               }
               $expense->status=$request->paystatus;
               $expense->description="Client Deposit";
-              $$expense->pickup_id = $request->pickup_id;
+              $expense->pickup_id = $request->pickup_id;
               $expense->city_id=1;
               $expense->expense_type_id=1;
               $expense->save();
