@@ -33,7 +33,7 @@ class ItemController extends Controller
       $items=Item::whereHas('pickup',function($query){
               $query->where('status',1);
             })->doesntHave('way')->get();
-      // dd($myitems);
+      // dd($items);
     
       $deliverymen = DeliveryMan::with(['townships'=> function($q){
                      $q->orderBy('name','asc');
@@ -126,7 +126,10 @@ class ItemController extends Controller
         $item->save();
 
         if($qty==1){
-          $allpaiditemsamount = Item::where('pickup_id',$request->pickup_id)->where('paystatus',2)->sum('delivery_fees');
+          $all_delivery_fees = Item::where('pickup_id',$request->pickup_id)->where('paystatus',2)->sum('delivery_fees');
+          $all_other_fees = Item::where('pickup_id',$request->pickup_id)->where('paystatus',2)->sum('other_fees');
+
+          $allpaiditemsamount = $all_delivery_fees + $all_other_fees;
           // dd($allpaiditemsamount);
           $checkitems = Item::orderBy('id', 'desc')->take($myqty)->get();
           //dd($checkitems->sum('deposit'));
