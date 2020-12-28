@@ -24,6 +24,7 @@ class ItemResource extends JsonResource
             'deposit' => $this->deposit,
             'receiver_name' => $this->receiver_name,
             'paystatus' => $this->paystatus,
+            'status' => $this->status,
             'township'=>new TownshipResource(Township::find($this->township_id)),
         ];
     }

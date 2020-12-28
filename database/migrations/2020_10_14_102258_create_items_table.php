@@ -34,6 +34,7 @@ class CreateItemsTable extends Migration
             $table->string('error_remark')->nullable();
             $table->unsignedBigInteger('sender_gate_id')->nullable();
             $table->unsignedBigInteger('sender_postoffice_id')->nullable();
+            $table->integer('status')->default(0);
 
             $table->softDeletes();
             $table->timestamps();

@@ -73,9 +73,20 @@
                           @endif
                         </td>
                         <td class="align-middle">{{number_format($row->deposit)}}</td>
-                        <td class="align-middle">{{number_format($row->delivery_fees)}}</td>
+                        <td class="align-middle">{{number_format($row->delivery_fees)}}
+                          @if($row->paystatus == 2 && $row->status == 1)
+                            <span class="badge badge-success badge-pill">paid</span>
+                          @endif
+                        </td>
                         <td class="align-middle">{{number_format($row->other_fees)}}</td>
                         <td class="mytd align-middle">
+                          @if($row->paystatus == 2 && $row->status == 0)
+                          <form action="{{ route('items.paidfull') }}" method="POST" class="d-inline-block">
+                            @csrf
+                            <input type="hidden" name="id" value="{{$row->id}}">
+                            <button type="submit" class="btn btn-sm btn-success">{{ __("Paid")}}</button>
+                          </form>
+                          @endif
                           <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$row->id}}">{{ __("Detail")}}</a>
                           <a href="{{route('items.edit',$row->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
                           <form action="{{ route('items.destroy',$row->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">

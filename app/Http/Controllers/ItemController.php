@@ -31,7 +31,7 @@ class ItemController extends Controller
     {
       //$items=Item::doesntHave('way')->get();
       $items=Item::whereHas('pickup',function($query){
-              $query->where('status',1);
+              $query->where('status',4);
             })->doesntHave('way')->get();
       // dd($items);
     
@@ -221,6 +221,9 @@ class ItemController extends Controller
         if (($pickup->schedule->quantity - count($pickup->items)) > 0) {
           return redirect()->back()->with("successMsg",'New Item is ADDED');
         }else{
+          $pickup->status = 4;
+          $pickup->save();
+
           return redirect()->route('items.index')->with("successMsg",'New Item is ADDED in your data');
         }
       }
@@ -306,6 +309,14 @@ class ItemController extends Controller
           $item->staff_id=$staffid;
         }
         $item->save();
+
+        $all_delivery_fees = Item::where('pickup_id',$item->pickup_id)->where('paystatus',2)->where('status',0)->sum('delivery_fees');
+        $all_other_fees = Item::where('pickup_id',$item->pickup_id)->where('paystatus',2)->where('status',0)->sum('other_fees');
+        $allpaiditemsamount = $all_delivery_fees + $all_other_fees;
+        $expense = Expense::where('pickup_id',$item->pickup_id)->where('status',2)->first();
+        $expense->guest_amount = $expense->amount-$allpaiditemsamount;
+        $expense->save();
+
         return redirect()->route('items.index')->with("successMsg",'Updatesuccessfully');
       }else{
         return redirect::back()->withErrors($validator);
@@ -502,5 +513,28 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
 
      return $lastamount;
 
+    }
+
+    public function paidfull(Request $request)
+    {
+      $item = Item::find($request->id);
+      $item->status = 1;
+      $item->save();
+
+      // $all_delivery_fees = Item::where('pickup_id',$item->pickup_id)->where('paystatus',2)->where('status',1)->sum('delivery_fees');
+      // $all_other_fees = Item::where('pickup_id',$item->pickup_id)->where('paystatus',2)->where('status',1)->sum('other_fees');
+      // $allpaiditemsamount = $all_delivery_fees + $all_other_fees;
+
+      // $transaction = new Transaction;
+      // $transaction->bank_id = 1;
+      // $transaction->amount = $allpaiditemsamount;
+      // $transaction->description = "Prepaid Delivery Fees";
+      // $transaction->save();
+
+      // $bank = Bank::find(1);
+      // $bank->amount += $transaction->amount;
+      // $bank->save();
+
+      return back();
     }
 }

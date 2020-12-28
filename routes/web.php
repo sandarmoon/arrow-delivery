@@ -100,6 +100,7 @@ Route::middleware('auth')->group(function () {
   Route::post('storeandassignschedule', 'ScheduleController@storeandassignschedule')->name('schedules.storeandassign');
 
   Route::resource('items', 'ItemController');
+  Route::post('items/paidfull', 'ItemController@paidfull')->name('items.paidfull');
   Route::get('items/collectitem/{cid}/{pid}','ItemController@collectitem')->name('items.collect');
   Route::post('itemdetail','ItemController@itemdetail')->name('itemdetail');
   Route::post('wayassign','ItemController@assignWays')->name('wayassign');

@@ -121,12 +121,6 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="InputDeposit">{{ __("Item Price")}}:</label>
-                  <input class="form-control" id="InputDeposit" type="number" name="deposit" value="@if($pickupeditem){{ $pickupeditem->deposit }}@else {{old('deposit')}} @endif">
-                  <div class="form-control-feedback text-danger"> {{$errors->first('deposit') }} </div>
-                </div>
-
-                <div class="form-group">
                   <label for="InputDeliveryFees">{{ __("Delivery Fees")}}:</label>
                   <input class="form-control" id="InputDeliveryFees" type="number" name="delivery_fees" value="{{ old('delivery_fees') }}">
                   <div class="form-control-feedback text-danger"> {{$errors->first('delivery_fees') }} </div>
@@ -135,6 +129,12 @@
                 <div class="form-group">
                   <label for="other">{{ __("Other Charges")}}:</label>
                   <input class="form-control" id="other" type="number" name="othercharges" value="0">
+                </div>
+
+                <div class="form-group">
+                  <label for="InputDeposit">{{ __("Item Price")}}:</label>
+                  <input class="form-control" id="InputDeposit" type="number" name="deposit" value="@if($pickupeditem){{ $pickupeditem->deposit }}@else {{old('deposit')}} @endif">
+                  <div class="form-control-feedback text-danger"> {{$errors->first('deposit') }} </div>
                 </div>
 
                 <div class="form-group">
@@ -420,7 +420,23 @@
         var amount=deposit+delivery_fees+other;
       $(this).val(amount);
       }
-     
+    })
+
+    $("#InputDeposit").focus(function(){
+      var amount=parseInt($('#InputAmount').val());
+      var depositamount=$(".depositamountforcheck").val();
+      var other=Number($("#other").val());
+      // console.log(deposit);
+      // alert(other);
+      var delivery_fees=parseInt($("#InputDeliveryFees").val());
+      // if(deposit>depositamount){
+      //   alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
+      //   $("#InputDeposit").val(0);
+      //   $("#InputDeposit").focus();
+      // }else{
+        var deposit=amount-(delivery_fees+other);
+        $(this).val(deposit);
+      // }
     })
 
     $("#other").change(function(){
