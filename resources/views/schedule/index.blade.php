@@ -127,7 +127,7 @@
                             <button type="button" class="btn btn-sm btn-danger">{{ __("pending")}}</button>
                           @endif
 
-                          @if($row->status != 1 || $row->schedule->quantity != count(($row->items)))
+                          @if($row->status != 4 || $row->schedule->quantity != count(($row->items)))
                             <a href="{{route('schedules.edit',$row->schedule->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
                             <form action="{{ route('schedules.destroy',$row->schedule->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                               @csrf
