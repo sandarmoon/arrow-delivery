@@ -119,6 +119,7 @@
                             @endrole
                           @elseif($row->status == 1 && $row->schedule->quantity == count(($row->items)))
                             <button type="button" class="btn btn-sm btn-info">{{ __("completed")}}</button>
+                            {{$row->id}}
                           @elseif($row->status==2)
                             <a href="{{route('checkitem',$row->id)}}" class="btn btn-sm btn-danger">{{ __("fail")}}</a>
                           @elseif($row->status==3)
