@@ -407,7 +407,7 @@
                       <td>${thousands_separators(row.item.deposit)}</td>
                       <td>${thousands_separators(Number(row.item.deposit) + delivery_fees)} Ks</td>
                   </tr>`;
-                  totalreject += Number(row.item.deposit + delivery_fees);
+                  totalreject += Number(row.item.deposit) + Number(delivery_fees);
           }
 
           for(let row of response.incomes){
