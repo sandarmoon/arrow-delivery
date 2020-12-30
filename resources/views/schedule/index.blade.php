@@ -117,7 +117,7 @@
                             @role('client')
                               <button type="button" class="btn btn-sm btn-info">{{ __("Brought")}}</button>
                             @endrole
-                          @elseif($row->status == 1 && $row->schedule->quantity == count(($row->items)))
+                          @elseif($row->status == 4 && $row->schedule->quantity == count(($row->items)))
                             <button type="button" class="btn btn-sm btn-info">{{ __("completed")}}</button>
                           @elseif($row->status==2)
                             <a href="{{route('checkitem',$row->id)}}" class="btn btn-sm btn-danger">{{ __("fail")}}</a>
