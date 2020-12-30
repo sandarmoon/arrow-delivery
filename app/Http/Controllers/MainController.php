@@ -954,8 +954,8 @@ public function profit(Request $request){
   }
 
   public function pickup_history(){
-       // dd($pickups);
-  $clients=DB::table('clients')
+    // dd($pickups);
+    $clients=DB::table('clients')
                 ->join('users', 'users.id', '=', 'clients.user_id')
                 ->select('clients.*', 'users.name as clientname')
                 ->orderBy('users.name')
@@ -970,8 +970,8 @@ public function profit(Request $request){
       })->where("status",1)->orderBy('id','desc')->get();
       //dd($pickups);
     }
-      return view('dashboard.pickup_history',compact('clients','pickups'));
-    }
+    return view('dashboard.pickup_history',compact('clients','pickups'));
+  }
 
   public function pickupbyclient(Request $request){
     $sdate = $request->sdate;

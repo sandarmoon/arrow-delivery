@@ -405,7 +405,7 @@
                       <td></td>
                       <td>${thousands_separators(delivery_fees)}</td>
                       <td>${thousands_separators(row.item.deposit)}</td>
-                      <td>${thousands_separators(row.item.deposit + delivery_fees)} Ks</td>
+                      <td>${thousands_separators(Number(row.item.deposit) + delivery_fees)} Ks</td>
                   </tr>`;
                   totalreject += Number(row.item.deposit + delivery_fees);
           }
