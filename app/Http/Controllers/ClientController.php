@@ -29,8 +29,7 @@ class ClientController extends Controller
      */
     public function create()
     {
-
-        $townships=Township::all();
+        $townships=Township::orderBy('name','asc')->get();
         return view('client.create',compact('townships'));
     }
 
