@@ -989,15 +989,15 @@ public function profit(Request $request){
       if($client_id==null){
         $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($sdate,$edate){
           $query->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
-        })->where("status",1)->get();
+        })->where("status",4)->get();
       }else if($sdate==null && $edate==null){
         $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id){
           $query->where('client_id', $client_id);
-        })->where("status",1)->get();
+        })->where("status",4)->get();
       }else{
         $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
           $query->where('client_id', $client_id)->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
-        })->where("status",1)->get();
+        })->where("status",4)->get();
       }
     }
     return Datatables::of($pickups)->addIndexColumn()->toJson();
