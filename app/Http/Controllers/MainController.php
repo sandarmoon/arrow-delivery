@@ -1076,7 +1076,7 @@ public function profit(Request $request){
     'deliveryman' => $deliveryman,
         );
       view()->share('data',$data);
-      $pdf = PDF::loadView('dashboard.waypdf');
+      $pdf = PDF::loadView('dashboard.waypdf')->setPaper('a4', 'landscape');
 
       // download PDF file with download method
       return $pdf->download( $deliname.'.pdf');

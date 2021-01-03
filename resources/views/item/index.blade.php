@@ -163,50 +163,49 @@
                   </table>
                 </div>
               </div>
-
-             {{--  print --}}
-
-             <div class="tab-pane fade" id="print">
-               <div class="row">
-                 <div class="col-6">
-                  <div class="form-group">
-                    <label>{{ __("Choose Delivery Man")}}:</label>
-                    <select class="deliverymanway form-control" name="delivery_man">
-                      @foreach($deliverymen as $man)
-                      <option value="{{$man->id}}">{{$man->user->name}}
-                      </option>
-                      @endforeach
-                    </select>
+              {{--  print --}}
+              <div class="tab-pane fade" id="print">
+                <div class="row">
+                  <div class="col-6">
+                    <div class="form-group">
+                      <label>{{ __("Choose Delivery Man")}}:</label>
+                      <select class="deliverymanway form-control" name="delivery_man">
+                        @foreach($deliverymen as $man)
+                        <option value="{{$man->id}}">{{$man->user->name}}
+                        </option>
+                        @endforeach
+                      </select>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-               <div class="table-responsive">
+                <div class="table-responsive">
                   <table class="table table-bordered" >
                     <thead>
                       <tr>
-                        <th>{{ __("Item Cod")}}</th>
+                        <th>{{ __("Codeno")}}</th>
                         <th>{{ __("Receiver Name")}}</th>
                         <th>{{ __("Full Address")}}</th>
                         <th>{{ __("Receiver Phone No")}}</th>
+                        <th>{{ __("Item Price")}}</th>
+                        <th>{{ __("Deli Fees")}}</th>
+                        <th>{{ __("Other Charges")}}</th>
                         <th>{{ __("Client")}}</th>
-                        <th>{{ __("Amount")}}</th>
                       </tr>
                     </thead>
-
                     <tbody class="tbody">
-                     
                     </tbody>
                   </table>
                 </div>
-            </div>
-            <form action="{{route("createpdf")}}" method="post">
-              @csrf
-              <input type="hidden" name="id" value="" id="exportid">
-             <div class="justify-content-end mb-4" id="export">
-                  <button type="submit" class="btn btn-primary exportpdf">Export to PDF</button>
+
+                <form action="{{route("createpdf")}}" method="post">
+                  @csrf
+                  <input type="hidden" name="id" value="" id="exportid">
+                 <div class="justify-content-end mb-4" id="export">
+                      <button type="submit" class="btn btn-primary exportpdf">Export to PDF</button>
+                  </div>
+                </form>
               </div>
-            </form>
             </div>
           </div>
         </div>
@@ -316,17 +315,17 @@
       $("#export").hide();
       setTimeout(function(){ $('.myalert').hide(); showDiv2() },3000);
       $('#checktable').dataTable({
-            "bPaginate": true,
-            "bLengthChange": true,
-            "bFilter": true,
-            "bSort": true,
-            "bInfo": true,
-            "bAutoWidth": true,
-            "bStateSave": true,
-            "aoColumnDefs": [
-                { 'bSortable': false, 'aTargets': [ -1,0] }
-            ]
-        });
+        "bPaginate": true,
+        "bLengthChange": true,
+        "bFilter": true,
+        "bSort": true,
+        "bInfo": true,
+        "bAutoWidth": true,
+        "bStateSave": true,
+        "aoColumnDefs": [
+            { 'bSortable': false, 'aTargets': [ -1,0] }
+        ]
+      });
 
       $('.wayassign').click(function () {
         var ways = [];
@@ -348,7 +347,6 @@
 
         $('#wayAssignModal').modal('show');
       })
-
 
       //item detail
       $(".dataTable tbody").on('click','.detail',function(){
@@ -376,9 +374,7 @@
         })
       })
 
-
       //check detail
-
       $("#checktable tbody").on('click','.detail',function(){
         var id=$(this).data('id');
         //console.log(id);
@@ -403,6 +399,7 @@
           $(".rcode").html(res.codeno);
         })
       })
+
       $('.js-example-basic-multiple').select2({
         width: '100%',
         dropdownParent: $('#wayAssignModal')
@@ -413,15 +410,15 @@
         dropdownParent: $('#editwayAssignModal')
       });
 
-       $('.deliverymanway').select2({
+      $('.deliverymanway').select2({
         width: '100%',
       })
 
       var submit = $("#submit_assign").hide();
       cbs = $('.dataTable tbody').on('click', 'input[name="assign[]"]', function () {
-      // cbs = $('input[name="assign[]').click(function() {
-      // submit.toggle(cbs.is(":checked") , 2000);
-      // submit.toggle(cbs.is(":checked"));
+        // cbs = $('input[name="assign[]').click(function() {
+        // submit.toggle(cbs.is(":checked") , 2000);
+        // submit.toggle(cbs.is(":checked"));
         if($('.dataTable tbody :input[type="checkbox"]:checked').length>0)
         {
           $("#submit_assign").show();
@@ -432,7 +429,6 @@
         console.log(submit)
       });
       // console.log($cbs)
-
       $(".wayedit").click(function(){
         $('#editwayAssignModal').modal('show');
         var id=$(this).data("id");
@@ -440,59 +436,49 @@
         $("#wayid").val(id);
       })
 
+      $(".deliverymanway").change(function(){
+        //alert("ok");
+        var id=$(this).val();
+        //console.log(id);
+        var url="{{route('waybydeliveryman')}}";
 
-     /*setTimeout(function(){
-      window.location.reload(1);
-    }, 90000);*/
+         $.ajaxSetup({
+           headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
+          });
 
-
-    $(".deliverymanway").change(function(){
-      //alert("ok");
-      var id=$(this).val();
-      //console.log(id);
-      var url="{{route('waybydeliveryman')}}";
-
-       $.ajaxSetup({
-         headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-        });
-
-      $.post(url,{id:id},function(res){
-        var html="";
-        console.log(res);
-        $.each(res,function(i,v){
-          html+=`<tr>
-                <td>${v.item.codeno}</td>
-                <td>${v.item.receiver_name}</td>
-                <td>${v.item.receiver_address}</td>
-                <td>${v.item.receiver_phone_no}</td>
-                <td>${v.item.pickup.schedule.client.user.name}</br>(${v.item.pickup.schedule.client.phone_no})</td>
-                <td>${thousands_separators(v.item.amount)}</td>
-              </tr>`
+        $.post(url,{id:id},function(res){
+          var html="";
+          console.log(res);
+          $.each(res,function(i,v){
+            html+=`<tr>
+                  <td>${v.item.codeno}</td>
+                  <td>${v.item.receiver_name}</td>
+                  <td>${v.item.receiver_address}</td>
+                  <td>${v.item.receiver_phone_no}</td>
+                  <td>${thousands_separators(v.item.deposit)}</td>
+                  <td>${thousands_separators(v.item.delivery_fees)}</td>
+                  <td>${thousands_separators(v.item.other_fees)}</td>
+                  <td>${v.item.pickup.schedule.client.user.name}</br>(${v.item.pickup.schedule.client.phone_no})</td>
+                </tr>`
+          })
+          $(".tbody").html(html);
+          if(res.length==0){
+             $("#export").hide();
+          }else{
+            $("#export").show();
+          }
+          $("#exportid").val(id);
         })
-        $(".tbody").html(html);
-        if(res.length==0){
-           $("#export").hide();
-        }else{
-          $("#export").show();
-        }
-       
-        $("#exportid").val(id);
       })
 
-    })
-
-
-    function thousands_separators(num)
-    {
-      var num_parts = num.toString().split(".");
-      num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      return num_parts.join(".");
-    }
+      function thousands_separators(num){
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return num_parts.join(".");
+      }
 
     })
-
-   
   </script>
 @endsection
