@@ -101,6 +101,7 @@
                   </table>
                 </div>
               </div>
+
               <div class="tab-pane fade" id="way">
                 <div class="table-responsive">
                   <table class="table table-bordered dataTable">
@@ -121,7 +122,7 @@
                       @php $i=1;
                       @endphp
                       @foreach($ways as $way) 
-                      @php $amount=number_format($way->item->amount) ;  @endphp
+                      @php $amount=number_format($way->item->amount) ; @endphp
                       <tr>
                         <td class="align-middle">
                           {{$i++}}
@@ -138,11 +139,10 @@
                         <td class="align-middle">{{$way->item->township->name}}</td>
                         <td class="text-danger align-middle">
                           {{$way->delivery_man->user->name}} 
-                            @foreach($data as $dd)
+                          @foreach($data as $dd)
                             @if($dd->id==$way->id)
-                            <span class="badge badge-info seen">seen</span>
+                              <span class="badge badge-info seen">seen</span>
                             @endif
-
                            @endforeach
                         </td>
                         <td class="align-middle">{{$way->item->expired_date}}</td>
@@ -152,8 +152,9 @@
                         <td class="mytd align-middle">
                           <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$way->item->id}}">{{ __("Detail")}}</a>
                           @if($way->status_code == '005')
-                            <a href="#" class="btn btn-sm btn-warning wayedit" data-id="{{$way->id}}">{{ __("Edit")}}</a>
-                            <a href="{{route('deletewayassign',$way->id)}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">{{ __("Delete")}}</a>
+                            <a href="{{route('items.edit',$way->item->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
+                            {{-- <a href="#" class="btn btn-sm btn-warning wayedit" data-id="{{$way->id}}">{{ __("Edit")}}</a>
+                            <a href="{{route('deletewayassign',$way->id)}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">{{ __("Delete")}}</a> --}}
                           @endif
                         </td>
                       </tr>
@@ -235,9 +236,10 @@
               <select class="js-example-basic-multiple form-control" name="delivery_man">
                 @foreach($deliverymen as $man)
                   <option value="{{$man->id}}">{{$man->user->name}}
-                  @foreach($man->townships as $township)
-                    ({{$township->name}})
-                  @endforeach</option>
+                    @foreach($man->townships as $township)
+                      ({{$township->name}})
+                    @endforeach
+                  </option>
                 @endforeach
               </select>
             </div>
@@ -314,7 +316,9 @@
     $(document).ready(function () {
       $("#export").hide();
       setTimeout(function(){ $('.myalert').hide(); showDiv2() },3000);
+
       $('#checktable').dataTable({
+        "pageLength": 100,
         "bPaginate": true,
         "bLengthChange": true,
         "bFilter": true,
@@ -351,12 +355,12 @@
       //item detail
       $(".dataTable tbody").on('click','.detail',function(){
         var id=$(this).data('id');
-        //console.log(id);
         $('#itemDetailModal').modal('show');
+
         $.ajaxSetup({
-         headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
         });
 
         $.post('itemdetail',{id:id},function(res){
@@ -437,32 +441,51 @@
       })
 
       $(".deliverymanway").change(function(){
-        //alert("ok");
         var id=$(this).val();
-        //console.log(id);
         var url="{{route('waybydeliveryman')}}";
 
-         $.ajaxSetup({
-           headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        $.ajaxSetup({
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
           }
-          });
+        });
 
         $.post(url,{id:id},function(res){
           var html="";
           console.log(res);
+          let total=0;
           $.each(res,function(i,v){
-            html+=`<tr>
-                  <td>${v.item.codeno}</td>
-                  <td>${v.item.receiver_name}</td>
-                  <td>${v.item.receiver_address}</td>
-                  <td>${v.item.receiver_phone_no}</td>
-                  <td>${thousands_separators(v.item.deposit)}</td>
-                  <td>${thousands_separators(v.item.delivery_fees)}</td>
-                  <td>${thousands_separators(v.item.other_fees)}</td>
-                  <td>${v.item.pickup.schedule.client.user.name}</br>(${v.item.pickup.schedule.client.phone_no})</td>
+
+            let payment_type = "";
+            let allpaid = "";
+            total += v.item.deposit+v.item.delivery_fees
+
+            if (v.item.paystatus==2) {
+              payment_type = "allpaid"
+              allpaid = "table-warning"
+              total -= v.item.delivery_fees
+            }else if (v.item.paystatus==3) {
+              payment_type = "only deli"
+            }else if (v.item.paystatus==4) {
+              payment_type = "only item price"
+            }
+
+            html+=`<tr class="${allpaid}">
+                  <td class="align-middle">${v.item.codeno} <span class="badge badge-danger badge-pill">${payment_type}</span></td>
+                  <td class="align-middle">${v.item.receiver_name}</td>
+                  <td class="align-middle">${v.item.receiver_address}</td>
+                  <td class="align-middle">${v.item.receiver_phone_no}</td>
+                  <td class="align-middle">${thousands_separators(v.item.deposit)}</td>
+                  <td class="align-middle">${thousands_separators(v.item.delivery_fees)}</td>
+                  <td class="align-middle">${thousands_separators(v.item.other_fees)}</td>
+                  <td class="align-middle">${v.item.pickup.schedule.client.user.name}</br>(${v.item.pickup.schedule.client.phone_no})</td>
                 </tr>`
           })
+
+          html+=`<tr>
+                  <td colspan="4">Total Amount</td>
+                  <td colspan="4">${thousands_separators(total)} Ks</td>
+                </tr>`;
           $(".tbody").html(html);
           if(res.length==0){
              $("#export").hide();

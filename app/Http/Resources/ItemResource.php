@@ -19,6 +19,7 @@ class ItemResource extends JsonResource
             'id'=>$this->id,
             'item_code' => $this->codeno,
             'item_amount'=> $this->amount,
+            'expired_date' => $this->expired_date,
             'delivery_fees' => $this->delivery_fees,
             'other_fees' => $this->other_fees,
             'deposit' => $this->deposit,

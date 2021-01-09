@@ -40,7 +40,7 @@
   </main>
 
 
-  <div class="modal fade" id="incomemodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="incomemodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -159,9 +159,35 @@
           console.log(response.ways)
           for(let row of response.ways){
             console.log(row);
-            total+=Number(row.item.item_amount);
+            if (row.item.paystatus==1) {
+              total+=Number(row.item.item_amount)
+            }else if(row.item.paystatus==2){
+              total+=0
+            }else if(row.item.paystatus==3){
+              total+=Number(row.item.delivery_fees)+Number(row.item.other_fees)
+            }else if(row.item.paystatus==4){
+              total+=Number(row.item.deposit)
+            }
+
+            if (row.status_code=="002") {
+              color = "table-warning"
+              if (row.item.paystatus==1) {
+                total-=Number(row.item.item_amount)
+              }else if(row.item.paystatus==2){
+                total-=0
+              }else if(row.item.paystatus==3){
+                total-=Number(row.item.delivery_fees)+Number(row.item.other_fees)
+              }else if(row.item.paystatus==4){
+                total-=Number(row.item.deposit)
+              }
+            }else if(row.status_code=="003"){
+              total -= Number(row.item.deposit)+Number(row.item.delivery_fees)
+              color = "table-danger"
+            }else{
+              color = ""
+            }
             html +=`
-              <tr>
+              <tr class="${color}">
                     <td>${i++}</td>
                     <td>
                       ${row.item.item_code}`
@@ -179,19 +205,21 @@
                     </td>`
                     if(row.delivery_date){
                       html+=`<td>${row.delivery_date}</td>`
+                      html+=`<td>${thousands_separators(row.item.delivery_fees)}`
+                      if(row.item.other_fees > 0){
+                        html += `+ ${thousands_separators(row.item.other_fees)}`
+                      }
+                      html+=`</td><td>${thousands_separators(row.item.deposit)}</td>`
                     }else{
-                      html+=`<td>-</td>`
+                      html+=`<td>-</td>
+                            <td>-</td>
+                            <td>-</td>`
                     }
-                    html+=`<td>${thousands_separators(row.item.delivery_fees)}`
-                    if(row.item.other_fees > 0){
-                      html += `+ ${thousands_separators(row.item.other_fees)}`
-                    }
-                    html+=`</td><td>${thousands_separators(row.item.deposit)}</td>`
-
+                    
                     if(row.status_code=="001"){
-                      html+=`<td><button class="btn btn-sm btn-primary btnsave" data-id="${row.id}" data-amount="${row.item.item_amount}" data-deliveryfee="${row.item.delivery_fees+row.item.other_fees}" data-deposit="${row.item.deposit}" data-paystatus="${row.item.paystatus}" data-status="${row.item.status}">save</button></td>`
+                      html+=`<td><button class="btn btn-sm btn-primary btnsave" data-id="${row.id}" data-amount="${row.item.item_amount}" data-deliveryfee="${row.item.delivery_fees+row.item.other_fees}" data-deposit="${row.item.deposit}" data-paystatus="${row.item.paystatus}">save</button></td>`
                       }else if(row.status_code=="002"){
-                       html+= `<td><span class="badge badge-info">return way</span></td>`
+                       html+= `<td><span class="badge badge-info">return way</span> (${row.item.expired_date})</td>`
                       }else if(row.status_code=="003"){
                        html+= `<td><span class="badge badge-danger">reject way</span></td>`
                       }
@@ -212,17 +240,14 @@
         var delivery_fees=$(this).data("deliveryfee");
         var deposit = $(this).data("deposit");
         let paystatus = $(this).data("paystatus");
-        let status = $(this).data("status");
 
         $(".totalamount").html(amount);
         $("#totalamount").val(amount);
         $("#way_id").val(id);
         $("#deliveryfee").val(delivery_fees);
         $("#deposit").val(deposit);
-        if (paystatus == 2 && status == 1) {
-          $("#paymenttype").val(1)
-          $('#paymenttype').attr('disabled',true)
-        }else if (paystatus == 2 && status == 0) {
+
+        if (paystatus == 2) {
           $("#paymenttype").val(4)
           $('#paymenttype').attr('disabled',true)
         }else if (paystatus == 3) {

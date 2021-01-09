@@ -82,7 +82,7 @@ Route::middleware('auth')->group(function () {
 
   //amounta ad qty edit
   Route::post('editamountandqty','MainController@editamountandqty')->name('editamountandqty');
-
+  Route::post('editprepaidamount','MainController@editprepaidamount')->name('editprepaidamount');
   //normal
   Route::get('normal/{id}','MainController@normal')->name('normal');
 
@@ -139,9 +139,7 @@ Route::middleware('auth')->group(function () {
     Route::post('pendingwaysbygate','MainController@pendingwaysbygate')->name('pendingwaysbygate');
     Route::post('pendingwaysbyoffice','MainController@pendingwaysbyoffice')->name('pendingwaysbyoffice');
   });
-
-
-
+  
   Route::post('waybydeliveryman','MainController@waybydeliveryman')->name('waybydeliveryman');
   Route::post('/createpdf', 'MainController@createpdf')->name('createpdf');
 

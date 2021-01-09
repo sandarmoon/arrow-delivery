@@ -195,15 +195,22 @@ class MainController extends Controller
 
   public function getdebitlistbyclient($id)
   {
-    $expenses = Expense::where('client_id',$id)->where('status',2)->where('expense_type_id',1)->with('expense_type')->with('pickup.items')->get();
+    // $expenses = Expense::where('client_id',$id)->where('status',2)->where('expense_type_id',1)->with('expense_type')->with('pickup.items')->get();
 
-    $incomes = Income::whereIn('payment_type_id',[4,5,6])->with('way.item.pickup.schedule')->with('way.item.township')->whereHas('way.item.pickup.schedule',function ($query) use ($id){
-      $query->where('client_id', $id);
-    })->where('amount',null)->get();
+    $expenses = Pickup::with('schedule')->whereHas('schedule',function ($query) use ($id){
+      $query->where('client_id',$id);
+    })->with('items')->with('expense')->where('status',4)->get();
+
+    // $incomes = Income::whereIn('payment_type_id',[4,5,6])->with('way.item.pickup.schedule')->with('way.item.township')->whereHas('way.item.pickup.schedule',function ($query) use ($id){
+    //   $query->where('client_id', $id);
+    // })->where('amount',null)->get();
+
+    $incomes = Item::whereHas('pickup.schedule', function ($query) use ($id){
+      $query->where('client_id',$id);
+    })->where('paystatus',2)->where('status',0)->with('way')->with('township')->get();
    
-    $rejects =  Way::with('item.pickup.schedule')
-    ->whereHas('item.pickup.schedule', function($query) use ($id){
-        $query->where('client_id', $id);
+    $rejects =  Way::with('item.pickup.schedule')->whereHas('item.pickup.schedule', function($query) use ($id){
+      $query->where('client_id', $id);
     })->where('status_code','003')->where('refund_date',null)->get();
 
     $carryfees = Expense::where('client_id',$id)->where('status',2)->where('expense_type_id',5)->with('item.township')->get();
@@ -466,7 +473,6 @@ public function profit(Request $request){
   // get the success ways by deliveryman
   public function successways($id)
   {
-
     $paymenttypes=PaymentType::all();
     $banks=Bank::all();
     $ways =Way::withTrashed()->doesntHave('income')->where('ways.delivery_man_id',$id)
@@ -637,7 +643,7 @@ public function profit(Request $request){
       $id=$user->delivery_man->id;
       $pickups=Pickup::where('delivery_man_id',$id)->doesntHave('items')->get();
       //dd($pickups);
-        $data=[];
+      $data=[];
       foreach ($pickups as $pickup) {
         
        //dd(count($pickup->unreadNotifications));
@@ -655,8 +661,10 @@ public function profit(Request $request){
           }
         }    
       }
-      $pickups=Pickup::where('delivery_man_id',$id)->doesntHave('items')->get();
-
+      $pickups=Pickup::where('delivery_man_id',$id)->doesntHave('items')->whereHas('schedule', function ($query)
+      {
+        $query->whereDate('pickup_date', '=', Carbon\Carbon::today()->toDateString());
+      })->get();
     }
     //dd($pickups);
     return view('dashboard.pickups',compact('pickups'));
@@ -919,6 +927,34 @@ public function profit(Request $request){
     }
   }
 
+  public function editprepaidamount(Request $request){
+    $validator = $request->validate([
+      'pickup_id'=>['required'],
+      'prepaidamount'=>['required']
+    ]);
+    
+    if($validator){
+      $id=$request->pickup_id;
+      $prepaidamount=$request->prepaidamount;
+
+      $expense=Expense::where('pickup_id',$id)->first();
+      $oldexpense = $expense->amount;
+      $expense->amount=$prepaidamount;
+      $expense->save();
+
+      $transaction=Transaction::where('expense_id',$expense->id)->first();
+      $transaction->amount=$prepaidamount;
+      $transaction->save();
+
+      $bank=$transaction->bank;
+      $bank->amount += $oldexpense;
+      $bank->amount -= $transaction->amount;
+      $bank->save();
+
+      return response()->json(['success'=>'successfully!']);
+    }
+  }
+
   public function normal($id){
     $way=Way::find($id);
     $way->status_code="005";
@@ -967,7 +1003,7 @@ public function profit(Request $request){
       $client_id=Auth::user()->client->id;
       $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id){
         $query->where('client_id', $client_id);
-      })->where("status",1)->orderBy('id','desc')->get();
+      })->where("status",4)->orderBy('id','desc')->get();
       //dd($pickups);
     }
     return view('dashboard.pickup_history',compact('clients','pickups'));
@@ -982,20 +1018,20 @@ public function profit(Request $request){
     $pickups="";
     if($rolename=="client"){
       $client_id=Auth::user()->client->id;
-      $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
+      $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
         $query->where('client_id', $client_id)->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
       })->where("status",1)->get();
     }else if($rolename=="staff"){
       if($client_id==null){
-        $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($sdate,$edate){
+        $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($sdate,$edate){
           $query->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
         })->where("status",4)->get();
       }else if($sdate==null && $edate==null){
-        $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id){
+        $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id){
           $query->where('client_id', $client_id);
         })->where("status",4)->get();
       }else{
-        $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
+        $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
           $query->where('client_id', $client_id)->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
         })->where("status",4)->get();
       }
@@ -1052,15 +1088,13 @@ public function profit(Request $request){
         }
         else
         {
-            return redirect::back()->withErrors($validator);
+          return redirect::back()->withErrors($validator);
         }
   }
 
-
   public function waybydeliveryman(Request $request){
     $id=$request->id;
-    $ways = Way::where('delivery_man_id',$id)->where('status_code','!=',001)->where('status_code','!=',002)->where('deleted_at',null)->orderBy('id','desc')->with('item.pickup.schedule.client.user')->get();
-    
+    $ways = Way::where('delivery_man_id',$id)->where('status_code',005)->orderBy('id','desc')->with('item.pickup.schedule.client.user')->get();
     return $ways;
   }
 
@@ -1069,18 +1103,12 @@ public function profit(Request $request){
     $deliveryman=DeliveryMan::find($id);
     $deliname=$deliveryman->user->name;
 
-   // dd($id);
-    $ways = Way::where('delivery_man_id',$id)->where('status_code','!=',001)->where('status_code','!=',002)->where('deleted_at',null)->orderBy('id','desc')->get();
-      $data = array(
-    'ways' => $ways,
-    'deliveryman' => $deliveryman,
-        );
-      view()->share('data',$data);
-      $pdf = PDF::loadView('dashboard.waypdf')->setPaper('a4', 'landscape');
-
-      // download PDF file with download method
-      return $pdf->download( $deliname.'.pdf');
-      
+    $ways = Way::where('delivery_man_id',$id)->where('status_code',005)->orderBy('id','desc')->get();
+    $data = array('ways' => $ways,'deliveryman' => $deliveryman);
+    view()->share('data',$data);
+    $pdf = PDF::loadView('dashboard.waypdf')->setPaper('a4', 'landscape');
+    // download PDF file with download method
+    return $pdf->download( $deliname.'.pdf');
   }
 
   public function pendingwaysbytownship(Request $request){
@@ -1090,9 +1118,7 @@ public function profit(Request $request){
         $query->where('township_id', $id);
       })->get();
     //dd($ways);
-
     return $ways;
-
   }
 
   public function pendingwaysbygate(Request $request){

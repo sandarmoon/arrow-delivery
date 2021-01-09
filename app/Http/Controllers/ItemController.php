@@ -102,7 +102,7 @@ class ItemController extends Controller
         $item->expired_date=$request->expired_date;
         $item->deposit=$request->deposit;
         $item->delivery_fees=$request->delivery_fees;
-        $item->other_fees=$request->othercharges;
+        // $item->other_fees=$request->othercharges;
         $item->amount =$request->amount;
         $item->paystatus=$request->amountstatus;
         $item->remark=$request->remark;
@@ -125,110 +125,52 @@ class ItemController extends Controller
         }
         $item->save();
 
-        if($qty==1){
-          $all_delivery_fees = Item::where('pickup_id',$request->pickup_id)->where('paystatus',2)->sum('delivery_fees');
-          $all_other_fees = Item::where('pickup_id',$request->pickup_id)->where('paystatus',2)->sum('other_fees');
-
-          $allpaiditemsamount = $all_delivery_fees + $all_other_fees;
-          // dd($allpaiditemsamount);
-          $checkitems = Item::orderBy('id', 'desc')->take($myqty)->get();
-          //dd($checkitems->sum('deposit'));
-          // amount မကိုက်တဲ့ အခြေအနေ
-          if($checkitems->sum('deposit')!=$damount){
-            //dd("hi");
-            //foreach ($checkitems as $value) {
-            $pickup=Pickup::find($checkitems[0]->pickup_id);
-            $pickup->status=2;
-            $pickup->save();
-            //}
-            return redirect()->route('checkitem',$pickup->id);
-          }else{
-            if($request->paidamount!=null){
-              $expense=new Expense;
-              $expense->amount=$request->paidamount;
-              $expense->client_id=$request->client_id;
-              if($rolename=="staff"){
-                $user=Auth::user();
-                $staffid=$user->staff->id;
-                $expense->staff_id=$staffid;
-              }
-              $expense->status=$request->paystatus;
-              $expense->description="Client Deposit";
-              $$expense->pickup_id = $request->pickup_id;
-              $expense->city_id=1;
-              $expense->expense_type_id=1;
-              $expense->save();
-
-              $expense=new Expense;
-              $unexpenseamount=$request->depositamount-$request->paidamount;
-              $expense->amount=$unexpenseamount;
-              $expense->client_id=$request->client_id;
-              if($rolename=="staff"){
-                $user=Auth::user();
-                $staffid=$user->staff->id;
-                $expense->staff_id=$staffid;
-              }
-              $expense->status=2;
-              $expense->description="Client Deposit";
-              $expense->pickup_id = $request->pickup_id;
-              $expense->city_id=1;
-              $expense->expense_type_id=1;
-              $expense->save();
-            }else{
-              $expense=new Expense;
-              $expense->amount=$damount;
-              $expense->guest_amount=$damount-$allpaiditemsamount;
-              $expense->client_id=$request->client_id;
-              if($rolename=="staff"){
-                $user=Auth::user();
-                $staffid=$user->staff->id;
-                $expense->staff_id=$staffid;
-              }
-              $expense->status=$request->paystatus;
-              $expense->description="Client Deposit";
-              $expense->pickup_id = $request->pickup_id;
-              $expense->city_id=1;
-              $expense->expense_type_id=1;
-              $expense->save();
-            }
-            // insert into transaction if paid
-            if($request->paystatus == 1){
-              $transaction = new Transaction;
-              $transaction->bank_id = $request->payment_method;
-              $transaction->expense_id = $expense->id;
-              if($request->paidamount!=null){
-                 $transaction->amount = $request->paidamount;
-              }else{
-                $transaction->amount = $request->depositamount;
-              }
-              
-              $transaction->description = "Client Deposit";
-              $transaction->save();
-
-              $bank = Bank::find($request->payment_method);
-               if($request->paidamount!=null){
-                $bank->amount=$bank->amount-$request->paidamount;
-               }else{
-                 $bank->amount = $bank->amount-$request->depositamount;
-               }
-              $bank->save();
-            }
+        if($request->paystatus == 1 && $request->paidamount != null){
+          $expense = new Expense;
+          $expense->amount=$request->paidamount;
+          $expense->client_id=$request->client_id;
+          if($rolename=="staff"){
+            $user=Auth::user();
+            $staffid=$user->staff->id;
+            $expense->staff_id=$staffid;
           }
-        }
+          $expense->status=$request->paystatus;
+          $expense->description="Client Deposit";
+          $expense->pickup_id = $request->pickup_id;
+          $expense->city_id=1;
+          $expense->expense_type_id=1;
+          $expense->save();
 
-        //dd("hello");
+          // transaction
+          $transaction = new Transaction;
+          $transaction->bank_id = $request->payment_method;
+          $transaction->expense_id = $expense->id;
+          if($request->paidamount!=null){
+             $transaction->amount = $request->paidamount;
+          }else{
+            $transaction->amount = $request->depositamount;
+          }
+          $transaction->description = "Client Deposit";
+          $transaction->save();
+
+          $bank = Bank::find($request->payment_method);
+           if($request->paidamount!=null){
+            $bank->amount=$bank->amount-$request->paidamount;
+           }else{
+             $bank->amount = $bank->amount-$request->depositamount;
+           }
+          $bank->save();
+        }
+        
         $pickup = Pickup::find($item->pickup_id);
         if (($pickup->schedule->quantity - count($pickup->items)) > 0) {
           return redirect()->back()->with("successMsg",'New Item is ADDED');
         }else{
           $pickup->status = 4;
           $pickup->save();
-
           return redirect()->route('items.index')->with("successMsg",'New Item is ADDED in your data');
         }
-      }
-      else
-      {
+      }else{
         return redirect::back()->withErrors($validator);
       }
             
@@ -254,11 +196,11 @@ class ItemController extends Controller
      */
     public function edit(Item $item)
     {
-        $item=$item;
-        $townships=Township::orderBy('name','asc')->get();
-        $sendergates=SenderGate::orderBy('name','asc')->get();
-        $senderoffice=SenderPostoffice::orderBy('name','asc')->get();
-        return view('item.edit',compact('item','townships','sendergates','senderoffice'));
+      $townships=Township::orderBy('name','asc')->get();
+      $sendergates=SenderGate::orderBy('name','asc')->get();
+      $senderoffice=SenderPostoffice::orderBy('name','asc')->get();
+      $deliverymen = DeliveryMan::all();
+      return view('item.edit',compact('item','townships','sendergates','senderoffice','deliverymen'));
     }
 
     /**
@@ -290,7 +232,7 @@ class ItemController extends Controller
         $item->expired_date=$request->expired_date;
         $item->deposit=$request->deposit;
         $item->delivery_fees=$request->delivery_fees;
-        $item->other_fees=$request->othercharges;
+        // $item->other_fees=$request->othercharges;
         $item->amount =$request->amount;
         $item->paystatus=$request->amountstatus;
         $item->remark=$request->remark;
@@ -310,12 +252,11 @@ class ItemController extends Controller
         }
         $item->save();
 
-        $all_delivery_fees = Item::where('pickup_id',$item->pickup_id)->where('paystatus',2)->where('status',0)->sum('delivery_fees');
-        $all_other_fees = Item::where('pickup_id',$item->pickup_id)->where('paystatus',2)->where('status',0)->sum('other_fees');
-        $allpaiditemsamount = $all_delivery_fees + $all_other_fees;
-        $expense = Expense::where('pickup_id',$item->pickup_id)->where('status',2)->first();
-        $expense->guest_amount = $expense->amount-$allpaiditemsamount;
-        $expense->save();
+        if ($item->way) {
+          $way = $item->way;
+          $way->delivery_man_id = $request->delivery_man;
+          $way->save();
+        }
 
         return redirect()->route('items.index')->with("successMsg",'Updatesuccessfully');
       }else{
@@ -436,24 +377,21 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
     }
 
     public function deletewayassign($id){
-        $way=Way::find($id);
-        $way->delete();
-        return redirect()->route('items.index')->with("successMsg",'way assign delete successfully');
+      $way=Way::find($id);
+      $way->delete();
+      return redirect()->route('items.index')->with("successMsg",'way assign delete successfully');
     }
 
     public function townshipbystatus(Request $request){
-        $id=$request->id;
-        $township=Township::where('status',$id)->get();
-        return $township;
+      $id=$request->id;
+      $township=Township::where('status',$id)->get();
+      return $township;
     }
 
     public function checkitem($pickupid){
-    
-    $checkitems=Item::where('pickup_id',$pickupid)->get();
-    $banks = Bank::all();
-    return view('dashboard.checkitem',compact('checkitems','banks'))->with("successMsg",'items amount are wrong');
-      //dd($pickupid);
-      
+      $checkitems=Item::where('pickup_id',$pickupid)->get();
+      $banks = Bank::all();
+      return view('dashboard.checkitem',compact('checkitems','banks'))->with("successMsg",'items amount are wrong');
     }
 
     public function updateamount(Request $request){
@@ -506,13 +444,11 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
     }
 
     public function lastitem(Request $request){
-      $myqty=$request->myqty;
-     // dd($myqty);
-      $checkitems = Item::orderBy('id', 'desc')->take($myqty)->get();
-      $lastamount=$checkitems->sum('deposit');
-
-     return $lastamount;
-
+      $id = $request->pickup_id;
+      $allpaid_delivery_fees = Item::where('pickup_id', $id)->where('paystatus','2')->sum('delivery_fees');
+      $notallpaid_deposit = Item::where('pickup_id', $id)->where('paystatus','<>','2')->sum('deposit');
+      $depositamount = $notallpaid_deposit-$allpaid_delivery_fees;
+      return $depositamount;
     }
 
     public function paidfull(Request $request)
@@ -521,19 +457,15 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
       $item->status = 1;
       $item->save();
 
-      // $all_delivery_fees = Item::where('pickup_id',$item->pickup_id)->where('paystatus',2)->where('status',1)->sum('delivery_fees');
-      // $all_other_fees = Item::where('pickup_id',$item->pickup_id)->where('paystatus',2)->where('status',1)->sum('other_fees');
-      // $allpaiditemsamount = $all_delivery_fees + $all_other_fees;
+      $transaction = new Transaction;
+      $transaction->bank_id = 1;
+      $transaction->amount = $item->delivery_fees;
+      $transaction->description = "Prepaid Delivery Fees";
+      $transaction->save();
 
-      // $transaction = new Transaction;
-      // $transaction->bank_id = 1;
-      // $transaction->amount = $allpaiditemsamount;
-      // $transaction->description = "Prepaid Delivery Fees";
-      // $transaction->save();
-
-      // $bank = Bank::find(1);
-      // $bank->amount += $transaction->amount;
-      // $bank->save();
+      $bank = Bank::find(1);
+      $bank->amount += $transaction->amount;
+      $bank->save();
 
       return back();
     }

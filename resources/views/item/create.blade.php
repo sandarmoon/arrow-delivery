@@ -27,22 +27,32 @@
           <form method="POST" action="{{route('items.store')}}" id="storeform">
             @csrf
             <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="InputCodeno">{{ __("Codeno")}}:</label>
-                  <input class="form-control" id="InputCodeno" type="text" value="{{$itemcode}}" name="codeno" readonly>
+              <div class="col-md-8">
+                <div class="form-group row">
+                  <div class="col">
+                    <label for="InputCodeno">{{ __("Codeno")}}:</label>
+                    <input class="form-control" id="InputCodeno" type="text" value="{{$itemcode}}" name="codeno" readonly>
+                  </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="InputReceiverName">{{ __("Receiver Name")}}:</label>
-                  <input class="form-control" id="InputReceiverName" type="text" name="receiver_name" value="{{ old('receiver_name') }}">
-                  <div class="form-control-feedback text-danger"> {{$errors->first('receiver_name') }} </div>
+                  <label for="txtDate">{{ __("Expired Date")}}:</label>
+                  <input class="form-control pickdate" id="txtDate" type="date" name="expired_date"  value="@if($pickupeditem){{ $pickupeditem->expired_date }}@else{{old('expired_date')}}@endif">
+                  <div class="form-control-feedback text-danger"> {{$errors->first('expired_date') }} </div>
                 </div>
 
-                <div class="form-group">
-                  <label for="InputReceiverPhoneNumber">{{ __("Receiver Phone Number")}}:</label>
-                  <input class="form-control" id="InputReceiverPhoneNumber" type="text" name="receiver_phoneno" value="{{ old('receiver_phoneno') }}" >
-                  <div class="form-control-feedback text-danger"> {{$errors->first('receiver_phoneno') }} </div>
+                <div class="form-group row">
+                  <div class="col">
+                    <label for="InputReceiverName">{{ __("Receiver Name")}}:</label>
+                    <input class="form-control" id="InputReceiverName" type="text" name="receiver_name" value="{{ old('receiver_name') }}">
+                    <div class="form-control-feedback text-danger"> {{$errors->first('receiver_name') }} </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="InputReceiverPhoneNumber">{{ __("Receiver Phone Number")}}:</label>
+                    <input class="form-control" id="InputReceiverPhoneNumber" type="text" name="receiver_phoneno" value="{{ old('receiver_phoneno') }}" >
+                    <div class="form-control-feedback text-danger"> {{$errors->first('receiver_phoneno') }} </div>
+                  </div>
                 </div>
 
                 <div class="form-group">
@@ -81,7 +91,7 @@
                   <div class="form-control-feedback text-danger"> {{$errors->first('rcity') }} </div>
                 </div>
 
-                <div class="form-group  mygate">
+                <div class="form-group mygate">
                   <label for="mygate">{{ __("Sender Gate")}}:</label><br>
                   <select class="js-example-basic-single " id="mygate" name="mygate"  >
                     <option value="">{{ __("Choose Gate")}}</option>
@@ -92,7 +102,7 @@
                   <div class="form-control-feedback text-danger"> {{$errors->first('receiver_township') }} </div>
                 </div>
 
-                <div class="form-group  myoffice">
+                <div class="form-group myoffice">
                   <label for="myoffice">{{ __("Sender PostOffice")}}:</label><br>
                   <select class="js-example-basic-single  " id="myoffice" name="myoffice"  >
                     <option value="">{{ __("Choose Post Office")}}</option>
@@ -114,45 +124,43 @@
                   <div class="form-control-feedback text-danger"> {{$errors->first('receiver_township') }} </div>
                 </div>
 
-                <div class="form-group">
-                  <label for="txtDate">{{ __("Expired Date")}}:</label>
-                  <input class="form-control pickdate" id="txtDate" type="date" name="expired_date"  value="@if($pickupeditem){{ $pickupeditem->expired_date }}@else{{old('expired_date')}}@endif">
-                  <div class="form-control-feedback text-danger"> {{$errors->first('expired_date') }} </div>
+                <div class="form-group row">
+                  <div class="col">
+                    <label for="InputDeliveryFees">{{ __("Delivery Fees")}}:</label>
+                    <input class="form-control" id="InputDeliveryFees" type="number" name="delivery_fees" value="{{ old('delivery_fees') }}">
+                    <div class="form-control-feedback text-danger"> {{$errors->first('delivery_fees') }} </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="InputDeposit">{{ __("Item Price")}}:</label>
+                    <input class="form-control" id="InputDeposit" type="number" name="deposit" value="{{old('deposit')}}">
+                    <div class="form-control-feedback text-danger"> {{$errors->first('deposit') }} </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="InputAmount">{{ __("Total Amount")}}:</label>
+                    <input class="form-control" id="InputAmount" type="number" name="amount" value="{{ old('amount') }}">
+                    <div class="form-control-feedback text-danger"> {{$errors->first('amount') }} </div>
+                  </div>
                 </div>
 
-                <div class="form-group">
-                  <label for="InputDeliveryFees">{{ __("Delivery Fees")}}:</label>
-                  <input class="form-control" id="InputDeliveryFees" type="number" name="delivery_fees" value="{{ old('delivery_fees') }}">
-                  <div class="form-control-feedback text-danger"> {{$errors->first('delivery_fees') }} </div>
-                </div>
+                <div class="form-group row">
+                  {{-- <div class="col">
+                    <label for="other">{{ __("Other Charges")}}:</label>
+                    <input class="form-control" id="other" type="number" name="othercharges" value="0">
+                  </div> --}}
 
-                <div class="form-group">
-                  <label for="other">{{ __("Other Charges")}}:</label>
-                  <input class="form-control" id="other" type="number" name="othercharges" value="0">
-                </div>
-
-                <div class="form-group">
-                  <label for="InputDeposit">{{ __("Item Price")}}:</label>
-                  <input class="form-control" id="InputDeposit" type="number" name="deposit" value="@if($pickupeditem){{ $pickupeditem->deposit }}@else {{old('deposit')}} @endif">
-                  <div class="form-control-feedback text-danger"> {{$errors->first('deposit') }} </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="InputAmount">{{ __("Amount")}}: ({{ __("deposit+delivery fees+others")}})</label>
-                  <input class="form-control" id="InputAmount" type="number" name="amount" value="{{ old('amount') }}">
-                  <div class="form-control-feedback text-danger"> {{$errors->first('amount') }} </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="other">{{ __("Delivery Type")}}:</label>
-                  <select class="form-control" name="amountstatus">
-                    <optgroup label="Choose type">
-                      <option value="1">Unpaid</option>
-                      <option value="2">Allpaid</option>
-                      <option value="3">Only Deli</option>
-                      <option value="4">Only Item Price</option>
-                    </optgroup>
-                  </select>
+                  <div class="col">
+                    <label for="other">{{ __("Delivery Type")}}:</label>
+                    <select class="form-control paystatus" name="amountstatus" >
+                      <optgroup label="Choose type">
+                        <option value="1">Unpaid</option>
+                        <option value="2">Allpaid</option>
+                        <option value="3">Only Deli</option>
+                        <option value="4">Only Item Price</option>
+                      </optgroup>
+                    </select>
+                  </div>
                 </div>
 
                 {{-- <div class="form-group row">
@@ -184,8 +192,8 @@
                 </div>
               </div>
 
-              <div class="col-md-6">
-                <input type="hidden" name="pickup_id" value="{{$pickup->id}}">
+              <div class="col-md-4">
+                <input type="hidden" name="pickup_id" value="{{$pickup->id}}" id="pickup_id">
 
                 <div class="card mt-4">
                   <div class="card-header">
@@ -205,8 +213,8 @@
                     @endforeach
 
                     <input type="hidden" name="client_id" value="{{$client->id}}">
-                    <input type="hidden" name="depositamount" value="{{$pickup->schedule->amount}}" class="depositamount">
-                    <input type="hidden" name="depositamountforcheck" value="{{$pickup->schedule->amount-$total}}" class="depositamountforcheck">
+                    {{-- <input type="hidden" name="depositamount" value="{{$pickup->schedule->amount}}" class="depositamount"> --}}
+                    {{-- <input type="hidden" name="depositamountforcheck" value="{{$pickup->schedule->amount-$total}}" class="depositamountforcheck"> --}}
                     <input type="hidden" class="lastqty" name="qty" value={{$pickup->schedule->quantity - count($pickup->items)}}>
                     <input type="hidden" class="totalqty" name="myqty" value="{{$pickup->schedule->quantity}}">
                     <li class="list-group-item">{{ __("Balance")}}: {{number_format($pickup->schedule->amount)}} KS</li>
@@ -234,7 +242,9 @@
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Deposit Amount: {{number_format($pickup->schedule->amount)}} KS</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Claim Amount: <span id="depositamount"></span>
+                      <input type="hidden" name="depositamount" class="depositamount">
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -246,7 +256,7 @@
                         <div class="form-check">
                           <input class="form-check-input" type="radio" name="paystatus" id="paid" value="1" checked="checked">
                           <label class="form-check-label" for="paid">
-                           {{ __("Paid")}}
+                           {{ __("Prepaid")}}
                           </label>
                         </div>
                       </div>
@@ -268,7 +278,7 @@
                       <div class="col-md-12 mt-3">
                         <div class="form-group myknow">
                           <input type="checkbox" id="know">
-                          <label for="know">{{ __("If you do not paid all deposit")}}</label> 
+                          <label for="know">{{ __("If you do not paid total amount")}}</label> 
                         </div>
                       </div>
                     </div>
@@ -282,13 +292,13 @@
                           <input type="number" name="paidamount" class="form-control" id="paidamount">
                         </div>
                         <div class="col-md-12">
-                          <span class="d-none text-danger amounterrormsg">paidamount must be between 1 and depositamount!</span>
+                          <span class="d-none text-danger amounterrormsg">Prepaid amount less then or equal to claim amount!</span>
                         </div>
                       </div>
                     </div>
 
                     <div class="row mt-3 bank">
-                      <div class="form-row col-md-12">
+                      <div class="form-row col-md-12 bankinfo">
                         <div class="col-md-4">
                           <label>Choose Bank or Cash:</label>
                         </div>
@@ -347,27 +357,32 @@
     });
 
     $('.confirm_and_save').prop('disabled',true);
+    $('.bankinfo').hide();
+
     $('#depositModal').on('change','#paidamount',function () {
       let depositamount = Number($('.depositamount').val());
       let paidamount=$(this).val();
-      console.log(depositamount);
-     if(paidamount>depositamount){
-      $('.amounterrormsg').removeClass('d-none');
+      // console.log(depositamount);
+      if(paidamount>depositamount){
+        $('.amounterrormsg').removeClass('d-none');
         $('.confirm_and_save').prop('disabled',true);
-     }else{
-       $('.errormsg').addClass('d-none');
+        $('.bankinfo').hide();
+      }else{
+        $('.amounterrormsg').addClass('d-none');
         $('.confirm_and_save').prop('disabled',false);
-     }
+        $('.bankinfo').show();
+      }
     })
+
     $('#depositModal').on('change','.payment_method',function () {
       let depositamount = Number($('.depositamount').val());
       let amount = Number($(this).find('option:selected').attr('data-amount'));
-      // console.log(amount)
+      
+
       if(amount==0){
         $('.errormsg').addClass('d-none');
         $('.confirm_and_save').prop('disabled',true);
       }else if(depositamount>amount){
-        // console.log('hi')
         $('.errormsg').removeClass('d-none');
         $('.confirm_and_save').prop('disabled',true);
       }else{
@@ -402,70 +417,47 @@
         });
       $.post("/delichargebytown",{id:id},function(res){
         $("#InputDeliveryFees").val(res);
+
+        var amount=Number($('#InputAmount').val()) | 0;
+        var deposit=Number($('#InputDeposit').val()) | 0;
+        if (amount>0 && deposit==0) {
+          $('#InputDeposit').val(amount-res)
+        }else if(deposit>0 && amount==0){
+          $('#InputAmount').val(deposit+res)
+        }else if(amount>0){
+          $('#InputDeposit').val(amount-res)
+        }
       })
     })
 
-    $("#InputAmount").focus(function(){
-      var deposit=parseInt($('#InputDeposit').val());
-      var depositamount=$(".depositamountforcheck").val();
-      var other=Number($("#other").val());
-      console.log(deposit);
-      //alert(other);
-      var delivery_fees=parseInt($("#InputDeliveryFees").val());
-      if(deposit>depositamount){
-        alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
-        $("#InputDeposit").val(0);
-        $("#InputDeposit").focus();
-      }else{
-        var amount=deposit+delivery_fees+other;
-      $(this).val(amount);
-      }
+    $("#InputAmount").change(function(){
+      var amount = Number($(this).val())|0;
+      var delivery_fees=Number($("#InputDeliveryFees").val())|0;
+      $('#InputDeposit').val(amount-delivery_fees)
     })
+
+    // $("#other").change(function(){
+    //   var deposit=parseInt($('#InputDeposit').val());
+    //   var depositamount=$(".depositamountforcheck").val();
+    //   var other=Number($("#other").val());
+    //   var delivery_fees=parseInt($("#InputDeliveryFees").val());
+    //   $("#InputAmount").val(deposit+delivery_fees+other);
+    // })
 
     $("#InputDeposit").focus(function(){
-      var amount=parseInt($('#InputAmount').val());
-      var depositamount=$(".depositamountforcheck").val();
-      var other=Number($("#other").val());
-      // console.log(deposit);
-      // alert(other);
-      var delivery_fees=parseInt($("#InputDeliveryFees").val());
-      // if(deposit>depositamount){
-      //   alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
-      //   $("#InputDeposit").val(0);
-      //   $("#InputDeposit").focus();
-      // }else{
-        var deposit=amount-(delivery_fees+other);
-        $(this).val(deposit);
-      // }
-    })
-
-    $("#other").change(function(){
-      //alert("ok");
-      var deposit=parseInt($('#InputDeposit').val());
-      var depositamount=$(".depositamountforcheck").val();
-      var other=Number($("#other").val());
-      var delivery_fees=parseInt($("#InputDeliveryFees").val());
-     // alert(deposit+delivery_fees+other);
-      $("#InputAmount").val(deposit+delivery_fees+other);
+      var amount=Number($('#InputAmount').val())|0;
+      var delivery_fees = Number($("#InputDeliveryFees").val())|0;
+      if (amount>0 && delivery_fees>0) {
+        $(this).val(amount-delivery_fees);
+      }
     })
 
     $("#InputDeposit").change(function(){
       var deposit=parseInt($('#InputDeposit').val());
-      var depositamount=$(".depositamountforcheck").val();
       var delivery_fees=parseInt($("#InputDeliveryFees").val());
-      
-      if(deposit>depositamount){
-        alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
-        $("#InputDeposit").val(0);
-        $("#InputDeposit").focus();
-      }else{
-        var amount=deposit+delivery_fees;
+      var amount=deposit+delivery_fees;
       $("#InputAmount").val(amount);
-      }
-      
-     
     })
-
 
     $("#InputRemark").focus(function(){
       var deposit=parseInt($('#InputDeposit').val());
@@ -478,26 +470,23 @@
         $("#InputDeposit").focus();
       }else{
         var amount=deposit+delivery_fees;
-      $("#InputAmount").val(amount);
+        $("#InputAmount").val(amount);
       }
-      
-     
     })
     
     $(function(){
-        var dtToday = new Date();
-        
-        var month = dtToday.getMonth() + 1;
-        var day = dtToday.getDate();
-        var year = dtToday.getFullYear();
-        if(month < 10)
-            month = '0' + month.toString();
-        if(day < 10)
-            day = '0' + day.toString();
-        
-        var maxDate = year + '-' + month + '-' + day;
-        //alert(maxDate);
-        $('#txtDate').attr('min', maxDate);
+      var dtToday = new Date();
+      
+      var month = dtToday.getMonth() + 1;
+      var day = dtToday.getDate();
+      var year = dtToday.getFullYear();
+      if(month < 10)
+          month = '0' + month.toString();
+      if(day < 10)
+          day = '0' + day.toString();
+      
+      var maxDate = year + '-' + month + '-' + day;
+      $('#txtDate').attr('min', maxDate);
     });
 
     $("input[name=rcity]").click(function(){
@@ -541,12 +530,13 @@
       }
 
       $.ajaxSetup({
-         headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
-        });
+      });
+
       $.post("/townshipbystatus",{id:id},function(res){
-       // console.log(id);
+        // console.log(id);
         var html="";
         html+=`<option>Choose township</option>`
         $.each(res,function(i,v){
@@ -558,9 +548,8 @@
   });
 
   $("#gate").click(function(){
-    
-      $(".mygate").show();
-     $(".myoffice").hide();
+    $(".mygate").show();
+    $(".myoffice").hide();
   })
 
   $("#incity").click(function(){
@@ -569,9 +558,8 @@
   })
 
   $("#post").click(function(){
-    
-      $(".mygate").hide();
-     $(".myoffice").show();
+    $(".mygate").hide();
+    $(".myoffice").show();
   })
 
     // Single select example if using params obj or configuration seen above
@@ -604,32 +592,26 @@
     $('.js-example-basic-single').select2(configParamsObj);
 
     $("#checkbtn").click(function(e){
-      //alert("ok");
       e.preventDefault();
-     var damount=Number($(".depositamount").val());
-     var lastdepostit=Number($("#InputDeposit").val());
-     var lastqty=Number($(".lastqty").val());
-     var totalqty=Number($(".totalqty").val());
-     var myqty=totalqty-lastqty;
-     //alert(myqty);
-     var url="{{route('lastitem')}}";
+      console.log(Number($("#InputDeposit").val()))
+      var pickup_id = $("#pickup_id").val();
 
-     $.get(url,{myqty:myqty},function(res){
-      //console.log(res);
-
-      var lastamount=Number(res);
-      var totalamount=lastamount+lastdepostit;
-      //alert(totalamount);
-      if(damount==totalamount){
-        //alert("hi")
-        $("#depositModal").modal('show');
+      if($(".paystatus option:selected").val() == 2){
+        var notallpaid_deposit = 0;
+        var allpaid_delivery_fees = Number($("#InputDeliveryFees").val());
       }else{
-       $("#storeform").submit();
-       //alert("ok")
+        var notallpaid_deposit=Number($("#InputDeposit").val());
+        var allpaid_delivery_fees = 0;
       }
 
-     })
-
+      var url="{{route('lastitem')}}";
+      $.get(url,{pickup_id,pickup_id},function(res){
+        let depositamount = Number(res) + (notallpaid_deposit-allpaid_delivery_fees)
+        $('#depositamount').html(`${depositamount} Ks`);
+        $('.depositamount').val(depositamount)
+        $("#depositModal").modal('show');
+      })
+      
     })
 
   })

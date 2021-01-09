@@ -89,6 +89,9 @@
                         <th>{{ __("Remark")}}</th>
                         <th>{{ __("Delivery Man")}}</th>
                         <th>{{ __("Quantity")}}</th>
+                        <th>{{ __("Amount")}}</th>
+                        {{-- <th>{{ __("Total Item Price")}}</th> --}}
+                        <th>{{ __("Prepaid Amount")}}</th>
                         <th>{{ __("Actions")}}</th>
                       </tr>
                     </thead>
@@ -109,6 +112,19 @@
                            @endforeach
                         </td>
                         <td class="align-middle">{{$row->schedule->quantity}}</td>
+                        <td class="align-middle">{{$row->schedule->amount}}</td>
+                        {{-- @php
+                          $total_item_price = $row->item->sum('deposit');
+                        @endphp --}}
+                        {{-- <td class="align-middle">{{$total_item_price}}</td> --}}
+
+                        <td class="align-middle">
+                          @if($row->expense)
+                            {{number_format($row->expense->amount)}}
+                          @else
+                            {{'-'}}
+                          @endif
+                        </td>
                         <td class="align-middle">
                           @if($row->status==1 && $row->schedule->quantity > count($row->items))
                             @role('staff')
@@ -119,6 +135,9 @@
                             @endrole
                           @elseif($row->status == 4 && $row->schedule->quantity == count(($row->items)))
                             <button type="button" class="btn btn-sm btn-info">{{ __("completed")}}</button>
+                            @if($row->expense)
+                              <button type="button" class="btn btn-sm btn-warning editprepaid" data-id="{{$row->id}}" data-amount="{{$row->expense->amount}}">Edit Prepaid Amount</button>
+                            @endif
                           @elseif($row->status==2)
                             <a href="{{route('checkitem',$row->id)}}" class="btn btn-sm btn-danger">{{ __("fail")}}</a>
                           @elseif($row->status==3)
@@ -274,6 +293,31 @@
     </div>
   </div>
 
+  {{--Add amount modal--}}
+  <div class="modal fade" id="editprepaid" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{ __("Edit Prepaid Amount!")}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="pickup" id="pickup_id" value="">
+          <div class="form-group prepaidamount">
+            <label for="prepaidamount">{{ __("Amount")}}:</label>
+            <input type="number" id="prepaidamount" class="form-control" name="prepaidamount">
+            <span class="Equantity error d-block" ></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary prepaidamountsave">{{ __("Save")}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 @endsection 
 @section('script')
   <script type="text/javascript">
@@ -352,6 +396,47 @@
       })
 
       setTimeout(function(){ $('.myalert').hide(); showDiv2() },3000);
+
+      $(".assigntbody").on('click','.editprepaid',function(e){
+        e.preventDefault();
+        $('#editprepaid').modal('show');
+        var id=$(this).data('id');
+        var amount = $(this).data('amount');
+        $("#pickup_id").val(id);
+        $("#prepaidamount").val(amount);
+      })
+
+      $(".prepaidamountsave").click(function(){
+        var pickup_id=$("#pickup_id").val();
+        var prepaidamount=$("#prepaidamount").val();
+        // var bank_id=$("#bank").val();
+        var url="{{route('editprepaidamount')}}";
+          
+        $.ajax({
+          url:url,
+          type:"post",
+          data:{pickup_id:pickup_id,prepaidamount:prepaidamount},
+          dataType:'json',
+          success:function(response){
+            if(response.success){
+               $('#prepaidamount').modal('hide');
+               $('.Eamount').text('');
+              $('span.error').removeClass('text-danger');
+              location.href="{{route('schedules.index')}}";
+            }
+          },
+          error:function(error){
+            var message=error.responseJSON.message;
+            var errors=error.responseJSON.errors;
+            console.log(error.responseJSON.errors);
+            if(errors){
+              var amount=errors.amount;
+              $('.Eamount').text(amount);
+              $('span.error').addClass('text-danger');
+            }
+          }
+        })
+      })
     })
   </script>
 @endsection

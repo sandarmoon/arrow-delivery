@@ -50,9 +50,9 @@
                     <th>#</th>
                     <th>{{ __("Pickup Date")}}</th>
                     <th>{{ __("Item Qty")}}</th>
-                    <th>{{ __("Description")}}</th>
-                    <th>{{ __("Expense Type")}}</th>
-                    <th>{{ __("Amount")}}</th>
+                    <th>{{ __("Total Amount")}}</th>
+                    <th>{{ __("Prepaid Amount")}}</th>
+                    <th>{{ __("Balance")}}</th>
                   </tr>
                 </thead>
                 <tbody id="debit_list">
@@ -262,8 +262,7 @@
     $('#debits').hide();
     // $('.search_btn').hide();
 
-    function thousands_separators(num)
-    {
+    function thousands_separators(num){
       var num_parts = num.toString().split(".");
       num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       return num_parts.join(".");
@@ -315,7 +314,6 @@
         var owner = $("#InputClient option:selected").data('owner');
         var account = $("#InputClient option:selected").data('account');
 
-        //alert(clientname)
         var url = `/debit/getdebitlistbyclient/${client_id}`;
         $.get(url,function (response) {
           console.log(response)
@@ -342,40 +340,46 @@
           var html = "";
           let total = 0;
           for(let row of response.expenses){
-            let showamount;
-            if (response.incomes.length > 0 || response.rejects.length > 0 || response.carryfees.length > 0){
-              showamount = row.amount;
+            let allpaid_delivery_fees = 0
+            let unpaid_total_item_price = 0
+            let pay_amount = 0
+            let prepaid_amount = 0
+
+            for(let item of row.items){
+              if (item.paystatus==2 && item.status==0) {
+                allpaid_delivery_fees += item.delivery_fees
+              }else{
+                unpaid_total_item_price += item.deposit
+              }
+            }
+            // console.log(allpaid_delivery_fees)
+            // console.log(unpaid_total_item_price)
+            // console.log(row.expense)
+            if (!row.expense) {
+              pay_amount = unpaid_total_item_price
             }else{
-              showamount = row.guest_amount;
+              prepaid_amount = row.expense.amount
+              pay_amount = unpaid_total_item_price-row.expense.amount
             }
 
             html +=`<tr>
                     <td>
                       <div class="animated-checkbox">
                         <label class="mb-0">
-                          <input type="checkbox" name="expenses[]" value="${row.id}" data-amount="${showamount}"><span class="label-text"> </span>
+                          <input type="checkbox" name="expenses[]" value="${row.id}" data-amount="${pay_amount}"><span class="label-text"> </span>
                         </label>
                       </div>
                     </td>`
-                    if(row.pickup!=null){
-                      let mydate=new Date(row.pickup.created_at);
-                      html+=`<td>${mydate.getDate()}-${mydate.getMonth()+1}-${mydate.getFullYear()}</td>`
-                    }else{
-                      html +=`<td>-</td>`
-                    }
-            html+=`<td>`;
-              if(row.pickup != null){
-                html += `${row.pickup.items.length}`
-              }else{
-                html += `${'-'}`
-              }
-
-              html+=`</td>
-                    <td>${row.description}</td>
-                    <td>${row.expense_type.name}</td>
-                    <td>${thousands_separators(showamount)} Ks</td>
+                    
+            let mydate=new Date(row.created_at);
+            html+=`<td>${mydate.getDate()}-${mydate.getMonth()+1}-${mydate.getFullYear()}</td>`
+                  
+            html+=`<td> ${row.items.length}</td>
+                    <td> ${thousands_separators(unpaid_total_item_price)} </td>
+                    <td> ${thousands_separators(prepaid_amount)} </td>
+                   <td>${thousands_separators(pay_amount)} Ks</td>
                   </tr>`;
-                  total += Number(showamount);
+                  total += Number(pay_amount);
           }
           html +=`<tr>
                     <td colspan="5">Total: </td>
@@ -402,7 +406,7 @@
                   html2 +=` <span class="badge badge-danger">reject</span>`;
           
             html2 +=`</td>
-                      <td></td>
+                      <td>-</td>
                       <td>${thousands_separators(delivery_fees)}</td>
                       <td>${thousands_separators(row.item.deposit)}</td>
                       <td>${thousands_separators(Number(row.item.deposit) + delivery_fees)} Ks</td>
@@ -412,15 +416,19 @@
 
           for(let row of response.incomes){
             let delivery_fees=deposit=0;
-            if(row.payment_type_id == 4){
-              delivery_fees = Number(row.way.item.delivery_fees);
-              deposit = Number(row.way.item.deposit);
-            }else if(row.payment_type_id == 5){
-              deposit = Number(row.way.item.deposit);
-            }else if(row.payment_type_id == 6){
-              delivery_fees = Number(row.way.item.delivery_fees);
+
+            if(row.paystatus == 2 && row.status == 0){
+              delivery_fees = Number(row.delivery_fees);
+            }else if(row.paystatus == 4){
+              deposit = Number(row.deposit);
             }
-            let delivered_date = new Date(row.created_at);
+
+            let delivered_date = "-"
+            if (row.way && row.way.status_code=="001") {
+              mydate = new Date(row.created_at);
+              delivered_date = `${mydate.getDate()}-${mydate.getMonth()+1}-${mydate.getFullYear()}`
+            }
+            
             html2 +=`<tr>
                       <td>
                         <div class="animated-checkbox">
@@ -429,18 +437,18 @@
                           </label>
                         </div>
                       </td>
-                      <td>${row.way.item.receiver_name} - ${row.way.item.township.name}`;
+                      <td>${row.receiver_name} - ${row.township.name}`;
 
-            if(row.payment_type_id == 4){
+            if(row.paystatus == 2){
               html2 +=` <span class="badge badge-info">All Paid</span>`;
-            }else if(row.payment_type_id == 5){
+            }else if(row.paystatus == 3){
               html2 +=` <span class="badge badge-info">Only Deli</span>`;
-            }else if(row.payment_type_id == 6){
+            }else if(row.paystatus == 4){
               html2 +=` <span class="badge badge-info">Only Item Price</span>`;
             }
 
             html2 +=`</td>
-                      <td>${delivered_date.getDate()}-${delivered_date.getMonth()+1}-${delivered_date.getFullYear()}</td>
+                      <td>${delivered_date}</td>
                       <td>${thousands_separators(delivery_fees)}</td>
                       <td>${thousands_separators(deposit)}</td>
                       <td>${thousands_separators(delivery_fees+deposit)} Ks</td>

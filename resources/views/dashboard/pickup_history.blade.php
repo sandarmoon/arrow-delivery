@@ -130,7 +130,7 @@
           {"data":'DT_RowIndex'},
           { "data": "schedule.pickup_date",},
           { "data": "schedule.quantity" },
-          { "data": "expenses[0].guest_amount" },
+          { "data": "expense.guest_amount" },
           { "data": "id",
                       sortable:false,
                       render:function(data){

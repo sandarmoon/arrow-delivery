@@ -2,6 +2,16 @@
 <html>
 <head>
 	<title></title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <style type="text/css">
+    .mmfont{
+      font-family: 'Zawgyi_One';
+    }
+
+    .table-warning{
+      background-color: #ffeeba;
+    }
+  </style>
 </head>
 <body>
 	<h1>Ways of {{$data['deliveryman']->user->name}}</h1>
@@ -22,15 +32,27 @@
     </thead>
 
     <tbody>
-      @php $i=1; @endphp
+      @php $i=1; $total=0;@endphp
       @foreach($data["ways"] as $way)
-        <tr>
+        @php
+          $allpaid = "";
+          $payment_type = "";
+          $total += $way->item->deposit+$way->item->delivery_fees;
+
+          if ($way->item->paystatus==2) {
+            $payment_type = "(allpaid)";
+            $allpaid = "table-warning";
+            $total -= $way->item->delivery_fees;
+          }elseif ($way->item->paystatus==3) {
+            $payment_type = "(only deli)";
+          }elseif ($way->item->paystatus==4) {
+            $payment_type = "(only item price)";
+          }
+        @endphp
+        <tr class="{{$allpaid}}">
          	<td>{{$i++}}</td>
          	<td>
-            {{$way->item->codeno}}
-            @if($way->item->paystatus==2)
-              {{'(Allpaid!)'}}
-            @endif
+            {{$way->item->codeno}}{{$payment_type}}
           </td>
          	@if($way->item->sender_gate_id != null)
     			<td>{{$way->item->SenderGate->name}}</td>
@@ -51,6 +73,10 @@
          	</td>
         </tr>
       @endforeach
+        <tr>
+          <td colspan="6">Total Amount</td>
+          <td colspan="4">{{number_format($total)}} Ks</td>
+        </tr>
     </tbody>
   </table>
 </body>
