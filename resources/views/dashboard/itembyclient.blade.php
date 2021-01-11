@@ -22,10 +22,10 @@
                         <th>{{ __("#")}}</th>
                         <th>{{ __("Codeno")}}</th>
                         <th>{{ __("Township")}}</th>
-                        <th>{{__("Receiver Name")}}</th>
-                        <th>{{__("Receiver Phone No")}}</th>
+                        <th>{{ __("Receiver Name")}}</th>
+                        <th>{{ __("Receiver Phone No")}}</th>
                         <th>{{ __("Way State")}}</th>
-                        <th>{{__("Deli Fees")}}</th>
+                        <th>{{ __("Deli Fees")}}</th>
                         <th>{{ __("Item Amount")}}</th>
                       </tr>
               </thead>
@@ -43,6 +43,7 @@
                   <td>{{$i++}}</td>
                   <td>{{$row->codeno}}
                     @if($row->paystatus == 2)
+                      @php $allpaid_color="text-danger"; @endphp
                       <span class="badge badge-info">allpaid</span>
                     @endif
                   </td>
@@ -73,7 +74,7 @@
                     @endif
 
                   </td>
-                  <td>{{number_format($row->delivery_fees)}}</td>
+                  <td class="{{$allpaid_color}}">{{number_format($row->delivery_fees)}}</td>
                   <td>{{number_format($row->deposit)}}</td>
                 </tr>
                 @endforeach
