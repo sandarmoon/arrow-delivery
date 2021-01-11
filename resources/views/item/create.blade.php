@@ -409,15 +409,20 @@
 
     $(".mytownship").change(function(){
       var id=$(this).val();
+      var status = $("input[name=rcity]:checked").val();
+      // alert(status)
+      if (status!=1) {
+        $('#InputAmount').val(1000);
+      }
       //console.log(id);
       $.ajaxSetup({
          headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
-        });
+      });
+
       $.post("/delichargebytown",{id:id},function(res){
         $("#InputDeliveryFees").val(res);
-
         var amount=Number($('#InputAmount').val()) | 0;
         var deposit=Number($('#InputDeposit').val()) | 0;
         if (amount>0 && deposit==0) {
@@ -496,7 +501,7 @@
       var id=$(this).val();
 
       if(id==1){
-        //alert("ok");
+        
         var today = new Date();
         var numberofdays = 3;
         today.setDate(today.getDate() + numberofdays); 
@@ -507,10 +512,12 @@
         //console.log(incityday);
         $(".pickdate").val(incityday);
         $('#InputDeposit').prop('disabled',false);
-        $("#InputDeposit").val();
+        $("#InputDeposit").val("");
         $('#InputDeposit').prop('readonly',false);
         $('#amountunpaid').removeAttr('checked');
         $('#amountpaid').attr('checked','checked');
+        $("#InputDeliveryFees").val("");
+        $("#InputAmount").val("");
         
       }else{
         //alert("ok");

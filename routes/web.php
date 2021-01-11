@@ -61,7 +61,9 @@ Route::middleware('auth')->group(function () {
 
   Route::get('way_history','MainController@way_history')->name('way_history');
   Route::get('pickup_history','MainController@pickup_history')->name('pickup_history');
-  Route::get('historydetails/{id}','MainController@historydetails')->name('historydetails');
+  Route::prefix('pickup_history')->group(function (){
+    Route::get('historydetails/{id}','MainController@historydetails')->name('historydetails');
+  });
 
   Route::get('debit/getdebitlistbyclient/{id}', 'MainController@getdebitlistbyclient')->name('debit.getdebitlistbyclient');
   Route::post('debit/getdebithistorybyclient', 'MainController@getdebithistorybyclient')->name('debit.getdebithistorybyclient');

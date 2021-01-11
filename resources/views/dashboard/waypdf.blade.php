@@ -3,9 +3,16 @@
 <head>
 	<title></title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link rel="stylesheet" href='https://mmwebfonts.comquas.com/fonts/?font=myanmar3' />
   <style type="text/css">
+    @font-face {
+      font-family: 'Myanmar3';
+      font-style: normal;
+      font-weight: normal;
+      src: url("/fonts/Myanmar3.ttf") format('truetype');
+    }
     .mmfont{
-      font-family: 'Zawgyi_One';
+      font-family: 'Myanmar3' !important;
     }
 
     .table-warning{
@@ -62,7 +69,7 @@
    			 <td>{{$way->item->township->name}}</td>
   			@endif
          	<td>{{$way->item->receiver_name}}</td>
-         	<td>{{$way->item->receiver_address}}</td>
+         	<td class="mmfont">{{$way->item->receiver_address}}</td>
          	<td>{{$way->item->receiver_phone_no}}</td>
           <td>{{number_format($way->item->deposit)}}</td>
           <td>{{number_format($way->item->delivery_fees)}}</td>

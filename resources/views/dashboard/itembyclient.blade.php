@@ -16,18 +16,18 @@
         <div class="tile">
           @php $mytime = Carbon\Carbon::now(); @endphp
             <div class="table-responsive">
-            <table class="table">
+            <table class="table table-bordered dataTable">
               <thead>
                 <tr>
-                        <th>{{ __("#")}}</th>
-                        <th>{{ __("Codeno")}}</th>
-                        <th>{{ __("Township")}}</th>
-                        <th>{{ __("Receiver Name")}}</th>
-                        <th>{{ __("Receiver Phone No")}}</th>
-                        <th>{{ __("Way State")}}</th>
-                        <th>{{ __("Deli Fees")}}</th>
-                        <th>{{ __("Item Amount")}}</th>
-                      </tr>
+                  <th>{{ __("#")}}</th>
+                  <th>{{ __("Codeno")}}</th>
+                  <th>{{ __("Township")}}</th>
+                  <th>{{ __("Receiver Name")}}</th>
+                  <th>{{ __("Receiver Phone No")}}</th>
+                  <th>{{ __("Way State")}}</th>
+                  <th>{{ __("Deli Fees")}}</th>
+                  <th>{{ __("Item Amount")}}</th>
+                </tr>
               </thead>
               <tbody>
                 @php $i=1;$total=0;$sub=0; $allpaid_color=""; @endphp
@@ -78,15 +78,16 @@
                   <td>{{number_format($row->deposit)}}</td>
                 </tr>
                 @endforeach
+
+              </tbody>
+              <tfoot>
                 <tr>
                   <td colspan="7">Total Amount</td>
-                  <td>{{number_format($total-$sub)}}</td>
+                  <td>{{number_format($total-$sub)}} Ks</td>
                 </tr>
-              </tbody>
+              </tfoot>
             </table>
           </div>
-           
-          
         </div>
       </div>
     </div>

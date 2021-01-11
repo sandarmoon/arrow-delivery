@@ -140,7 +140,11 @@
           {"data":'DT_RowIndex'},
           { "data": "schedule.pickup_date",},
           { "data": "schedule.quantity" },
-          { "data": "expense.guest_amount" },
+          { "data": "items",
+             render:function (data) {
+              return thousands_separators(data.reduce((acc, row) => acc + row.deposit, 0));
+             }
+          },
           { "data": "id",
                       sortable:false,
                       render:function(data){
