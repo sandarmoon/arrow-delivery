@@ -119,8 +119,14 @@
                           <tr>
                             <td>{{$i++}}</td>
                             <td>{{$item->receiver_name}} <span class="badge badge-dark">{{$item->receiver_phone_no}}</span></td>
-                            <td>{{$item->way->income->payment_type->name}}</td>
-                            <td>{{\Carbon\Carbon::parse($item->way->income->created_at)->format('d-m-Y')}}</td>
+                            @if(isset($item->way))
+                              <td>{{$item->way->income->payment_type->name}}</td>
+                              <td>{{\Carbon\Carbon::parse($item->way->income->created_at)->format('d-m-Y')}}</td>
+                            @else
+                              <td>{{"-"}}</td>
+                              <td>{{"-"}}</td>
+                            @endif
+                            
                             <td>
                               {{number_format($delifees)}}
                             </td>
