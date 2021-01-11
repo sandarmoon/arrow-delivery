@@ -104,14 +104,14 @@
                       <tbody>
                         @php $i=1; $total=0; @endphp
                         @foreach($incomes as $item)
-                          @php $delifees = 0; $deposit=0;@endphp
-                          @if($item->way->income->payment_type_id == 5)
+                          @php $delifees = 0; $deposit=0; @endphp
+                          @if(isset($item->way) && $item->way->income->payment_type_id == 5)
                             @php $delifees = 0; @endphp
                           @else
                             @php $delifees = $item->delivery_fees; @endphp
                           @endif
 
-                          @if($item->way->income->payment_type_id == 6)
+                          @if(isset($item->way) && $item->way->income->payment_type_id == 6)
                             @php $deposit = 0; @endphp
                           @else
                             @php $deposit = $item->deposit; @endphp
