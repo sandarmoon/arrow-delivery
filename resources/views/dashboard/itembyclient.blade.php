@@ -30,7 +30,7 @@
                       </tr>
               </thead>
               <tbody>
-                @php $i=1;$total=0;$sub=0; @endphp
+                @php $i=1;$total=0;$sub=0; $allpaid_color=""; @endphp
                 @foreach($items as $row)
                 @php 
                   $total+=$row->deposit;
