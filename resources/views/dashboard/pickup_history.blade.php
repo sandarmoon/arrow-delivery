@@ -56,19 +56,29 @@
               @role('client')
                 @php $i=1; @endphp
                 @foreach($pickups as $row)
+                @php
+                  $allpaid_delivery_fees = $unpaid_total_item_price = $pay_amount = $prepaid_amount = 0;
 
-                @php $sub=0; @endphp
-
-                @foreach($row->items as $item)
-                  @if($item->paystatus == 2)
-                    @php $sub += $item->delivery_fees; @endphp
-                  @endif
-                @endforeach
+                  foreach($row->items as $item){
+                    if ($item->paystatus==2) {
+                      $allpaid_delivery_fees += $item->delivery_fees;
+                    }else{
+                      $unpaid_total_item_price += $item->deposit;
+                    }
+                  }
+                  
+                  if (!isset($row->expense)) {
+                    $pay_amount = $unpaid_total_item_price;
+                  }else{
+                    $prepaid_amount = $row->expense->amount;
+                    $pay_amount = $unpaid_total_item_price-$row->expense->amount;
+                  }
+                  @endphp
                 <tr>
                   <td>{{$i++}}</td>
                   <td>{{\Carbon\Carbon::parse($row->schedule->pickup_date)->format('d-m-Y')}}</td>
                   <td>{{$row->schedule->quantity}}</td>
-                  <td>{{number_format($row->schedule->amount-$sub)}}</td>
+                  <td>{{number_format($pay_amount-$allpaid_delivery_fees)}} Ks</td>
                   
                   @if($row->items)
                   <td><a class="btn btn-primary btn-sm d-inline-block btnEdit " href="{{route('historydetails',$row->id)}}">Detail</a></td>

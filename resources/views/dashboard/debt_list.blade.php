@@ -103,24 +103,24 @@
                       </thead>
                       <tbody>
                         @php $i=1; $total=0; @endphp
-                        @foreach($incomes as $income)
+                        @foreach($incomes as $item)
                           @php $delifees = 0; $deposit=0;@endphp
-                          @if($income->payment_type_id == 5)
+                          @if($item->way->income->payment_type_id == 5)
                             @php $delifees = 0; @endphp
                           @else
-                            @php $delifees = $income->way->item->delivery_fees; @endphp
+                            @php $delifees = $item->delivery_fees; @endphp
                           @endif
 
-                          @if($income->payment_type_id == 6)
+                          @if($item->way->income->payment_type_id == 6)
                             @php $deposit = 0; @endphp
                           @else
-                            @php $deposit = $income->way->item->deposit; @endphp
+                            @php $deposit = $item->deposit; @endphp
                           @endif
                           <tr>
                             <td>{{$i++}}</td>
-                            <td>{{$income->way->item->receiver_name}} <span class="badge badge-dark">{{$income->way->item->receiver_phone_no}}</span></td>
-                            <td>{{$income->payment_type->name}}</td>
-                            <td>{{\Carbon\Carbon::parse($income->created_at)->format('d-m-Y')}}</td>
+                            <td>{{$item->receiver_name}} <span class="badge badge-dark">{{$item->receiver_phone_no}}</span></td>
+                            <td>{{$item->way->income->payment_type->name}}</td>
+                            <td>{{\Carbon\Carbon::parse($item->way->income->created_at)->format('d-m-Y')}}</td>
                             <td>
                               {{number_format($delifees)}}
                             </td>
@@ -146,7 +146,7 @@
                             <td>{{$carryfee->item->receiver_name}} <span class="badge badge-dark">{{$carryfee->item->receiver_phone_no}}</span></td>
                             <td>{{'Carry Fees'}}</td>
                             <td>{{number_format(0)}}</td>
-                            <td>{{number_format($carryfee->amount)}}</td>
+                            <td colspan="2">{{number_format($carryfee->amount)}}</td>
                             <td>{{number_format($carryfee->amount)}}</td>
                             @php $total += $carryfee->amount; @endphp
                           </tr>
@@ -165,43 +165,49 @@
                       <thead>
                         <tr>
                           <th>#</th>
-                          <th>{{ __("Description")}}</th>
                           <th>{{ __("Pickup Date")}}</th>
                           <th>{{ __("Item Qty")}}</th>
                           <th>{{ __("Amount")}}</th>
+                          <th>{{ __("Prepaid Amount")}}</th>
+                          <th>{{ __("Balance")}}</th>
                         </tr>
                       </thead>
                       <tbody>
                         @php $i=1; $etotal=0; @endphp
-                        @foreach($expenses as $expense)
-                        @if(count($incomes)>0 || count($rejects)>0 || count($carryfees)>0)
-                          @php $amount = $expense->amount; @endphp
-                        @else
-                          @php $amount = $expense->guest_amount; @endphp
-                        @endif
+                        @foreach($expenses as $row)
+                        @php
+                        $allpaid_delivery_fees = $unpaid_total_item_price = $pay_amount = $prepaid_amount = 0;
+
+                        foreach($row->items as $item){
+                          if ($item->paystatus==2 && $item->status==0) {
+                            $allpaid_delivery_fees += $item->delivery_fees;
+                          }else{
+                            $unpaid_total_item_price += $item->deposit;
+                          }
+                        }
+                        
+                        if (!isset($row->expense)) {
+                          $pay_amount = $unpaid_total_item_price;
+                        }else{
+                          $prepaid_amount = $row->expense->amount;
+                          $pay_amount = $unpaid_total_item_price-$row->expense->amount;
+                        }
+                        @endphp
                         <tr>
                           <td>{{$i++}}</td>
-                          <td>{{$expense->description}}</td>
                           <td>
-                            @if($expense->pickup)
-                              {{\Carbon\Carbon::parse($expense->pickup->created_at)->format('d-m-Y')}}
-                            @else
-                              {{'-'}}
-                            @endif
+                            {{\Carbon\Carbon::parse($row->created_at)->format('d-m-Y')}}
                           </td>
-                          <td>
-                            @if(isset($expense->pickup))
-                            {{count($expense->pickup->items)}}
-                            @else
-                            {{'-'}}
-                            @endif
-                          </td>
-                          <td>{{number_format($amount)}}</td>
-                          @php $etotal += $amount; @endphp
+                          <td>{{count($row->items)}}</td>
+                          <td>{{number_format($pay_amount)}}</td>
+                          <td>{{number_format($prepaid_amount)}}</td>
+                          <td>{{number_format($pay_amount)}}</td>
+
+                          @php $etotal += $pay_amount; @endphp
                         </tr>
                         @endforeach
                         <tr>
-                          <td colspan="4">{{ __("Total")}}:</td>
+                          <td colspan="5">{{ __("Total")}}:</td>
                           <td>{{number_format($etotal)}} Ks</td>
                         </tr>
                       </tbody>

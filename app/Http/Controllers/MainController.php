@@ -174,11 +174,19 @@ class MainController extends Controller
 
     if($rolename == "client") {
       $client_id=Auth::user()->client->id;
-      $expenses = Expense::where('client_id',$client_id)->where('status',2)->where('expense_type_id',1)->with('expense_type')->get();
+      // $expenses = Expense::where('client_id',$client_id)->where('status',2)->where('expense_type_id',1)->with('expense_type')->get();
 
-      $incomes = Income::whereIn('payment_type_id',[4,5,6])->with('way.item.pickup.schedule')->whereHas('way.item.pickup.schedule',function ($query) use ($client_id){
-        $query->where('client_id', $client_id);
-      })->where('amount',null)->get();
+      $expenses = Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id){
+        $query->where('client_id',$client_id);
+      })->with('items')->with('expense')->where('status',4)->get();
+
+      // $incomes = Income::whereIn('payment_type_id',[4,5,6])->with('way.item.pickup.schedule')->whereHas('way.item.pickup.schedule',function ($query) use ($client_id){
+      //   $query->where('client_id', $client_id);
+      // })->where('amount',null)->get();
+      
+      $incomes = Item::whereHas('pickup.schedule', function ($query) use ($client_id){
+        $query->where('client_id',$client_id);
+      })->where('paystatus',2)->where('status',0)->with('way')->with('township')->get();
 
       $rejects =  Way::with('item.pickup.schedule')
       ->whereHas('item.pickup.schedule', function($query) use ($client_id){
@@ -1094,7 +1102,7 @@ public function profit(Request $request){
 
   public function waybydeliveryman(Request $request){
     $id=$request->id;
-    $ways = Way::where('delivery_man_id',$id)->where('status_code',005)->orderBy('id','desc')->with('item.pickup.schedule.client.user')->get();
+    $ways = Way::where('delivery_man_id',$id)->with('item.township')->where('status_code',005)->orderBy('id','desc')->with('item.pickup.schedule.client.user')->get();
     return $ways;
   }
 
