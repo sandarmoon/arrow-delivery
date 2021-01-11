@@ -12,5 +12,6 @@ return [
       'R' => 'Myanmar3.ttf',
     ]
     // ...add as many as you want.
-  ]
+  ],
+  'default_font' => 'mm3'
 ];
