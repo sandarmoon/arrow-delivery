@@ -353,9 +353,9 @@
 
             for(let item of row.items){
               if (item.paystatus==2 && item.status==0) {
-                allpaid_delivery_fees += item.delivery_fees
+                allpaid_delivery_fees += Number(item.delivery_fees)
               }else{
-                unpaid_total_item_price += item.deposit
+                unpaid_total_item_price += Number(item.deposit)
               }
             }
             // console.log(allpaid_delivery_fees)
@@ -365,7 +365,7 @@
               pay_amount = unpaid_total_item_price
             }else{
               prepaid_amount = row.expense.amount
-              pay_amount = unpaid_total_item_price-row.expense.amount
+              pay_amount = unpaid_total_item_price-Number(row.expense.amount)
             }
 
             html +=`<tr>
