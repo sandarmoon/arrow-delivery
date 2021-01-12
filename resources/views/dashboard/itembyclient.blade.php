@@ -45,6 +45,11 @@
                     @if($row->paystatus == 2)
                       @php $allpaid_color="text-danger"; @endphp
                       <span class="badge badge-info">allpaid</span>
+                    @elseif($row->paystatus == 3)
+                      @php $allpaid_color=""; @endphp
+                      <span class="badge badge-info">only deli</span>
+                    @else
+                      @php $allpaid_color=""; @endphp
                     @endif
                   </td>
                   <td>{{$row->township->name}}</td>
