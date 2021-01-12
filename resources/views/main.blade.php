@@ -143,10 +143,9 @@
         <li><a class="app-menu__item {{ Request::is('debt_list') ? 'active' : '' }}" href="{{route('debt_list')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">{{ __('Debit List') }}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('staff*') ? 'active' : '' }}" href="{{route('staff.index')}}"><i class="app-menu__icon fa fa-users"></i><span class="app-menu__label">{{ __("Staff")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('debt_history') ? 'active' : '' }}" href="{{route('debt_history')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">{{ __("Debit History")}}</span></a></li>
-         <li><a class="app-menu__item {{ Request::is('way_history') ? 'active' : '' }}" href="{{route('way_history')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">{{ __("Ways History")}}</span></a></li>
-         <li>
-           <a class="app-menu__item {{ Request::is('banktransfer') ? 'active' : '' }}" href="{{route('banktransfer')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">{{ __("Banks Transfer")}}</span></a>
-         </li>
+        <li>
+          <a class="app-menu__item {{ Request::is('banktransfer') ? 'active' : '' }}" href="{{route('banktransfer')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">{{ __("Banks Transfer")}}</span></a>
+        </li>
         @endrole
 
         <!-- For Staff -->
@@ -162,6 +161,8 @@
         <li><a class="app-menu__item {{ Request::is('incomes*') ? 'active' : '' }}" href="{{route('incomes')}}"><i class="app-menu__icon fa fa-files-o"></i><span class="app-menu__label">{{ __("Income")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('expenses*') ? 'active' : '' }}" href="{{route('expenses.index')}}"><i class="app-menu__icon fa fa-files-o"></i><span class="app-menu__label">{{ __("Expense")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('pickup_history*') ? 'active' : '' }}" href="{{route('pickup_history')}}"><i class="app-menu__icon fa fa-list-alt"></i><span class="app-menu__label">{{ __("Pickup History")}}</span></a></li>
+        <li><a class="app-menu__item {{ Request::is('way_history') ? 'active' : '' }}" href="{{route('way_history')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">{{ __("Ways History")}}</span></a></li>
+        {{-- <li><a class="app-menu__item {{ Request::is('Daily Fix') ? 'active' : '' }}" href="{{route('daily_fix')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">{{ __("Daily Fix")}}</span></a></li> --}}
         @endrole
 
         <!-- For Delivery Men -->

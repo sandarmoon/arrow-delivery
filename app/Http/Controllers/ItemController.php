@@ -225,8 +225,8 @@ class ItemController extends Controller
 
       if($validator){
         $item->codeno=$request->codeno;
-        $item->receiver_name=$request->receiver_name;
-        $item->receiver_address=$request->receiver_address;
+        $item->receiver_name=tounicode($request->receiver_name);
+        $item->receiver_address=tounicode($request->receiver_address);
         $item->receiver_phone_no=$request->receiver_phoneno;
         $item->township_id=$request->receiver_township;
         $item->expired_date=$request->expired_date;

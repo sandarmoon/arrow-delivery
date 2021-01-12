@@ -104,7 +104,9 @@
               return "success"
             }else if(data=="002"){
               return "return"
-            }else{
+            }else if(data=="005"){
+              return "pending"
+            }else if(data=="003"){
               return "reject"
             }
            }

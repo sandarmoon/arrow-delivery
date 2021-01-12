@@ -992,8 +992,8 @@ public function profit(Request $request){
     $sdate = $request->sdate;
     $edate = $request->edate;
    // dd($sdate);
-    $ways = Way::withTrashed()->with('item.pickup.schedule.client.user','delivery_man.user')->where('status_code','!=','005')->whereBetween('updated_at', [$sdate.' 00:00:00',$edate.' 23:59:59'])->get();
-   // dd($ways);
+    $ways = Way::withTrashed()->with('item.pickup.schedule.client.user','delivery_man.user')->whereBetween('updated_at', [$sdate.' 00:00:00',$edate.' 23:59:59'])->get();
+   // ->where('status_code','!=','005')
     return Datatables::of($ways)->addIndexColumn()->toJson();
   }
 
@@ -1141,13 +1141,38 @@ public function profit(Request $request){
   }
 
   public function pendingwaysbyoffice(Request $request){
-     $id=$request->id;
+    $id=$request->id;
     //dd($id);
     $ways = Way::where('delivery_man_id',Auth::user()->delivery_man->id)->where('status_code','!=',001)->where('status_code','!=',002)->where('deleted_at',null)->orderBy('id','desc')->with('item.pickup.schedule.client.user')->with('item.SenderGate')->with('item.SenderPostoffice')->with('item.township')->whereHas('item',function ($query) use ($id){
         $query->where('sender_postoffice_id', $id);
-      })->get();
+    })->get();
     //dd($ways);
-
     return $ways;
+  }
+
+  public function daily_fix($value=''){
+    $clients=DB::table('clients')
+            ->join('users', 'users.id', '=', 'clients.user_id')
+            ->select('clients.*', 'users.name as clientname')
+            ->orderBy('users.name')
+            ->get();
+    return view('dashboard.daily_fix',compact('clients'));
+  }
+
+  public function getsuccessways(Request $request){
+    $client_id = $request->client_id;
+    $start_date = $request->inputStartDate;
+    $end_date = $request->inputEndDate;
+    if ($start_date != null && $end_date != null) {
+      $successways = Way::whereBetween('delivery_date', [$start_date,$end_date])->whereHas('item.pickup.schedule',function ($query) use ($client_id){
+        $query->where('client_id',$client_id);
+      })->with('item')->get();
+    }else{
+      $successways = Way::whereNotNull('delivery_date')->whereHas('item.pickup.schedule',function ($query) use ($client_id){
+        $query->where('client_id',$client_id);
+      })->with('item')->get();
+    }
+
+    return Datatables::of($successways)->addIndexColumn()->toJson();
   }
 }

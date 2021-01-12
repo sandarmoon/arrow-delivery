@@ -148,6 +148,9 @@ Route::middleware('auth')->group(function () {
   Route::post('makeDelivered','MainController@makeDeliver')->name('makeDeliver');
   Route::post('retuenDeliver','MainController@retuenDeliver')->name('retuenDeliver');
   Route::post('rejectDeliver','MainController@rejectDeliver')->name('rejectDeliver');
+
+  Route::get('daily_fix','MainController@daily_fix')->name('daily_fix');
+  Route::post('getsuccessways', 'MainController@getsuccessways')->name('getsuccessways');
 });
 
 Route::resource('profiles','ProfileController');
