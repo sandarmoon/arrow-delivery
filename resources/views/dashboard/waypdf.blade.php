@@ -62,8 +62,8 @@
   			@else
    			 <td>{{$way->item->township->name}}</td>
   			@endif
-         	<td class="mmfont">{{$way->item->receiver_name}}</td>
-         	<td class="mmfont">{{$way->item->receiver_address}}</td>
+         	<td class="mmfont">{{strip_tags(zawuni($way->item->receiver_name))}}</td>
+         	<td class="mmfont">{{strip_tags(zawuni($way->item->receiver_address))}}</td>
          	<td>{{$way->item->receiver_phone_no}}</td>
           <td>{{number_format($way->item->deposit)}}</td>
           <td>{{number_format($way->item->delivery_fees)}}</td>
