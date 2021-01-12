@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <style type="text/css">
     .mmfont{
-      font-family: 'Zawgyi_One'
+      font-family: 'Myanmar3'
     }
 
     .table-warning{
