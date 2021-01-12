@@ -4,11 +4,16 @@
 	<title></title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <style type="text/css">
+    .mmfont{
+      font-family: 'Zawgyi_One'
+    }
+
     .table-warning{
       background-color: #ffeeba;
     }
   </style>
 </head>
+{!! Zawuni::includeFiles() !!}
 <body>
 	<h1>Ways of {{$data['deliveryman']->user->name}}</h1>
 	<table border="1" cellpadding="5" cellspacing="0">
@@ -57,8 +62,8 @@
   			@else
    			 <td>{{$way->item->township->name}}</td>
   			@endif
-         	<td>{{$way->item->receiver_name}}</td>
-         	<td style="font-family: Myanmar3 !important;">{{$way->item->receiver_address}}</td>
+         	<td class="mmfont">{{strip_tags(zawuni($way->item->receiver_name))}}</td>
+         	<td class="mmfont">{{strip_tags(zawuni($way->item->receiver_address))}}</td>
          	<td>{{$way->item->receiver_phone_no}}</td>
           <td>{{number_format($way->item->deposit)}}</td>
           <td>{{number_format($way->item->delivery_fees)}}</td>

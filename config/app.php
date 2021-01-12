@@ -177,6 +177,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+        PhpJunior\Zawuni\ZawuniServiceProvider::class,
     ],
 
     /*

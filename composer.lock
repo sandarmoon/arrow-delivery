@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c54e05dfac831c3e13209f4e711480e1",
+    "content-hash": "106d049632dcbe5be0749513d3b525cd",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1090,6 +1090,51 @@
                 "source": "https://github.com/guzzle/psr7/tree/1.7.0"
             },
             "time": "2020-09-30T07:37:11+00:00"
+        },
+        {
+            "name": "kyawnaingtun/tounicode",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/KyawNaingTun/tounicode.git",
+                "reference": "3076e63a8970ce68f5c4ea2f18fec3de7d61ea76"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/KyawNaingTun/tounicode/zipball/3076e63a8970ce68f5c4ea2f18fec3de7d61ea76",
+                "reference": "3076e63a8970ce68f5c4ea2f18fec3de7d61ea76",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Kyawnaingtun\\Tounicode\\": "src"
+                },
+                "files": [
+                    "src/convert-helper.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kyaw Naing Tun",
+                    "email": "kyawnainghtun93@gmail.com"
+                }
+            ],
+            "description": "\"Laravel zawgyi to unicode converter\"",
+            "homepage": "https://github.com/KyawNaingTun/tounicode",
+            "support": {
+                "issues": "https://github.com/KyawNaingTun/tounicode/issues",
+                "source": "https://github.com/KyawNaingTun/tounicode/tree/v3.0.1"
+            },
+            "time": "2020-10-20T03:15:56+00:00"
         },
         {
             "name": "laravel/framework",
@@ -2672,6 +2717,56 @@
                 "source": "https://github.com/PhenX/php-svg-lib/tree/master"
             },
             "time": "2019-09-11T20:02:13+00:00"
+        },
+        {
+            "name": "php-junior/zawuni",
+            "version": "v1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPJunior/laravel-zawgyi-uni.git",
+                "reference": "425bfb4d79ce3f609e637f71844c310eee4cc598"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPJunior/laravel-zawgyi-uni/zipball/425bfb4d79ce3f609e637f71844c310eee4cc598",
+                "reference": "425bfb4d79ce3f609e637f71844c310eee4cc598",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpJunior\\Zawuni\\": "src/"
+                },
+                "files": [
+                    "helper/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nyi Nyi Lwin",
+                    "email": "nyinyilwin1992@hotmail.com"
+                }
+            ],
+            "description": "Laravel Zawgyi Unicode",
+            "keywords": [
+                "converter",
+                "laravel",
+                "myanmar-font",
+                "unicode",
+                "zawgyi"
+            ],
+            "support": {
+                "issues": "https://github.com/PHPJunior/laravel-zawgyi-uni/issues",
+                "source": "https://github.com/PHPJunior/laravel-zawgyi-uni/tree/master"
+            },
+            "time": "2017-08-05T12:38:46+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
@@ -8513,7 +8608,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "kyawnaingtun/tounicode": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
