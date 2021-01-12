@@ -458,12 +458,12 @@
 
             let payment_type = "";
             let allpaid = "";
-            total += v.item.deposit+v.item.delivery_fees
+            total += Number(v.item.deposit)+Number(v.item.delivery_fees)
 
             if (v.item.paystatus==2) {
               payment_type = "allpaid"
               allpaid = "table-warning"
-              total -= v.item.delivery_fees
+              total -= Number(v.item.delivery_fees)
             }else if (v.item.paystatus==3) {
               payment_type = "only deli"
             }else if (v.item.paystatus==4) {
