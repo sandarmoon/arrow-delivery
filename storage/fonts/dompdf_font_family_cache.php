@@ -91,4 +91,11 @@
     'italic' => $fontDir . '/Zawgyi_One',
     'bold_italic' => $fontDir . '/Zawgyi_One',
   ),
+
+  'pyidaungsu' => array(
+    'normal' => $fontDir . '/Pyidaungsu',
+    'bold' => $fontDir . '/Pyidaungsu',
+    'italic' => $fontDir . '/Pyidaungsu',
+    'bold_italic' => $fontDir . '/Pyidaungsu',
+  ),
 ) ?>
