@@ -142,7 +142,7 @@
           { "data": "schedule.quantity" },
           { "data": "items",
              render:function (data) {
-              return thousands_separators(data.reduce((acc, row) => acc + row.deposit, 0));
+              return thousands_separators(data.reduce((acc, row) => acc + Number(row.deposit), 0));
              }
           },
           { "data": "id",
