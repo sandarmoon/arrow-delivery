@@ -495,7 +495,7 @@
           total2  = Number(totalreject)+Number(totalincome)+Number(totalcarryfees);
 
           html2 +=`<tr>
-                    <td colspan="5">Total: </td>
+                    <td colspan="6">Total: </td>
                     <td>${thousands_separators(total2)} Ks</td>
                   </tr>`;
 
