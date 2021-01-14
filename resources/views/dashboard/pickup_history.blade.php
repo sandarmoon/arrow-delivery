@@ -142,7 +142,14 @@
           { "data": "schedule.quantity" },
           { "data": "items",
              render:function (data) {
-              return thousands_separators(data.reduce((acc, row) => acc + Number(row.deposit), 0));
+              let total=allpaid_delivery_fees=0;
+              for(row of data){
+                if (row.paystatus == 2 && row.status==0) {
+                  allpaid_delivery_fees += Number(row.delivery_fees)
+                }
+                  
+              }
+              return thousands_separators(data.reduce((acc, row) => acc + Number(row.deposit), 0) - allpaid_delivery_fees);
              }
           },
           { "data": "id",
