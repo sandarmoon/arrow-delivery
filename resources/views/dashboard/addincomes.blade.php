@@ -138,6 +138,7 @@
                     <th>Delivered Date</th>
                     <th>Delivery Fees</th>
                     <th>Item Price</th>
+                    <th>Subtotal</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -209,9 +210,11 @@
                       if(row.item.other_fees > 0){
                         html += `+ ${thousands_separators(row.item.other_fees)}`
                       }
-                      html+=`</td><td>${thousands_separators(row.item.deposit)}</td>`
+                      html+=`</td><td>${thousands_separators(row.item.deposit)}</td>
+                              <td>${thousands_separators(Number(row.item.deposit)+Number(row.item.delivery_fees)+Number(row.item.other_fees))}</td>`
                     }else{
                       html+=`<td>-</td>
+                            <td>-</td>
                             <td>-</td>
                             <td>-</td>`
                     }
@@ -227,7 +230,7 @@
           }
           html+=`<tr>
                     <td colspan="5">Total:</td>
-                    <td colspan="3">${thousands_separators(total)} Ks</td>
+                    <td colspan="4">${thousands_separators(total)} Ks</td>
                   </tr>`;
           $('#incomeform').html(html);
         })

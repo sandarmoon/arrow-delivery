@@ -70,6 +70,7 @@
                     <th>{{ __("Delivered Date")}}</th>
                     <th>{{ __("Delivery Fees")}}</th>
                     <th>{{ __("Item Price")}}</th>
+                    <th>{{ __("Bus Gate / Other Charges")}}</th>
                     <th>{{ __("Total Amount")}}</th>
                   </tr>
                 </thead>
@@ -404,6 +405,7 @@
           for(let row of response.rejects){
             // console.log(row)
             let delivery_fees = 0;
+            let busgate_othercharges = 0;
 
             html2 +=`<tr>
                       <td>
@@ -421,13 +423,14 @@
                       <td>-</td>
                       <td>${thousands_separators(delivery_fees)}</td>
                       <td>${thousands_separators(row.item.deposit)}</td>
+                      <td>${thousands_separators(busgate_othercharges)}</td>
                       <td>${thousands_separators(Number(row.item.deposit) + delivery_fees)} Ks</td>
                   </tr>`;
                   totalreject += Number(row.item.deposit) + Number(delivery_fees);
           }
 
           for(let row of response.incomes){
-            let delivery_fees=deposit=0;
+            let delivery_fees=deposit=busgate_othercharges=0;
 
             if(row.paystatus == 2 && row.status == 0){
               delivery_fees = Number(row.delivery_fees);
@@ -463,13 +466,14 @@
                       <td>${delivered_date}</td>
                       <td>${thousands_separators(delivery_fees)}</td>
                       <td>${thousands_separators(deposit)}</td>
+                      <td>${thousands_separators(busgate_othercharges)}</td>
                       <td>${thousands_separators(delivery_fees+deposit)} Ks</td>
                     </tr>`;
                   totalincome += Number(delivery_fees) + Number(deposit);
           }
 
           for(let row of response.carryfees){
-            // console.log(row)
+            let busgate_othercharges = row.amount;
             html2 +=`<tr>
                       <td>
                         <div class="animated-checkbox">
@@ -481,10 +485,11 @@
                       <td>${row.item.receiver_name} - ${row.item.township.name} <span class="badge badge-info">carryfees</span></td>
                       <td></td>
                       <td>${0}</td>
-                      <td>${thousands_separators(row.amount)}</td>
-                      <td>${thousands_separators(row.amount)} Ks</td>
+                      <td>${0}</td>
+                      <td>${thousands_separators(busgate_othercharges)}</td>
+                      <td>${thousands_separators(busgate_othercharges)} Ks</td>
                   </tr>`;
-                  totalcarryfees += Number(row.amount);
+                  totalcarryfees += Number(busgate_othercharges);
           }
 
           total2  = Number(totalreject)+Number(totalincome)+Number(totalcarryfees);

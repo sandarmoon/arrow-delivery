@@ -109,6 +109,7 @@
                       <tr>
                         <th>{{ __("#")}}</th>
                         <th>{{ __("Codeno")}}</th>
+                        <th>{{ __("Customer Name")}}</th>
                         <th>{{ __("Township")}}</th>
                         <th>{{ __("Delivery Man")}}</th>
                         <th>{{ __("Expired Date")}}</th>
@@ -136,6 +137,7 @@
                             <span class="badge badge-danger">{{'reject'}}</span>
                           @endif
                         </td>
+                        <td class="align-middle">{{$way->item->receiver_name}}</td>
                         <td class="align-middle">{{$way->item->township->name}}</td>
                         <td class="text-danger align-middle">
                           {{$way->delivery_man->user->name}} 
@@ -185,13 +187,14 @@
                     <thead>
                       <tr>
                         <th>{{ __("Codeno")}}</th>
+                        <th>{{ __("Client")}}</th>
                         <th>{{ __("Receiver Name")}}</th>
                         <th>{{ __("Full Address")}}</th>
                         <th>{{ __("Receiver Phone No")}}</th>
                         <th>{{ __("Item Price")}}</th>
                         <th>{{ __("Deli Fees")}}</th>
                         <th>{{ __("Other Charges")}}</th>
-                        <th>{{ __("Client")}}</th>
+                        <th>{{ __("Subtotal")}}</th>
                       </tr>
                     </thead>
                     <tbody class="tbody">
@@ -472,18 +475,19 @@
 
             html+=`<tr class="${allpaid}">
                   <td class="align-middle">${v.item.codeno} <span class="badge badge-danger badge-pill">${payment_type}</span></td>
+                  <td class="align-middle">${v.item.pickup.schedule.client.user.name}</br>(${v.item.pickup.schedule.client.phone_no})</td>
                   <td class="align-middle">${v.item.receiver_name}</td>
                   <td class="align-middle">${v.item.receiver_address}</td>
                   <td class="align-middle">${v.item.receiver_phone_no}</td>
                   <td class="align-middle">${thousands_separators(v.item.deposit)}</td>
                   <td class="align-middle">${thousands_separators(v.item.delivery_fees)}</td>
                   <td class="align-middle">${thousands_separators(v.item.other_fees)}</td>
-                  <td class="align-middle">${v.item.pickup.schedule.client.user.name}</br>(${v.item.pickup.schedule.client.phone_no})</td>
+                  <td class="align-middle">${thousands_separators(Number(v.item.deposit)+Number(v.item.delivery_fees)+Number(v.item.other_fees))}</td>
                 </tr>`
           })
 
           html+=`<tr>
-                  <td colspan="4">Total Amount</td>
+                  <td colspan="5">Total Amount</td>
                   <td colspan="4">${thousands_separators(total)} Ks</td>
                 </tr>`;
           $(".tbody").html(html);
