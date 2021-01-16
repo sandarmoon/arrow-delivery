@@ -156,7 +156,13 @@
                           @endif
                         </td>
                         <td class="align-middle">{{Carbon\Carbon::parse($way->item->expired_date)->format('d-m-Y')}}</td>
-                        <td class="align-middle">{{$way->item->pickup->schedule->client->user->name}}</td>
+                        <td class="align-middle">
+                        @if(isset($way->item->pickup->schedule))
+                        {{$way->item->pickup->schedule->client->user->name}}
+                        @else
+                        {{'-'}}
+                        @endif
+                        </td>
                         <td class="align-middle">{{$way->item->receiver_name}}</td>
                         <td class="align-middle">{{$way->item->township->name}}</td>
                         <td class="text-danger align-middle">
