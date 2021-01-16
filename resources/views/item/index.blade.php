@@ -61,7 +61,7 @@
                           </div>
                         </td>
                         <td class="align-middle">
-                          {{$row->codeno}}
+                          <span class="d-block">{{$row->codeno}}</span>
                           @if($row->paystatus == "1")
                             <span class="badge badge-info">{{'unpaid'}}</span>
                           @elseif($row->paystatus == "2")
@@ -91,13 +91,13 @@
                         </td>
                         <td class="align-middle">{{number_format($row->deposit)}}</td>
                         <td class="align-middle">{{number_format($row->delivery_fees)}}
-                          @if(($row->paystatus == "2" || $row->paystatus == "4" ) && $row->status == 1)
+                          @if(($row->paystatus == "2" || $row->paystatus == "4" ) && ($row->status == 1))
                             <span class="badge badge-success badge-pill">paid</span>
                           @endif
                         </td>
                         <td class="align-middle">{{number_format($row->other_fees)}}</td>
                         <td class="mytd align-middle">
-                          @if(($row->paystatus == "2" || $row->paystatus == "4" ) && $row->status == 0)
+                          @if(($row->paystatus == "2" || $row->paystatus == "4" ) && ($row->status == 0))
                           <form action="{{ route('items.paidfull') }}" method="POST" class="d-inline-block">
                             @csrf
                             <input type="hidden" name="id" value="{{$row->id}}">
@@ -146,7 +146,8 @@
                         <td class="align-middle">
                           {{$i++}}
                         </td>
-                        <td class="align-middle">{{$way->item->codeno}}  
+                        <td class="align-middle">
+                          <span class="d-block">{{$way->item->codeno}}</span>  
                           @if($way->status_code == '001')
                             <span class="badge badge-info">{{'success'}}</span>
                           @elseif($way->status_code == '002')
@@ -166,7 +167,7 @@
                         <td class="align-middle">{{$way->item->receiver_name}}</td>
                         <td class="align-middle">{{$way->item->township->name}}</td>
                         <td class="text-danger align-middle">
-                          {{$way->delivery_man->user->name}} 
+                          <span class="d-block">{{$way->delivery_man->user->name}}</span> 
                           @foreach($data as $dd)
                             @if($dd->id==$way->id)
                               <span class="badge badge-info seen">seen</span>
@@ -180,12 +181,9 @@
                           <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$way->item->id}}">{{ __("Detail")}}</a>
                           @if($way->status_code == '005')
                             <a href="{{route('items.edit',$way->item->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
-                            {{-- <a href="#" class="btn btn-sm btn-warning wayedit" data-id="{{$way->id}}">{{ __("Edit")}}</a>
-                            <a href="{{route('deletewayassign',$way->id)}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">{{ __("Delete")}}</a> --}}
                           @endif
                         </td>
                       </tr>
-                      
                       @endforeach
                     </tbody>
                   </table>
@@ -212,10 +210,9 @@
                     <thead>
                       <tr>
                         <th>{{ __("Codeno")}}</th>
-                        <th>{{ __("Client")}}</th>
-                        <th>{{ __("Receiver Name")}}</th>
-                        <th>{{ __("Full Address")}}</th>
-                        <th>{{ __("Receiver Phone No")}}</th>
+                        <th>{{ __("Client Info")}}</th>
+                        <th>{{ __("Receiver Info")}}</th>
+                        <th>{{ __("Receiver Address")}}</th>
                         <th>{{ __("Item Price")}}</th>
                         <th>{{ __("Deli Fees")}}</th>
                         <th>{{ __("Other Charges")}}</th>
@@ -409,7 +406,6 @@
       //check detail
       $("#checktable tbody").on('click','.detail',function(){
         var id=$(this).data('id');
-        //console.log(id);
         $('#itemDetailModal').modal('show');
         $.ajaxSetup({
          headers: {
@@ -486,12 +482,12 @@
 
             let payment_type = "";
             let allpaid = "";
-            total += Number(v.item.deposit)+Number(v.item.delivery_fees)
+            total += Number(v.item.deposit)+Number(v.item.delivery_fees)+Number(v.item.other_fees)
 
             if (v.item.paystatus==2) {
               payment_type = "allpaid"
               allpaid = "table-warning"
-              total -= Number(v.item.delivery_fees)
+              total -= (Number(v.item.delivery_fees) + Number(v.item.other_fees))
             }else if (v.item.paystatus==3) {
               payment_type = "only deli"
             }else if (v.item.paystatus==4) {
@@ -500,10 +496,12 @@
 
             html+=`<tr class="${allpaid}">
                   <td class="align-middle">${v.item.codeno} <span class="badge badge-danger badge-pill">${payment_type}</span></td>
-                  <td class="align-middle">${v.item.pickup.schedule.client.user.name}</br>(${v.item.pickup.schedule.client.phone_no})</td>
-                  <td class="align-middle">${v.item.receiver_name}</td>
+                  <td class="align-middle"><span class="d-block">${v.item.pickup.schedule.client.user.name}</span>(${v.item.pickup.schedule.client.phone_no})</td>
+                  <td class="align-middle">
+                    <span class="d-block">${v.item.receiver_name}</span>
+                    (${v.item.receiver_phone_no})
+                  </td>
                   <td class="align-middle">${v.item.receiver_address}</td>
-                  <td class="align-middle">${v.item.receiver_phone_no}</td>
                   <td class="align-middle">${thousands_separators(v.item.deposit)}</td>
                   <td class="align-middle">${thousands_separators(v.item.delivery_fees)}</td>
                   <td class="align-middle">${thousands_separators(v.item.other_fees)}</td>
@@ -512,7 +510,7 @@
           })
 
           html+=`<tr>
-                  <td colspan="5">Total Amount</td>
+                  <td colspan="4">Total Amount</td>
                   <td colspan="4">${thousands_separators(total)} Ks</td>
                 </tr>`;
           $(".tbody").html(html);

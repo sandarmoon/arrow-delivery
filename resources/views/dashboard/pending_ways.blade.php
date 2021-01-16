@@ -214,13 +214,13 @@
             </p>
             <p class="card-text">
               @if($row->item->paystatus==1)
-                {{ __("Amount")}}: {{$row->item->amount}} Ks
+                {{ __("Amount")}}: {{number_format($row->item->deposit+$row->item->delivery_fees+$row->item->other_fees)}} Ks
                {{-- <span class="badge badge-success">Unpaid!</span> --}}
               @elseif($row->item->paystatus==3)
-                {{ __("Amount")}}: {{$row->item->delivery_fees}} Ks
+                {{ __("Amount")}}: {{number_format($row->item->delivery_fees+$row->item->other_fees)}} Ks
                <span class="badge badge-success">Only Deli!</span>
               @elseif($row->item->paystatus==4)
-                {{ __("Amount")}}: {{$row->item->deposit}} Ks
+                {{ __("Amount")}}: {{number_format($row->item->deposit)}} Ks
                <span class="badge badge-success">Only Item Price!</span>
               @else
                <span class="badge badge-success">All Paid!</span>

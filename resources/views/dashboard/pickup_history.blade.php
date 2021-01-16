@@ -118,6 +118,14 @@
       return num_parts.join(".");
     }
 
+    // Y/M/D into D/M/Y
+    function formatDate (input) {
+      var datePart = input.match(/\d+/g),
+      year = datePart[0].substring(0,4), // get only two digits
+      month = datePart[1], day = datePart[2];
+      return day+'-'+month+'-'+year;
+    }
+
     $('.search_btn').click(function () {
       //alert("ok");
       var sdate = $('#InputStartDate').val();
@@ -141,7 +149,11 @@
           },
         "columns": [
           {"data":'DT_RowIndex'},
-          { "data": "schedule.pickup_date"},
+          { "data": "schedule.pickup_date",
+            render:function (data) {
+              return formatDate(data)
+            }
+          },
           { "data": null,
             render:function (data) {
               return client_name

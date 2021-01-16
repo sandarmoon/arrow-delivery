@@ -11,6 +11,10 @@
     .table-warning{
       background-color: #ffeeba;
     }
+
+    .d-block{
+      display: block;
+    }
   </style>
 </head>
 {!! Zawuni::includeFiles() !!}
@@ -20,15 +24,14 @@
     <thead>
       <tr>
       	<th>No</th>
-        <th>Item Cod</th>
-        <th>Delivered Township</th>
-        <th>Receiver Name</th>
-        <th>Full Address</th>
-        <th>Receiver Phone No</th>
+        <th>Codeno</th>
+        <th>Client Info</th>
+        <th>Receiver Info</th>
+        <th>Receiver Address</th>
         <th>Item Price</th>
         <th>Deli Fees</th>
         <th>Other Charges</th>
-        <th>Client</th>
+        <th>Subtotal</th>
       </tr>
     </thead>
 
@@ -38,12 +41,12 @@
         @php
           $allpaid = "";
           $payment_type = "";
-          $total += $way->item->deposit+$way->item->delivery_fees;
+          $total += $way->item->deposit+$way->item->delivery_fees+$way->item->other_fees;
 
           if ($way->item->paystatus==2) {
             $payment_type = "(allpaid)";
             $allpaid = "table-warning";
-            $total -= $way->item->delivery_fees;
+            $total -= ($way->item->delivery_fees+$way->item->other_fees);
           }elseif ($way->item->paystatus==3) {
             $payment_type = "(only deli)";
           }elseif ($way->item->paystatus==4) {
@@ -53,29 +56,26 @@
         <tr class="{{$allpaid}}">
          	<td>{{$i++}}</td>
          	<td>
-            {{$way->item->codeno}}{{$payment_type}}
+            <span class="d-block">{{$way->item->codeno}}</span>{{$payment_type}}
           </td>
-         	@if($way->item->sender_gate_id != null)
-    			<td>{{$way->item->SenderGate->name}}</td>
-  			@elseif($way->item->sender_postoffice_id != null)
-   				<td> {{$way->item->SenderPostoffice->name}}</td>
-  			@else
-   			 <td>{{$way->item->township->name}}</td>
-  			@endif
-         	<td class="mmfont">{{strip_tags(zawuni($way->item->receiver_name))}}</td>
+          <td>
+            {{$way->item->pickup->schedule->client->user->name}}<br>
+            ({{$way->item->pickup->schedule->client->phone_no}})
+          </td>
+         	
+         	<td class="mmfont">
+            <span class="d-block">{{strip_tags(zawuni($way->item->receiver_name))}}</span>
+            {{'('.$way->item->receiver_phone_no.')'}}
+          </td>
          	<td class="mmfont">{{strip_tags(zawuni($way->item->receiver_address))}}</td>
-         	<td>{{$way->item->receiver_phone_no}}</td>
-          <td>{{number_format($way->item->deposit)}}</td>
+         	<td>{{number_format($way->item->deposit)}}</td>
           <td>{{number_format($way->item->delivery_fees)}}</td>
           <td>{{number_format($way->item->other_fees)}}</td>
-         	<td>
-            {{$way->item->pickup->schedule->client->user->name}}<br>
-         	  ({{$way->item->pickup->schedule->client->phone_no}})
-         	</td>
+          <td>{{number_format($way->item->deposit+$way->item->delivery_fees+$way->item->other_fees)}}</td>
         </tr>
       @endforeach
         <tr>
-          <td colspan="6">Total Amount</td>
+          <td colspan="5">Total Amount</td>
           <td colspan="4">{{number_format($total)}} Ks</td>
         </tr>
     </tbody>

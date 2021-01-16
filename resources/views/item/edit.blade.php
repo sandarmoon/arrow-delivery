@@ -212,14 +212,11 @@
     $(".mygate").hide();
     $(".myoffice").hide();
     setTimeout(function(){ $('.myalert').hide(); showDiv2() },3000);
-    // $(".township").hide();
-    // for in city
     var today = new Date();
     var numberofdays = 3;
     today.setDate(today.getDate() + numberofdays); 
     var day = ("0" + today.getDate()).slice(-2);
     var month = ("0" + (today.getMonth() + 1)).slice(-2);
-    //console.log(month);
     var incityday= today.getFullYear()+"-"+(month)+"-"+(day) ;
     console.log(incityday);
     $(".pickdate").val(incityday);
@@ -233,46 +230,72 @@
       });
       $.post("/delichargebytown",{id:id},function(res){
         $("#InputDeliveryFees").val(res);
+        var deposit=Number($('#InputDeposit').val()) | 0;
+        var other=Number($('#other').val()) | 0;
+
+        if (deposit>0 && other>0) {
+          $('#InputAmount').val(Number(res)+other+deposit)
+          var amount=Number($('#InputAmount').val()) | 0;
+          if($('.paystatus').val() == 2 || $('.paystatus').val() == 3){
+            $('#InputDeposit').val(0)
+          }else{
+            $('#InputDeposit').val(amount-Number(res)-other)
+          }
+        }
       })
     })
 
-    $("#InputAmount").focus(function(){
-      var deposit=parseInt($('#InputDeposit').val());
-      var delivery_fees=parseInt($("#InputDeliveryFees").val());
-      var other=parseInt($("#other").val());
-      var amount=deposit+delivery_fees+other;
-      $(this).val(amount);
+    $("#InputAmount").change(function(){
+      var other=Number($('#other').val()) | 0;
+      var deposit=Number($('#InputDeposit').val()) | 0;
+      var delivery_fees=Number($("#InputDeliveryFees").val())|0;
+      $(this).val(delivery_fees+deposit+other)
     })
 
-    // $("#InputDeposit").change(function(){
-    //   var deposit=parseInt($('#InputDeposit').val());
-    //   var depositamount=$(".depositamountforcheck").val();
-    //   var delivery_fees=parseInt($("#InputDeliveryFees").val());
-      
-    //   if(deposit>depositamount){
-    //     alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
-    //     $("#InputDeposit").val(0);
-    //     $("#InputDeposit").focus();
-    //   }else{
-    //     var amount=deposit+delivery_fees;
-    //   $("#InputAmount").val(amount);
-    //   }
-    // })
+    $("#InputAmount").focus(function(){
+      var amount = Number($(this).val())|0;
+      var delivery_fees=Number($("#InputDeliveryFees").val())|0;
+      var other=Number($('#other').val()) | 0;
 
-    // $("#InputRemark").focus(function(){
-    //   var deposit=parseInt($('#InputDeposit').val());
-    //   var depositamount=$(".depositamountforcheck").val();
-    //   var delivery_fees=parseInt($("#InputDeliveryFees").val());
-      
-    //   if(deposit>depositamount){
-    //     alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
-    //     $("#InputDeposit").val(0);
-    //     $("#InputDeposit").focus();
-    //   }else{
-    //     var amount=deposit+delivery_fees;
-    //   $("#InputAmount").val(amount);
-    //   }
-    // })
+      if($('.paystatus').val() == 2 || $('.paystatus').val() == 3){
+        $('#InputDeposit').val(0)
+        $(this).val(delivery_fees+other)
+      }else if(other>0){
+        $('#InputDeposit').val(amount-delivery_fees-other)
+      }else{
+        $('#InputDeposit').val(amount-delivery_fees)
+      }
+    })
+
+    $("#InputDeposit").focus(function(){
+      var amount=Number($('#InputAmount').val())|0;
+      var delivery_fees=Number($("#InputDeliveryFees").val())|0;
+      var other=Number($('#other').val()) | 0;
+      var deposit = Number($(this).val()) | 0;
+
+      if (amount>0 && delivery_fees>0 && other>0) {
+        if (deposit>0) {
+          var amount = delivery_fees+deposit+other
+          $('#InputAmount').val(amount)
+        }
+        if($('.paystatus').val() == 2 || $('.paystatus').val() == 3){
+          $(this).val(0)
+        }else{
+          $(this).val(amount-delivery_fees-other);
+        }
+      }else if(amount==0){
+        $(this).val('');
+      }
+    })
+
+    $("#InputDeposit").change(function(){
+      var deposit=parseInt($('#InputDeposit').val());
+      var delivery_fees=parseInt($("#InputDeliveryFees").val());
+      var other=Number($('#other').val()) | 0;
+
+      var amount=deposit+delivery_fees+other;
+      $("#InputAmount").val(amount);
+    })
     
     $(function(){
         var dtToday = new Date();
@@ -290,98 +313,98 @@
     });
 
     $("input[name=rcity]").click(function(){
-    if ($(this).is(':checked')){
-      $(".township").show();
-      var id=$(this).val();
-      if(id==1){
-        var today = new Date();
-        var numberofdays = 3;
-        today.setDate(today.getDate() + numberofdays); 
-        var day = ("0" + today.getDate()).slice(-2);
-        var month = ("0" + (today.getMonth() + 1)).slice(-2);
-        //console.log(month);
-        var incityday= today.getFullYear()+"-"+(month)+"-"+(day) ;
-        // console.log(incityday);
-        $(".paystatus").val(1);
-        $(".paystatus").attr('readonly',false);
-        $(".pickdate").val(incityday);
-        $('#InputDeposit').prop('disabled',false);
-        getTownship(id);
+      if ($(this).is(':checked')){
+        $(".township").show();
+        var id=$(this).val();
+        if(id==1){
+          var today = new Date();
+          var numberofdays = 3;
+          today.setDate(today.getDate() + numberofdays); 
+          var day = ("0" + today.getDate()).slice(-2);
+          var month = ("0" + (today.getMonth() + 1)).slice(-2);
+          //console.log(month);
+          var incityday= today.getFullYear()+"-"+(month)+"-"+(day) ;
+          // console.log(incityday);
+          $(".paystatus").val(1);
+          $(".paystatus").attr('readonly',false);
+          $(".pickdate").val(incityday);
+          $('#InputDeposit').prop('disabled',false);
+          getTownship(id);
 
-        let oldtownship = $('#oldtownship').val();
-        $.post("/delichargebytown",{id:oldtownship},function(res){
-          $("#InputDeliveryFees").val(res);
-        })
-      }else{
-        var today = new Date();
-        var numberofdays = 7;
-        today.setDate(today.getDate() + numberofdays); 
-        var day = ("0" + today.getDate()).slice(-2);
-        var month = ("0" + (today.getMonth() + 1)).slice(-2);
-        //console.log(month);
-        var gateday= today.getFullYear()+"-"+(month)+"-"+(day) ;
-        console.log(gateday);
-        // type change allpaid
-        $(".paystatus").val(2);
-        $(".paystatus").attr('readonly',true);
-        $(".pickdate").val(gateday);
-        $("#InputDeposit").val(0);
-        $('#InputDeposit').prop('readonly',true);
-        getTownship(id);
-        $("#InputDeliveryFees").val(1000);
-      } 
-    }
-  });
-
-  function getTownship(id){
-    $.ajaxSetup({
-      headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          let oldtownship = $('#oldtownship').val();
+          $.post("/delichargebytown",{id:oldtownship},function(res){
+            $("#InputDeliveryFees").val(res);
+          })
+        }else{
+          var today = new Date();
+          var numberofdays = 7;
+          today.setDate(today.getDate() + numberofdays); 
+          var day = ("0" + today.getDate()).slice(-2);
+          var month = ("0" + (today.getMonth() + 1)).slice(-2);
+          //console.log(month);
+          var gateday= today.getFullYear()+"-"+(month)+"-"+(day) ;
+          console.log(gateday);
+          // type change allpaid
+          $(".paystatus").val(2);
+          $(".paystatus").attr('readonly',true);
+          $(".pickdate").val(gateday);
+          $("#InputDeposit").val(0);
+          $('#InputDeposit').prop('readonly',true);
+          getTownship(id);
+          $("#InputDeliveryFees").val(1000);
+        } 
       }
     });
-    $.post("/townshipbystatus",{id:id},function(res){
-      // console.log(res);
-      var html="";
-      html+=`<option>Choose township</option>`
-      $.each(res,function(i,v){
-        html+=`<option value="${v.id}">${v.name}</option>`
+
+    function getTownship(id){
+      $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
+      $.post("/townshipbystatus",{id:id},function(res){
+        // console.log(res);
+        var html="";
+        html+=`<option>Choose township</option>`
+        $.each(res,function(i,v){
+          html+=`<option value="${v.id}">${v.name}</option>`
+        })
+        $("#InputReceiverTownship").html(html);
+        let oldtownship = $('#oldtownship').val();
+        $(`#InputReceiverTownship option:eq(${oldtownship})`).prop('selected', true)
       })
-      $("#InputReceiverTownship").html(html);
-      let oldtownship = $('#oldtownship').val();
-      $(`#InputReceiverTownship option:eq(${oldtownship})`).prop('selected', true)
+    }
+
+    var checked=$("input[name='rcity']:checked").val();
+    console.log(checked);
+    if(checked==1){
+      getTownship(checked);
+      $(".mygate").hide();
+      $(".myoffice").hide();
+    }else if(checked==2){
+      getTownship(checked);
+      $(".mygate").show();
+      $(".myoffice").hide();
+    }else if(checked==3){
+      $(".mygate").hide();
+      $(".myoffice").show();
+      getTownship(checked);
+    }
+
+    $("#gate").click(function(){
+      $(".mygate").show();
+      $(".myoffice").hide();
     })
-  }
 
-  var checked=$("input[name='rcity']:checked").val();
-  console.log(checked);
-  if(checked==1){
-    getTownship(checked);
-    $(".mygate").hide();
-    $(".myoffice").hide();
-  }else if(checked==2){
-    getTownship(checked);
-    $(".mygate").show();
-    $(".myoffice").hide();
-  }else if(checked==3){
-    $(".mygate").hide();
-    $(".myoffice").show();
-    getTownship(checked);
-  }
+    $("#incity").click(function(){
+      $(".mygate").hide();
+      $(".myoffice").hide();
+    })
 
-  $("#gate").click(function(){
-    $(".mygate").show();
-    $(".myoffice").hide();
-  })
-
-  $("#incity").click(function(){
-    $(".mygate").hide();
-    $(".myoffice").hide();
-  })
-
-  $("#post").click(function(){
-    $(".mygate").hide();
-    $(".myoffice").show();
-  })
+    $("#post").click(function(){
+      $(".mygate").hide();
+      $(".myoffice").show();
+    })
 
     $('.js-example-basic-single').select2({width:'100%'});
 

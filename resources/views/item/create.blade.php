@@ -423,48 +423,61 @@
 
       $.post("/delichargebytown",{id:id},function(res){
         $("#InputDeliveryFees").val(res);
-        var amount=Number($('#InputAmount').val()) | 0;
         var deposit=Number($('#InputDeposit').val()) | 0;
         var other=Number($('#other').val()) | 0;
 
-        if (amount>0 && deposit==0) {
-          if($('.paystatus').val() == 2){
+        if (deposit>0 && other>0) {
+          $('#InputAmount').val(Number(res)+other+deposit)
+          var amount=Number($('#InputAmount').val()) | 0;
+          if($('.paystatus').val() == 2 || $('.paystatus').val() == 3){
             $('#InputDeposit').val(0)
           }else{
-            $('#InputDeposit').val(amount-res)
+            $('#InputDeposit').val(amount-Number(res)-other)
           }
-        }else if(deposit>0 && amount==0){
-          $('#InputAmount').val(deposit+res+other)
         }
-        // else if(amount>0){
-        //   $('#InputDeposit').val(amount-res)
-        // }
       })
     })
 
-    $("#InputAmount").change(function(){
+    $("#InputAmount").focus(function(){
       var amount = Number($(this).val())|0;
       var delivery_fees=Number($("#InputDeliveryFees").val())|0;
-      if($('.paystatus').val() == 2){
+      var other=Number($('#other').val()) | 0;
+
+      if($('.paystatus').val() == 2 || $('.paystatus').val() == 3){
         $('#InputDeposit').val(0)
+        $(this).val(delivery_fees+other)
+      }else if(other>0){
+        $('#InputDeposit').val(amount-delivery_fees-other)
       }else{
         $('#InputDeposit').val(amount-delivery_fees)
       }
     })
 
-    // $("#other").change(function(){
-    //   var deposit=parseInt($('#InputDeposit').val());
-    //   var depositamount=$(".depositamountforcheck").val();
-    //   var other=Number($("#other").val());
-    //   var delivery_fees=parseInt($("#InputDeliveryFees").val());
-    //   $("#InputAmount").val(deposit+delivery_fees+other);
-    // })
+    $("#InputAmount").change(function(){
+      var other=Number($('#other').val()) | 0;
+      var deposit=Number($('#InputDeposit').val()) | 0;
+      var delivery_fees=Number($("#InputDeliveryFees").val())|0;
+      $(this).val(delivery_fees+deposit+other)
+    })
 
     $("#InputDeposit").focus(function(){
       var amount=Number($('#InputAmount').val())|0;
-      var delivery_fees = Number($("#InputDeliveryFees").val())|0;
-      if (amount>0 && delivery_fees>0) {
-        $(this).val(amount-delivery_fees);
+      var delivery_fees=Number($("#InputDeliveryFees").val())|0;
+      var other=Number($('#other').val()) | 0;
+      var deposit = Number($(this).val()) | 0;
+
+      if (amount>0 && delivery_fees>0 && other>0) {
+        if (deposit>0) {
+          var amount = delivery_fees+deposit+other
+          $('#InputAmount').val(amount)
+        }
+        if($('.paystatus').val() == 2 || $('.paystatus').val() == 3){
+          $(this).val(0)
+        }else{
+          $(this).val(amount-delivery_fees-other);
+        }
+      }else if(amount==0){
+        $(this).val('');
       }
     })
 
@@ -476,23 +489,6 @@
       var amount=deposit+delivery_fees+other;
       $("#InputAmount").val(amount);
     })
-
-    // $("#InputRemark").focus(function(){
-    //   var deposit=parseInt($('#InputDeposit').val());
-    //   var depositamount=$(".depositamountforcheck").val();
-    //   var delivery_fees=parseInt($("#InputDeliveryFees").val());
-    //   var other=Number($('#other').val()) | 0;
-
-      
-    //   if(deposit>depositamount){
-    //     alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
-    //     $("#InputDeposit").val(0);
-    //     $("#InputDeposit").focus();
-    //   }else{
-    //     var amount=deposit+delivery_fees;
-    //     $("#InputAmount").val(amount);
-    //   }
-    // })
     
     $(function(){
       var dtToday = new Date();
@@ -510,109 +506,109 @@
     });
 
     $("input[name=rcity]").click(function(){
-    if ($(this).is(':checked'))
-    {
-      $(".township").show();
-      var id=$(this).val();
+      if ($(this).is(':checked'))
+      {
+        $(".township").show();
+        var id=$(this).val();
 
-      if(id==1){
-        
-        var today = new Date();
-        var numberofdays = 3;
-        today.setDate(today.getDate() + numberofdays); 
-        var day = ("0" + today.getDate()).slice(-2);
-        var month = ("0" + (today.getMonth() + 1)).slice(-2);
-        //console.log(month);
-        var incityday= today.getFullYear()+"-"+(month)+"-"+(day) ;
-        //console.log(incityday);
-        $(".paystatus").val(1);
-        $(".paystatus").attr('readonly',false);
-        $(".pickdate").val(incityday);
-        $('#InputDeposit').prop('disabled',false);
-        $("#InputDeposit").val("");
-        $('#InputDeposit').prop('readonly',false);
-        $('#amountunpaid').removeAttr('checked');
-        $('#amountpaid').attr('checked','checked');
-        $("#InputDeliveryFees").val("");
-        $("#InputAmount").val("");
-      }else{
-        //alert("ok");
-        var today = new Date();
-        var numberofdays = 7;
-        today.setDate(today.getDate() + numberofdays); 
-        var day = ("0" + today.getDate()).slice(-2);
-        var month = ("0" + (today.getMonth() + 1)).slice(-2);
-        //console.log(month);
-        var gateday= today.getFullYear()+"-"+(month)+"-"+(day) ;
-        console.log(gateday);
-        // type change allpaid
-        $(".paystatus").val(2);
-        $(".paystatus").attr('readonly',true);
-        $(".pickdate").val(gateday);
-        $("#InputDeposit").val(0);
-        $('#InputDeposit').prop('readonly',true);
-        $('#amountpaid').removeAttr('checked');
-        $('#amountunpaid').attr('checked','checked');
-      }
-
-      $.ajaxSetup({
-        headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        if(id==1){
+          
+          var today = new Date();
+          var numberofdays = 3;
+          today.setDate(today.getDate() + numberofdays); 
+          var day = ("0" + today.getDate()).slice(-2);
+          var month = ("0" + (today.getMonth() + 1)).slice(-2);
+          //console.log(month);
+          var incityday= today.getFullYear()+"-"+(month)+"-"+(day) ;
+          //console.log(incityday);
+          $(".paystatus").val(1);
+          $(".paystatus").attr('readonly',false);
+          $(".pickdate").val(incityday);
+          $('#InputDeposit').prop('disabled',false);
+          $("#InputDeposit").val("");
+          $('#InputDeposit').prop('readonly',false);
+          $('#amountunpaid').removeAttr('checked');
+          $('#amountpaid').attr('checked','checked');
+          $("#InputDeliveryFees").val("");
+          $("#InputAmount").val("");
+        }else{
+          //alert("ok");
+          var today = new Date();
+          var numberofdays = 7;
+          today.setDate(today.getDate() + numberofdays); 
+          var day = ("0" + today.getDate()).slice(-2);
+          var month = ("0" + (today.getMonth() + 1)).slice(-2);
+          //console.log(month);
+          var gateday= today.getFullYear()+"-"+(month)+"-"+(day) ;
+          console.log(gateday);
+          // type change allpaid
+          $(".paystatus").val(2);
+          $(".paystatus").attr('readonly',true);
+          $(".pickdate").val(gateday);
+          $("#InputDeposit").val(0);
+          $('#InputDeposit').prop('readonly',true);
+          $('#amountpaid').removeAttr('checked');
+          $('#amountunpaid').attr('checked','checked');
         }
-      });
 
-      $.post("/townshipbystatus",{id:id},function(res){
-        // console.log(id);
-        var html="";
-        html+=`<option>Choose township</option>`
-        $.each(res,function(i,v){
-          html+=`<option value="${v.id}">${v.name}</option>`
+        $.ajaxSetup({
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
+        });
+
+        $.post("/townshipbystatus",{id:id},function(res){
+          // console.log(id);
+          var html="";
+          html+=`<option>Choose township</option>`
+          $.each(res,function(i,v){
+            html+=`<option value="${v.id}">${v.name}</option>`
+          })
+          $("#InputReceiverTownship").html(html);
         })
-        $("#InputReceiverTownship").html(html);
-      })
-    }
-  });
+      }
+    });
 
-  $("#gate").click(function(){
-    $(".mygate").show();
-    $(".myoffice").hide();
-  })
+    $("#gate").click(function(){
+      $(".mygate").show();
+      $(".myoffice").hide();
+    })
 
-  $("#incity").click(function(){
-    $(".mygate").hide();
-    $(".myoffice").hide();
-  })
+    $("#incity").click(function(){
+      $(".mygate").hide();
+      $(".myoffice").hide();
+    })
 
-  $("#post").click(function(){
-    $(".mygate").hide();
-    $(".myoffice").show();
-  })
+    $("#post").click(function(){
+      $(".mygate").hide();
+      $(".myoffice").show();
+    })
 
     // Single select example if using params obj or configuration seen above
     var configParamsObj = {
-        placeholder: 'Select an option...', // Place holder text to place in the select
-        // minimumResultsForSearch: 3, // Overrides default of 15 set above
-        width:'100%',
-        matcher: function (params, data) {
-            // If there are no search terms, return all of the data
-            if ($.trim(params.term) === '') {
-                return data;
-            }
- 
-            // `params.term` should be the term that is used for searching
-            // `data.text` is the text that is displayed for the data object
-            if (data.text.toLowerCase().startsWith(params.term.toLowerCase())) {
-                var modifiedData = $.extend({}, data, true);
-                // modifiedData.text += ' (matched)';
- 
-                // You can return modified objects from here
-                // This includes matching the `children` how you want in nested data sets
-                return modifiedData;
-            }
- 
-            // Return `null` if the term should not be displayed
-            return null;
+      placeholder: 'Select an option...', // Place holder text to place in the select
+      // minimumResultsForSearch: 3, // Overrides default of 15 set above
+      width:'100%',
+      matcher: function (params, data) {
+        // If there are no search terms, return all of the data
+        if ($.trim(params.term) === '') {
+            return data;
         }
+
+        // `params.term` should be the term that is used for searching
+        // `data.text` is the text that is displayed for the data object
+        if (data.text.toLowerCase().startsWith(params.term.toLowerCase())) {
+            var modifiedData = $.extend({}, data, true);
+            // modifiedData.text += ' (matched)';
+
+            // You can return modified objects from here
+            // This includes matching the `children` how you want in nested data sets
+            return modifiedData;
+        }
+
+        // Return `null` if the term should not be displayed
+        return null;
+      }
     };
 
     $('.js-example-basic-single').select2(configParamsObj);
