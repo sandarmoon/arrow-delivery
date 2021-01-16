@@ -90,7 +90,7 @@
               <label for="InputDeliveryMan">{{ __("Delivery Man")}}:</label>
               <select class="form-control" name="deliveryman" id="InputDeliveryMan">
                 <optgroup label="Choose Delivery Man">
-                   <option value="">{{ __("Choose Delivery Man")}}</option>
+                   <option value="0">{{ __("Choose Delivery Man")}}</option>
                  @foreach($deliverymen as $row)
                   <option value="{{$row->id}}">{{$row->deliveryname}}</option>
                   @endforeach

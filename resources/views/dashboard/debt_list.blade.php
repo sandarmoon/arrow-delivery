@@ -432,10 +432,12 @@
           for(let row of response.incomes){
             let delivery_fees=deposit=busgate_othercharges=0;
 
-            if(row.paystatus == 2 && row.status == 0){
+            if(row.other_fees>0 && row.status==0){
+              busgate_othercharges = Number(row.other_fees)
+            }
+
+            if((row.paystatus == 2 || row.paystatus == 4) && (row.status == 0)){
               delivery_fees = Number(row.delivery_fees);
-            }else if(row.paystatus == 4){
-              deposit = Number(row.deposit);
             }
 
             let delivered_date = "-"
@@ -467,9 +469,9 @@
                       <td>${thousands_separators(delivery_fees)}</td>
                       <td>${thousands_separators(deposit)}</td>
                       <td>${thousands_separators(busgate_othercharges)}</td>
-                      <td>${thousands_separators(delivery_fees+deposit)} Ks</td>
+                      <td>${thousands_separators(delivery_fees+deposit+busgate_othercharges)} Ks</td>
                     </tr>`;
-                  totalincome += Number(delivery_fees) + Number(deposit);
+                  totalincome += Number(delivery_fees) + Number(deposit) + Number(busgate_othercharges);
           }
 
           for(let row of response.carryfees){

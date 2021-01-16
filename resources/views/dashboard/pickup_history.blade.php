@@ -47,6 +47,7 @@
                 <tr>
                   <th>{{ __("#")}}</th>
                   <th>{{ __("Pickup Date")}}</th>
+                  <th>{{ __("Client Name")}}</th>
                   <th>{{ __("Quantity")}}</th>
                   <th>{{ __("Amount")}}</th>
                   <th>{{ __("Actions")}}</th>
@@ -60,8 +61,8 @@
                   $allpaid_delivery_fees = $unpaid_total_item_price = $pay_amount = $prepaid_amount = 0;
 
                   foreach($row->items as $item){
-                    if ($item->paystatus==2) {
-                      $allpaid_delivery_fees += $item->delivery_fees;
+                    if (($item->paystatus=="2" || $item->paystatus=="2") && $item->status==0) {
+                      $allpaid_delivery_fees += ($item->delivery_fees+$item->other_fees);
                     }else{
                       $unpaid_total_item_price += $item->deposit;
                     }
@@ -77,6 +78,7 @@
                 <tr>
                   <td>{{$i++}}</td>
                   <td>{{\Carbon\Carbon::parse($row->schedule->pickup_date)->format('d-m-Y')}}</td>
+                  <td>{{$row->schedule->client->user->name}}</td>
                   <td>{{$row->schedule->quantity}}</td>
                   <td>{{number_format($pay_amount-$allpaid_delivery_fees)}} Ks</td>
                   
@@ -121,6 +123,7 @@
       var sdate = $('#InputStartDate').val();
       var edate = $('#InputEndDate').val();
       var client_id=$("#InputClient").val();
+      var client_name=$("#InputClient option:selected").data('name');
       // console.log(start_date, end_date)
       var url="{{route('pickupbyclient')}}";
       var i=1;
@@ -138,16 +141,25 @@
           },
         "columns": [
           {"data":'DT_RowIndex'},
-          { "data": "schedule.pickup_date",},
+          { "data": "schedule.pickup_date"},
+          { "data": null,
+            render:function (data) {
+              return client_name
+            }
+          },
           { "data": "schedule.quantity" },
           { "data": "items",
              render:function (data) {
-              let total=allpaid_delivery_fees=0;
+              let total=allpaid_delivery_fees=carry_fees=0;
               for(row of data){
-                if (row.paystatus == 2 && row.status==0) {
-                  allpaid_delivery_fees += Number(row.delivery_fees)
+                if ((row.paystatus == 2 || row.paystatus == 4 ) && row.status==0) {
+                  allpaid_delivery_fees += (Number(row.delivery_fees)+Number(row.other_fees))
                 }
-                  
+
+                if (row.expense) {
+                  carry_fees = Number(row.expense.amount)
+                  allpaid_delivery_fees += carry_fees
+                }
               }
               return thousands_separators(data.reduce((acc, row) => acc + Number(row.deposit), 0) - allpaid_delivery_fees);
              }

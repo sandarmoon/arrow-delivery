@@ -129,6 +129,26 @@
 
                 <div class="form-group row">
                   <div class="col">
+                    <label for="other">{{ __("Delivery Type")}}:</label>
+                    <select class="form-control paystatus" name="amountstatus" >
+                      <optgroup label="Choose type">
+                        <option value="1" @if($item->paystatus==1) {{"selected"}} @endif>Unpaid</option>
+                        <option value="2" @if($item->paystatus==2) {{"selected"}} @endif>Allpaid</option>
+                        <option value="3" @if($item->paystatus==3) {{"selected"}} @endif>Only Deli</option>
+                        <option value="4" @if($item->paystatus==4) {{"selected"}} @endif>Only Item Price</option>
+                      </optgroup>
+                    </select>
+                    <div class="form-control-feedback text-danger"> {{$errors->first('amountstatus') }} </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="other">{{ __("Other Charges")}}:</label>
+                    <input class="form-control" id="other" type="number" name="othercharges" value="{{$item->other_fees}}">
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <div class="col">
                     <label for="InputDeposit">Item Price:</label>
                     <input class="form-control" id="InputDeposit" type="number" name="deposit" value="{{$item->deposit}}">
                     <div class="form-control-feedback text-danger"> {{$errors->first('deposit') }} </div>
@@ -140,46 +160,10 @@
                     <div class="form-control-feedback text-danger"> {{$errors->first('delivery_fees') }} </div>
                   </div>
 
-                  {{-- <div class="form-group">
-                    <label for="other">{{ __("Other Charges")}}:</label>
-                    <input class="form-control" id="other" type="number" name="othercharges" value="{{$item->other_fees}}">
-                  </div> --}}
-
                   <div class="col">
                     <label for="InputAmount">Amount:</label>
                     <input class="form-control" id="InputAmount" type="number" name="amount" value="{{$item->amount}}">
                     <div class="form-control-feedback text-danger"> {{$errors->first('amount') }} </div>
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  {{-- <div class="col-6">
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="amountstatus" id="amountpaid" value="1" @if($item->paystatus==1) checked="checked" @endif>
-                      <label class="form-check-label" for="amountpaid">
-                       {{ __("Unpaid")}}
-                      </label>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="amountstatus" id="amountunpaid"  value="2" @if($item->paystatus==2) checked="checked" @endif >
-                      <label class="form-check-label" for="amountunpaid">
-                        {{ __("All paid")}}
-                      </label>
-                    </div>
-                  </div> --}}
-                  <div class="col">
-                    <label for="other">{{ __("Delivery Type")}}:</label>
-                    <select class="form-control paystatus" name="amountstatus" >
-                      <optgroup label="Choose type">
-                        <option value="1" @if($item->paystatus==1) {{"selected"}} @endif>Unpaid</option>
-                        <option value="2" @if($item->paystatus==2) {{"selected"}} @endif>Allpaid</option>
-                        <option value="3" @if($item->paystatus==3) {{"selected"}} @endif>Only Deli</option>
-                        <option value="4" @if($item->paystatus==4) {{"selected"}} @endif>Only Item Price</option>
-                      </optgroup>
-                    </select>
-                    <div class="form-control-feedback text-danger"> {{$errors->first('amountstatus') }} </div>
                   </div>
                 </div>
 
@@ -254,47 +238,41 @@
 
     $("#InputAmount").focus(function(){
       var deposit=parseInt($('#InputDeposit').val());
-      var depositamount=$(".depositamountforcheck").val();
       var delivery_fees=parseInt($("#InputDeliveryFees").val());
-      if(deposit>depositamount){
-        alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
-        $("#InputDeposit").val(0);
-        $("#InputDeposit").focus();
-      }else{
-        var amount=deposit+delivery_fees;
+      var other=parseInt($("#other").val());
+      var amount=deposit+delivery_fees+other;
       $(this).val(amount);
-      }
     })
 
-    $("#InputDeposit").change(function(){
-      var deposit=parseInt($('#InputDeposit').val());
-      var depositamount=$(".depositamountforcheck").val();
-      var delivery_fees=parseInt($("#InputDeliveryFees").val());
+    // $("#InputDeposit").change(function(){
+    //   var deposit=parseInt($('#InputDeposit').val());
+    //   var depositamount=$(".depositamountforcheck").val();
+    //   var delivery_fees=parseInt($("#InputDeliveryFees").val());
       
-      if(deposit>depositamount){
-        alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
-        $("#InputDeposit").val(0);
-        $("#InputDeposit").focus();
-      }else{
-        var amount=deposit+delivery_fees;
-      $("#InputAmount").val(amount);
-      }
-    })
+    //   if(deposit>depositamount){
+    //     alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
+    //     $("#InputDeposit").val(0);
+    //     $("#InputDeposit").focus();
+    //   }else{
+    //     var amount=deposit+delivery_fees;
+    //   $("#InputAmount").val(amount);
+    //   }
+    // })
 
-    $("#InputRemark").focus(function(){
-      var deposit=parseInt($('#InputDeposit').val());
-      var depositamount=$(".depositamountforcheck").val();
-      var delivery_fees=parseInt($("#InputDeliveryFees").val());
+    // $("#InputRemark").focus(function(){
+    //   var deposit=parseInt($('#InputDeposit').val());
+    //   var depositamount=$(".depositamountforcheck").val();
+    //   var delivery_fees=parseInt($("#InputDeliveryFees").val());
       
-      if(deposit>depositamount){
-        alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
-        $("#InputDeposit").val(0);
-        $("#InputDeposit").focus();
-      }else{
-        var amount=deposit+delivery_fees;
-      $("#InputAmount").val(amount);
-      }
-    })
+    //   if(deposit>depositamount){
+    //     alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
+    //     $("#InputDeposit").val(0);
+    //     $("#InputDeposit").focus();
+    //   }else{
+    //     var amount=deposit+delivery_fees;
+    //   $("#InputAmount").val(amount);
+    //   }
+    // })
     
     $(function(){
         var dtToday = new Date();
@@ -323,7 +301,9 @@
         var month = ("0" + (today.getMonth() + 1)).slice(-2);
         //console.log(month);
         var incityday= today.getFullYear()+"-"+(month)+"-"+(day) ;
-        console.log(incityday);
+        // console.log(incityday);
+        $(".paystatus").val(1);
+        $(".paystatus").attr('readonly',false);
         $(".pickdate").val(incityday);
         $('#InputDeposit').prop('disabled',false);
         getTownship(id);
@@ -341,6 +321,9 @@
         //console.log(month);
         var gateday= today.getFullYear()+"-"+(month)+"-"+(day) ;
         console.log(gateday);
+        // type change allpaid
+        $(".paystatus").val(2);
+        $(".paystatus").attr('readonly',true);
         $(".pickdate").val(gateday);
         $("#InputDeposit").val(0);
         $('#InputDeposit').prop('readonly',true);
@@ -401,6 +384,18 @@
   })
 
     $('.js-example-basic-single').select2({width:'100%'});
+
+    // if type is allpaid, set item price into 0
+    $('.paystatus').change(function () {
+      let type = $(this).val()
+      if( type == 2 || type == 3){
+        $("#InputDeposit").val(0);
+        $('#InputDeposit').prop('readonly',true);
+      }else{
+        $("#InputDeposit").val("");
+        $('#InputDeposit').prop('readonly',false);
+      }
+    })
   })
 </script>
 @endsection

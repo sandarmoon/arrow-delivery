@@ -40,4 +40,9 @@ class Item extends Model
   public function SenderPostoffice(){
     return $this->belongsTo('App\SenderPostoffice');
   }
+
+  public function expense()
+  {
+    return $this->hasOne('App\Expense');
+  }
 }

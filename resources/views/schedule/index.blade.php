@@ -112,7 +112,7 @@
                            @endforeach
                         </td>
                         <td class="align-middle">{{$row->schedule->quantity}}</td>
-                        <td class="align-middle">{{$row->schedule->amount}}</td>
+                        <td class="align-middle">{{number_format($row->schedule->amount)}}</td>
                         {{-- @php
                           $total_item_price = $row->item->sum('deposit');
                         @endphp --}}

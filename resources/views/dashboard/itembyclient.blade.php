@@ -26,25 +26,37 @@
                   <th>{{ __("Receiver Phone No")}}</th>
                   <th>{{ __("Way State")}}</th>
                   <th>{{ __("Deli Fees")}}</th>
-                  <th>{{ __("Item Amount")}}</th>
+                  <th>{{ __("Bus Gate / Other Fees")}}</th>
+                  <th>{{ __("Item Price")}}</th>
                 </tr>
               </thead>
               <tbody>
                 @php $i=1;$total=0;$sub=0; $allpaid_color=""; @endphp
                 @foreach($items as $row)
                 @php 
+                  $carry_fees = 0;
                   $total+=$row->deposit;
                 @endphp
-                @if($row->paystatus == 2)
-                  @php $sub += $row->delivery_fees; @endphp
+                @if(($row->paystatus == 2 || $row->paystatus == 4) && ($row->status==0))
+                  @php $sub += ($row->delivery_fees+$row->other_fees); @endphp
                 @endif
 
+                @if(isset($row->expense))
+                  @php 
+                    $carry_fees = $row->expense->amount; 
+                    $sub += $carry_fees;
+                  @endphp
+                @endif
                 <tr>
                   <td>{{$i++}}</td>
                   <td>{{$row->codeno}}
-                    @if($row->paystatus == 2)
+                    @if(($row->paystatus == 2 || $row->paystatus == 4) && ($row->status == 0))
                       @php $allpaid_color="text-danger"; @endphp
-                      <span class="badge badge-info">allpaid</span>
+                      @if($row->paystatus == 2)
+                        <span class="badge badge-info">allpaid</span>
+                      @else
+                        <span class="badge badge-info">only item price</span>
+                      @endif
                     @elseif($row->paystatus == 3)
                       @php $allpaid_color=""; @endphp
                       <span class="badge badge-info">only deli</span>
@@ -80,6 +92,9 @@
 
                   </td>
                   <td class="{{$allpaid_color}}">{{number_format($row->delivery_fees)}}</td>
+                  <td class="{{$allpaid_color}}">
+                    {{number_format($row->other_fees+$carry_fees)}}
+                  </td>
                   <td>{{number_format($row->deposit)}}</td>
                 </tr>
                 @endforeach
@@ -88,7 +103,7 @@
               <tfoot>
                 <tr>
                   <td colspan="7">Total Amount</td>
-                  <td>{{number_format($total-$sub)}} Ks</td>
+                  <td colspan="2">{{number_format($total-$sub)}} Ks</td>
                 </tr>
               </tfoot>
             </table>

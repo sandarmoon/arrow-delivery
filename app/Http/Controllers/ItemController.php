@@ -102,7 +102,7 @@ class ItemController extends Controller
         $item->expired_date=$request->expired_date;
         $item->deposit=$request->deposit;
         $item->delivery_fees=$request->delivery_fees;
-        // $item->other_fees=$request->othercharges;
+        $item->other_fees=$request->othercharges;
         $item->amount =$request->amount;
         $item->paystatus=$request->amountstatus;
         $item->remark=$request->remark;
@@ -232,7 +232,7 @@ class ItemController extends Controller
         $item->expired_date=$request->expired_date;
         $item->deposit=$request->deposit;
         $item->delivery_fees=$request->delivery_fees;
-        // $item->other_fees=$request->othercharges;
+        $item->other_fees=$request->othercharges;
         $item->amount =$request->amount;
         $item->paystatus=$request->amountstatus;
         $item->remark=$request->remark;
@@ -459,7 +459,7 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
 
       $transaction = new Transaction;
       $transaction->bank_id = 1;
-      $transaction->amount = $item->delivery_fees;
+      $transaction->amount = $item->delivery_fees+$item->other_fees;
       $transaction->description = "Prepaid Delivery Fees";
       $transaction->save();
 

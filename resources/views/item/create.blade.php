@@ -93,7 +93,7 @@
 
                 <div class="form-group mygate">
                   <label for="mygate">{{ __("Sender Gate")}}:</label><br>
-                  <select class="js-example-basic-single " id="mygate" name="mygate"  >
+                  <select class="js-example-basic-single " id="mygate" name="mygate" >
                     <option value="">{{ __("Choose Gate")}}</option>
                     @foreach($sendergates as $row)
                       <option value="{{$row->id}}">{{$row->name}}</option>
@@ -104,7 +104,7 @@
 
                 <div class="form-group myoffice">
                   <label for="myoffice">{{ __("Sender PostOffice")}}:</label><br>
-                  <select class="js-example-basic-single  " id="myoffice" name="myoffice"  >
+                  <select class="js-example-basic-single  " id="myoffice" name="myoffice">
                     <option value="">{{ __("Choose Post Office")}}</option>
                     @foreach($senderoffice as $row)
                       <option value="{{$row->id}}">{{$row->name}}</option>
@@ -126,6 +126,25 @@
 
                 <div class="form-group row">
                   <div class="col">
+                    <label for="other">{{ __("Delivery Type")}}:</label>
+                    <select class="form-control paystatus" name="amountstatus" >
+                      <optgroup label="Choose type">
+                        <option value="1">Unpaid</option>
+                        <option value="2">Allpaid</option>
+                        <option value="3">Only Deli</option>
+                        <option value="4">Only Item Price</option>
+                      </optgroup>
+                    </select>
+                  </div>
+
+                  <div class="col">
+                    <label for="other">{{ __("Other Charges")}}:</label>
+                    <input class="form-control" id="other" type="number" name="othercharges" value="0">
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <div class="col">
                     <label for="InputDeliveryFees">{{ __("Delivery Fees")}}:</label>
                     <input class="form-control" id="InputDeliveryFees" type="number" name="delivery_fees" value="{{ old('delivery_fees') }}">
                     <div class="form-control-feedback text-danger"> {{$errors->first('delivery_fees') }} </div>
@@ -141,25 +160,6 @@
                     <label for="InputAmount">{{ __("Total Amount")}}:</label>
                     <input class="form-control" id="InputAmount" type="number" name="amount" value="{{ old('amount') }}">
                     <div class="form-control-feedback text-danger"> {{$errors->first('amount') }} </div>
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  {{-- <div class="col">
-                    <label for="other">{{ __("Other Charges")}}:</label>
-                    <input class="form-control" id="other" type="number" name="othercharges" value="0">
-                  </div> --}}
-
-                  <div class="col">
-                    <label for="other">{{ __("Delivery Type")}}:</label>
-                    <select class="form-control paystatus" name="amountstatus" >
-                      <optgroup label="Choose type">
-                        <option value="1">Unpaid</option>
-                        <option value="2">Allpaid</option>
-                        <option value="3">Only Deli</option>
-                        <option value="4">Only Item Price</option>
-                      </optgroup>
-                    </select>
                   </div>
                 </div>
 
@@ -425,20 +425,31 @@
         $("#InputDeliveryFees").val(res);
         var amount=Number($('#InputAmount').val()) | 0;
         var deposit=Number($('#InputDeposit').val()) | 0;
+        var other=Number($('#other').val()) | 0;
+
         if (amount>0 && deposit==0) {
-          $('#InputDeposit').val(amount-res)
+          if($('.paystatus').val() == 2){
+            $('#InputDeposit').val(0)
+          }else{
+            $('#InputDeposit').val(amount-res)
+          }
         }else if(deposit>0 && amount==0){
-          $('#InputAmount').val(deposit+res)
-        }else if(amount>0){
-          $('#InputDeposit').val(amount-res)
+          $('#InputAmount').val(deposit+res+other)
         }
+        // else if(amount>0){
+        //   $('#InputDeposit').val(amount-res)
+        // }
       })
     })
 
     $("#InputAmount").change(function(){
       var amount = Number($(this).val())|0;
       var delivery_fees=Number($("#InputDeliveryFees").val())|0;
-      $('#InputDeposit').val(amount-delivery_fees)
+      if($('.paystatus').val() == 2){
+        $('#InputDeposit').val(0)
+      }else{
+        $('#InputDeposit').val(amount-delivery_fees)
+      }
     })
 
     // $("#other").change(function(){
@@ -460,24 +471,28 @@
     $("#InputDeposit").change(function(){
       var deposit=parseInt($('#InputDeposit').val());
       var delivery_fees=parseInt($("#InputDeliveryFees").val());
-      var amount=deposit+delivery_fees;
+      var other=Number($('#other').val()) | 0;
+
+      var amount=deposit+delivery_fees+other;
       $("#InputAmount").val(amount);
     })
 
-    $("#InputRemark").focus(function(){
-      var deposit=parseInt($('#InputDeposit').val());
-      var depositamount=$(".depositamountforcheck").val();
-      var delivery_fees=parseInt($("#InputDeliveryFees").val());
+    // $("#InputRemark").focus(function(){
+    //   var deposit=parseInt($('#InputDeposit').val());
+    //   var depositamount=$(".depositamountforcheck").val();
+    //   var delivery_fees=parseInt($("#InputDeliveryFees").val());
+    //   var other=Number($('#other').val()) | 0;
+
       
-      if(deposit>depositamount){
-        alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
-        $("#InputDeposit").val(0);
-        $("#InputDeposit").focus();
-      }else{
-        var amount=deposit+delivery_fees;
-        $("#InputAmount").val(amount);
-      }
-    })
+    //   if(deposit>depositamount){
+    //     alert("deposit amount is greate than total deposit amount!!please retype deposit fee again");
+    //     $("#InputDeposit").val(0);
+    //     $("#InputDeposit").focus();
+    //   }else{
+    //     var amount=deposit+delivery_fees;
+    //     $("#InputAmount").val(amount);
+    //   }
+    // })
     
     $(function(){
       var dtToday = new Date();
@@ -510,6 +525,8 @@
         //console.log(month);
         var incityday= today.getFullYear()+"-"+(month)+"-"+(day) ;
         //console.log(incityday);
+        $(".paystatus").val(1);
+        $(".paystatus").attr('readonly',false);
         $(".pickdate").val(incityday);
         $('#InputDeposit').prop('disabled',false);
         $("#InputDeposit").val("");
@@ -518,7 +535,6 @@
         $('#amountpaid').attr('checked','checked');
         $("#InputDeliveryFees").val("");
         $("#InputAmount").val("");
-        
       }else{
         //alert("ok");
         var today = new Date();
@@ -529,6 +545,9 @@
         //console.log(month);
         var gateday= today.getFullYear()+"-"+(month)+"-"+(day) ;
         console.log(gateday);
+        // type change allpaid
+        $(".paystatus").val(2);
+        $(".paystatus").attr('readonly',true);
         $(".pickdate").val(gateday);
         $("#InputDeposit").val(0);
         $('#InputDeposit').prop('readonly',true);
@@ -618,9 +637,19 @@
         $('.depositamount').val(depositamount)
         $("#depositModal").modal('show');
       })
-      
     })
 
+    // if type is allpaid, set item price into 0
+    $('.paystatus').change(function () {
+      let type = $(this).val()
+      if( type == 2 || type == 3 ){
+        $("#InputDeposit").val(0);
+        $('#InputDeposit').prop('readonly',true);
+      }else{
+        $("#InputDeposit").val("");
+        $('#InputDeposit').prop('readonly',false);
+      }
+    })
   })
 </script>
 @endsection

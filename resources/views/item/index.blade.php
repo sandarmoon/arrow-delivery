@@ -60,7 +60,18 @@
                             </label>
                           </div>
                         </td>
-                        <td class="align-middle">{{$row->codeno}}</td>
+                        <td class="align-middle">
+                          {{$row->codeno}}
+                          @if($row->paystatus == "1")
+                            <span class="badge badge-info">{{'unpaid'}}</span>
+                          @elseif($row->paystatus == "2")
+                            <span class="badge badge-info">{{'allpaid'}}</span>
+                          @elseif($row->paystatus == "3")
+                            <span class="badge badge-info">{{'only deli'}}</span>
+                          @elseif($row->paystatus == "4")
+                            <span class="badge badge-info">{{'only item price'}}</span>
+                          @endif
+                        </td>
                         <td class="align-middle">{{$row->pickup->schedule->client->user->name}}</td>
                         <td class="text-danger align-middle">{{$row->township->name}}</td>
                         <td class="align-middle">
@@ -74,13 +85,13 @@
                         </td>
                         <td class="align-middle">{{number_format($row->deposit)}}</td>
                         <td class="align-middle">{{number_format($row->delivery_fees)}}
-                          @if($row->paystatus == 2 && $row->status == 1)
+                          @if(($row->paystatus == "2" || $row->paystatus == "4" ) && $row->status == 1)
                             <span class="badge badge-success badge-pill">paid</span>
                           @endif
                         </td>
                         <td class="align-middle">{{number_format($row->other_fees)}}</td>
                         <td class="mytd align-middle">
-                          @if($row->paystatus == 2 && $row->status == 0)
+                          @if(($row->paystatus == "2" || $row->paystatus == "4" ) && $row->status == 0)
                           <form action="{{ route('items.paidfull') }}" method="POST" class="d-inline-block">
                             @csrf
                             <input type="hidden" name="id" value="{{$row->id}}">
@@ -109,10 +120,11 @@
                       <tr>
                         <th>{{ __("#")}}</th>
                         <th>{{ __("Codeno")}}</th>
+                        <th>{{ __("Expired Date")}}</th>
+                        <th>{{ __("Client Name")}}</th>
                         <th>{{ __("Customer Name")}}</th>
                         <th>{{ __("Township")}}</th>
                         <th>{{ __("Delivery Man")}}</th>
-                        <th>{{ __("Expired Date")}}</th>
                         <th>{{ __("Item Price")}}</th>
                         <th>{{ __("Deli Fees")}}</th>
                         <th>{{ __("Other Charges")}}</th>
@@ -137,6 +149,8 @@
                             <span class="badge badge-danger">{{'reject'}}</span>
                           @endif
                         </td>
+                        <td class="align-middle">{{Carbon\Carbon::parse($way->item->expired_date)->format('d-m-Y')}}</td>
+                        <td class="align-middle">{{$way->item->pickup->schedule->client->user->name}}</td>
                         <td class="align-middle">{{$way->item->receiver_name}}</td>
                         <td class="align-middle">{{$way->item->township->name}}</td>
                         <td class="text-danger align-middle">
@@ -147,7 +161,6 @@
                             @endif
                            @endforeach
                         </td>
-                        <td class="align-middle">{{$way->item->expired_date}}</td>
                         <td class="align-middle">{{number_format($way->item->deposit)}}</td>
                         <td class="align-middle">{{number_format($way->item->delivery_fees)}}</td>
                         <td class="align-middle">{{number_format($way->item->other_fees)}}</td>

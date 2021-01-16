@@ -281,44 +281,47 @@ class ScheduleController extends Controller
     
     public function storeandassignschedule(Request $request)
     {
-       // dd($request);
+        // dd($request);
         $schedule_id=$request->assignid;
         $deliveryman_id=$request->deliveryman;
-        //dd($deliveryman_id);
+        // dd($deliveryman_id);
         $user=Auth::user();
         $staff=$user->staff->id;
 
         $pickup=new Pickup;
         $pickup->status=0;
         if($request->client){
-             if($request->hasfile('file'))
-            {
+          if($request->hasfile('file')){
             $name= time().'_'.$request->file->getClientOriginalName();
             $filePath = $request->file('file')->storeAs('images', $name, 'public');
             $path='/storage/'.$filePath;
-            }else
-            {
-                $path="";
-            }
-                $schedule=new Schedule;
-                $schedule->pickup_date=$request->date;
-                $schedule->status=1;
-                $schedule->remark=$request->remark;
-                $schedule->file=$path;
-                $schedule->client_id=$request->client;
-                 if($request->quantity!=null && $request->amount!=null){
-                $schedule->quantity=$request->quantity;
-                $schedule->amount=$request->amount;
-            }
-                $schedule->save();
-                $pickup->schedule_id=$schedule->id;
+          }else{
+            $path="";
+          }
+          $schedule=new Schedule;
+          $schedule->pickup_date=$request->date;
+          $schedule->status=1;
+          $schedule->remark=$request->remark;
+          $schedule->file=$path;
+          $schedule->client_id=$request->client;
+          if($request->quantity!=null && $request->amount!=null){
+            $schedule->quantity=$request->quantity;
+            $schedule->amount=$request->amount;
+          }
+          $schedule->save();
+          $pickup->schedule_id=$schedule->id;
         }else{
-            $pickup->schedule_id=$schedule_id;
+          $pickup->schedule_id=$schedule_id;
         }
-        //dd($deliveryman_id);
-        $pickup->delivery_man_id=$deliveryman_id;
-        $pickup->staff_id=$staff;
-        $pickup->save();
+        
+        if ($deliveryman_id == 0) {
+          return redirect()->route('schedules.index')->with('successMsg','Assign successfully');
+        }else{
+          $pickup->delivery_man_id=$deliveryman_id;
+          $pickup->staff_id=$staff;
+          $pickup->save();
+        }
+        
         return redirect()->route('schedules.index')->with('successMsg','Assign successfully');
     }
 
