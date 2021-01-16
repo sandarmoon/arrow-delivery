@@ -72,7 +72,13 @@
                             <span class="badge badge-info">{{'only item price'}}</span>
                           @endif
                         </td>
-                        <td class="align-middle">{{$row->pickup->schedule->client->user->name}}</td>
+                        <td class="align-middle">
+                          @if(isset($row->pickup->schedule))
+                          {{$row->pickup->schedule->client->user->name}}
+                          @else
+                          {{'-'}}
+                          @endif
+                        </td>
                         <td class="text-danger align-middle">{{$row->township->name}}</td>
                         <td class="align-middle">
                           {{$row->receiver_name}} <span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
