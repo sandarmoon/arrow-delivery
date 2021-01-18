@@ -147,7 +147,17 @@
                           {{$i++}}
                         </td>
                         <td class="align-middle">
-                          <span class="d-block">{{$way->item->codeno}}</span>  
+                          <span class="d-block">{{$way->item->codeno}}</span>
+                          @if($way->item->paystatus == "1")
+                            <span class="badge badge-info">{{'unpaid'}}</span>
+                          @elseif($way->item->paystatus == "2")
+                            <span class="badge badge-info">{{'allpaid'}}</span>
+                          @elseif($way->item->paystatus == "3")
+                            <span class="badge badge-info">{{'only deli'}}</span>
+                          @elseif($way->item->paystatus == "4")
+                            <span class="badge badge-info">{{'only item price'}}</span>
+                          @endif
+
                           @if($way->status_code == '001')
                             <span class="badge badge-info">{{'success'}}</span>
                           @elseif($way->status_code == '002')
@@ -178,6 +188,13 @@
                         <td class="align-middle">{{number_format($way->item->delivery_fees)}}</td>
                         <td class="align-middle">{{number_format($way->item->other_fees)}}</td>
                         <td class="mytd align-middle">
+                          @if(($way->item->paystatus == "2" || $way->item->paystatus == "4" ) && ($way->item->status == 0))
+                          <form action="{{ route('items.paidfull') }}" method="POST" class="d-inline-block">
+                            @csrf
+                            <input type="hidden" name="id" value="{{$row->id}}">
+                            <button type="submit" class="btn btn-sm btn-success">{{ __("Paid")}}</button>
+                          </form>
+                          @endif
                           <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$way->item->id}}">{{ __("Detail")}}</a>
                           @if($way->status_code == '005')
                             <a href="{{route('items.edit',$way->item->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
