@@ -332,6 +332,7 @@
           getTownship(id);
 
           let oldtownship = $('#oldtownship').val();
+          alert($('#InputReceiverTownship').val() + oldtownship);
           $.post("/delichargebytown",{id:oldtownship},function(res){
             $("#InputDeliveryFees").val(res);
           })
