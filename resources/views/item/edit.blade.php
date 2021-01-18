@@ -371,8 +371,8 @@
         })
         $("#InputReceiverTownship").html(html);
         let oldtownship = $('#oldtownship').val();
-        alert(oldtownship)
         $(`#InputReceiverTownship option:eq(${oldtownship})`).prop('selected', true)
+        alert(oldtownship)
       })
     }
 
