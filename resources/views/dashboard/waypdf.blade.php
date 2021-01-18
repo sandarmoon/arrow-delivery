@@ -68,7 +68,7 @@
             {{'('.$way->item->receiver_phone_no.')'}}
           </td>
          	<td class="mmfont">
-            <span class="d-block">{{$way->item->receiver_address}}</span>
+            {{-- <span class="d-block">{{$way->item->receiver_address}}</span> --}}
             {{strip_tags(zawuni($way->item->receiver_address))}}
           </td>
          	<td>{{number_format($way->item->deposit)}}</td>
