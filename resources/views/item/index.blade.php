@@ -191,7 +191,7 @@
                           @if(($way->item->paystatus == "2" || $way->item->paystatus == "4" ) && ($way->item->status == 0))
                           <form action="{{ route('items.paidfull') }}" method="POST" class="d-inline-block">
                             @csrf
-                            <input type="hidden" name="id" value="{{$row->id}}">
+                            <input type="hidden" name="id" value="{{$way->item->id}}">
                             <button type="submit" class="btn btn-sm btn-success">{{ __("Paid")}}</button>
                           </form>
                           @endif
