@@ -120,7 +120,7 @@
                     <optgroup label="Choose Township">
                       <option>Choose township</option>
                       @foreach($townships as $row)
-                        <option value="{{$row->id}}" @if($item->township_id==$row->id) selected @endif>{{$row->name}}</option>
+                        <option value="{{$row->id}}" @if($item->township_id==$row->id){{'selected'}}@endif>{{$row->name}}</option>
                       @endforeach
                     </optgroup>
                   </select>
@@ -372,7 +372,7 @@
         $("#InputReceiverTownship").html(html);
         let oldtownship = $('#oldtownship').val();
         $(`#InputReceiverTownship option:eq(${oldtownship})`).prop('selected', true)
-        alert(oldtownship)
+        // alert(oldtownship)
       })
     }
 
