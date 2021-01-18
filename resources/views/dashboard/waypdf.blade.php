@@ -67,7 +67,10 @@
             <span class="d-block">{{strip_tags(zawuni($way->item->receiver_name))}}</span>
             {{'('.$way->item->receiver_phone_no.')'}}
           </td>
-         	<td class="mmfont">{{strip_tags(zawuni($way->item->receiver_address))}}</td>
+         	<td class="mmfont">
+            <span class="d-block">{{$way->item->receiver_address}}</span>
+            {{strip_tags(zawuni($way->item->receiver_address))}}
+          </td>
          	<td>{{number_format($way->item->deposit)}}</td>
           <td>{{number_format($way->item->delivery_fees)}}</td>
           <td>{{number_format($way->item->other_fees)}}</td>

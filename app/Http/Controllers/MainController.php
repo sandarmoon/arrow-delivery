@@ -1119,7 +1119,8 @@ public function profit(Request $request){
     view()->share('data',$data);
     $pdf = PDF::loadView('dashboard.waypdf')->setPaper('a4', 'landscape');
     // download PDF file with download method
-    return $pdf->download( $deliname.'.pdf');
+    // return $pdf->download( $deliname.'.pdf');
+    return $pdf->stream();
   }
 
   public function pendingwaysbytownship(Request $request){
@@ -1166,14 +1167,17 @@ public function profit(Request $request){
     $client_id = $request->client_id;
     $start_date = $request->inputStartDate;
     $end_date = $request->inputEndDate;
-    if ($start_date != null && $end_date != null) {
-      $successways = Way::whereBetween('delivery_date', [$start_date,$end_date])->whereHas('item.pickup.schedule',function ($query) use ($client_id){
+
+    if ($start_date != null && $end_date != null && $client_id == 0) {
+      $successways = Way::whereBetween('delivery_date', [$start_date,$end_date])->with('item.expense')->with('item.pickup.schedule')->get();
+    }else if ($start_date != null && $end_date != null) {
+      $successways = Way::whereBetween('delivery_date', [$start_date,$end_date])->with('item.expense')->with('item.pickup.schedule')->whereHas('item.pickup.schedule',function ($query) use ($client_id){
         $query->where('client_id',$client_id);
-      })->with('item')->get();
+      })->get();
     }else{
-      $successways = Way::whereNotNull('delivery_date')->whereHas('item.pickup.schedule',function ($query) use ($client_id){
+      $successways = Way::whereNotNull('delivery_date')->with('item.expense')->with('item.pickup.schedule')->whereHas('item.pickup.schedule',function ($query) use ($client_id){
         $query->where('client_id',$client_id);
-      })->with('item')->get();
+      })->get();
     }
 
     return Datatables::of($successways)->addIndexColumn()->toJson();

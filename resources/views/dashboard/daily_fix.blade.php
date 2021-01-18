@@ -26,6 +26,7 @@
                     <label for="InputClient">{{ __("Select Client")}}:</label>
                     <select class="form-control" id="InputClient" name="client">
                       <optgroup label="Select Client">
+                        <option value="0">Choose Client</option>
                         @foreach($clients as $client)
                           <option value="{{$client->id}}" data-name="{{$client->clientname}}" data-owner="{{$client->owner}}" data-account="{{$client->account}}">{{$client->clientname}}</option>
                         @endforeach
@@ -66,7 +67,23 @@
                       <th>Remittance Value</th>
                     </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody>
+                    
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
                 </table>
               </div>
             </div>
@@ -102,8 +119,10 @@
     })
 
     function showmytable(client_id,inputStartDate,inputEndDate) {
+      // alert('hi')
       var url="{{route('getsuccessways')}}";
       $('#mytable').dataTable({
+        "destroy": true,
         "pageLength": 100,
         "bPaginate": true,
         "bLengthChange": true,
@@ -113,7 +132,7 @@
         "bAutoWidth": true,
         "bStateSave": true,
         "aoColumnDefs": [
-        { 'bSortable': false, 'aTargets': [ -1,0] }
+          { 'bSortable': false, 'aTargets': [ -1,0] }
         ],
         "bserverSide": true,
         "bprocessing":true,
@@ -131,58 +150,127 @@
               return 'completed'
             }
           },
-          {"data": "item.receiver_name"},
-          {"data": "item.receiver_address"},
-          {"data": "delivery_date"},
-          {"data": "item.deposit"},
-          {"data": "item.delivery_fees"},
-          {"data": "item.delivery_fees"},
-          {"data": "item.delivery_fees"},
-          // {
-          //   "data":"item.assign_date",
-          //   render:function(data){
-          //     var date=new Date(data);
-          //     date =date.toLocaleDateString(undefined, {year:'numeric'})+ '-' +date.toLocaleDateString(undefined, {month:'numeric'})+ '-' +date.toLocaleDateString(undefined, {day:'2-digit'})
-          //      return date;
-          //   }
-          // },
-          // {
-          //   "data":"item.pickup.schedule.client.user.name"
-          // },
-          // {"data":"item.receiver_name"},
-          // {
-          //   "data":"item.township.name"
-          // },
-          // {
-          //   "data":"delivery_man.user.name"
-          // },
-          // {
-          //   "data":"item.deposit",
-          //   render:function(data){
-          //     return `${thousands_separators(data)}`
-          //   }
-          // },
-          // {
-          //   "data":"item.delivery_fees",
-          //   render:function(data){
-          //     return `${thousands_separators(data)}`
-          //   }
-          // },
-          // {
-          //   "data":null,
-          //    render:function(data, type, full, meta){
-          //     var wayediturl="{{route('items.edit',":id")}}"
-          //     wayediturl=wayediturl.replace(':id',data.item.id);
-          //     var waydeleteurl="{{route('deletewayassign',":id")}}"
-          //     waydeleteurl=waydeleteurl.replace(':id',data.item.id);
-          //     return`<a href="#" class="btn btn-sm btn-primary detail" data-id="${data.item.id}">{{ __("Detail")}}</a>
-          //     <a href="${wayediturl}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
-          //     <a href="${waydeleteurl}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">{{ __("Delete")}}</a>`
-          //    }
-          // }
+          {"data": "item.receiver_name",
+            render:function (data) {
+              return `${data}`
+            }
+          },
+          {"data": "item.receiver_address",
+            render:function (data) {
+              return `${data}`
+            }
+          },
+          {"data": "delivery_date",
+            render:function (data) {
+              return `${formatDate(data)}`
+            }
+          },
+          {"data": "item",
+            render:function (data) {
+              if (data.paystatus == 1) {
+                return thousands_separators(Number(data.deposit)+Number(data.delivery_fees)+Number(data.other_fees))
+              }else if(data.paystatus == 2){
+                return 0;
+              }else if(data.paystatus == 3){
+                return thousands_separators(Number(data.delivery_fees)+Number(data.other_fees))
+              }else if(data.paystatus == 4){
+                return thousands_separators(Number(data.deposit))
+              }
+            }
+          },
+          {"data": "item.delivery_fees",
+            render:function (data) {
+              return `${thousands_separators(data)}`
+            }
+          },
+          {"data": "item",
+            render:function (data) {
+              if (data.expense!=null) {
+                var bus_gate_fees = Number(data.expense.amount)
+                return `${thousands_separators(bus_gate_fees)} / ${thousands_separators(data.other_fees)}`
+              }else{
+                return `${thousands_separators(data.other_fees)}`
+              }
+            }
+          },
+          {"data": null,
+            render:function (data) {
+              return `${data}`
+            }
+          },
         ],
+        footerCallback: function (row, data) {
+          var table = $('#mytable').DataTable();
+          var api = table,data;
+          
+          // Remove the formatting to get integer data for summation
+          var intVal = function ( i ) {
+              return typeof i === 'string' ?
+                  i.replace(/[\$,]/g, '')*1 :
+                  typeof i === 'number' ?
+                      i : 0;
+          };
+
+          // Total over all pages
+          if(data.length > 0){
+              
+            // var price = data[0].item.deposit;
+            cod_total =  api
+                .column(7 )
+                .data()
+                .reduce( function (a, b) {
+                   return intVal(a) + intVal(b);
+                    
+                }, 0 );
+
+            cod_pageTotal = api
+                .column( 7, { page: 'current'} )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b) ;
+                    
+                }, 0 );
+
+            delivery_fee_total = api
+                .column( 8 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+ 
+            // Total over this page
+            delivery_fee_pageTotal = api
+                .column( 8, { page: 'current'} )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            $( api.column( 7 ).footer() ).html(
+                thousands_separators(cod_pageTotal) ,
+            );
+
+            $( api.column( 8 ).footer() ).html(
+                thousands_separators( delivery_fee_pageTotal ),
+            );
+
+            }
+        },
         "info":false
       });
+    }
+
+    function formatDate(input) {
+      var datePart = input.match(/\d+/g),
+      year = datePart[0].substring(0,4), // get only two digits
+      month = datePart[1], day = datePart[2];
+      return day+'-'+month+'-'+year;
+    }
+
+    function thousands_separators(num){
+      var num_parts = num.toString().split(".");
+      num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return num_parts.join(".");
     }
   })
 </script>

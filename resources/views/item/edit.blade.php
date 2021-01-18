@@ -93,7 +93,7 @@
 
                 <div class="form-group mygate">
                   <label for="mygate">{{ __("Sender Gate")}}:</label><br>
-                  <select class="js-example-basic-single  " id="mygate" name="mygate"  >
+                  <select class="js-example-basic-single" id="mygate" name="mygate"  >
                     <option value="">{{ __("Choose Gate")}}</option>
                     @foreach($sendergates as $row)
                       <option value="{{$row->id}}" @if($item->sender_gate_id==$row->id) selected @endif>{{$row->name}}</option>
@@ -104,7 +104,7 @@
 
                 <div class="form-group myoffice">
                   <label for="myoffice">{{ __("Sender PostOffice")}}:</label><br>
-                  <select class="js-example-basic-single  " id="myoffice" name="myoffice"  >
+                  <select class="js-example-basic-single" id="myoffice" name="myoffice"  >
                     <option value="">{{ __("Choose Post Office")}}</option>
                     @foreach($senderoffice as $row)
                       <option value="{{$row->id}}" @if($item->sender_postoffice_id==$row->id) selected @endif>{{$row->name}}</option>
@@ -116,7 +116,7 @@
                 <div class="form-group">
                   <input type="hidden" name="oldtownship" value="{{$item->township_id}}" id="oldtownship">
                   <label for="InputReceiverTownship">Receiver Township:</label>
-                  <select class="form-control mytownship" id="InputReceiverTownship" name="receiver_township">
+                  <select class="js-example-basic-single form-control mytownship" id="InputReceiverTownship" name="receiver_township">
                     <optgroup label="Choose Township">
                       <option>Choose township</option>
                       @foreach($townships as $row)
@@ -371,6 +371,7 @@
         })
         $("#InputReceiverTownship").html(html);
         let oldtownship = $('#oldtownship').val();
+        alert(oldtownship)
         $(`#InputReceiverTownship option:eq(${oldtownship})`).prop('selected', true)
       })
     }
