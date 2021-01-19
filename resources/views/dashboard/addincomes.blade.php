@@ -273,6 +273,8 @@
           // console.log(response)
           if (response.deposit == 0 && (response.sender_gate_id!=null || response.sender_postoffice_id!=null)) {
             $('.carryfees').show();
+          }else{
+            $("#carryfees").val('');
           }
         })
       })

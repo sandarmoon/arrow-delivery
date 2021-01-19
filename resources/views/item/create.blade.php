@@ -340,7 +340,6 @@
           $(".paidamount").show();
         }else{
           $(".paidamount").hide();
-
         }
       })
 
@@ -622,12 +621,13 @@
         var notallpaid_deposit = 0;
         var allpaid_delivery_fees = Number($("#InputDeliveryFees").val());
         var allpaid_other_fees = Number($("#other").val());
+        if ($(".paystatus option:selected").val() == 4) {
+          var notallpaid_deposit=Number($("#InputDeposit").val());
+        }
       }else{
+        var notallpaid_deposit=Number($("#InputDeposit").val());
         var allpaid_delivery_fees = 0;
         var allpaid_other_fees = 0;
-      }
-      if ($(".paystatus option:selected").val() == 4) {
-        var notallpaid_deposit=Number($("#InputDeposit").val());
       }
 
       var url="{{route('lastitem')}}";

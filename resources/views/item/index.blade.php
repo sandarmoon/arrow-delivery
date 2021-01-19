@@ -35,7 +35,7 @@
             <div class="tab-content mt-3" id="myTabContent">
               <div class="tab-pane fade active show" id="collect">
                 <div class="table-responsive">
-                  <table class="table table-bordered" id="checktable">
+                  <table class="table table-bordered dataTable" id="checktable">
                     <thead>
                       <tr>
                         <th>{{ __("#")}}</th>
@@ -361,19 +361,19 @@
       $("#export").hide();
       setTimeout(function(){ $('.myalert').hide(); showDiv2() },3000);
 
-      $('#checktable').dataTable({
-        "pageLength": 100,
-        "bPaginate": true,
-        "bLengthChange": true,
-        "bFilter": true,
-        "bSort": true,
-        "bInfo": true,
-        "bAutoWidth": true,
-        "bStateSave": true,
-        "aoColumnDefs": [
-            { 'bSortable': false, 'aTargets': [ -1,0] }
-        ]
-      });
+      // $('#checktable').dataTable({
+        // "pageLength": 100,
+        // "bPaginate": true,
+        // "bLengthChange": true,
+        // "bFilter": true,
+        // "bSort": true,
+        // "bInfo": true,
+        // "bAutoWidth": true,
+        // "bStateSave": true,
+        // "aoColumnDefs": [
+        //     { 'bSortable': false, 'aTargets': [ -1,0] }
+        // ],
+      // });
 
       $('.wayassign').click(function () {
         var ways = [];

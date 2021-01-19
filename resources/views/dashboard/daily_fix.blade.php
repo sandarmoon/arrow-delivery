@@ -185,6 +185,7 @@
           },
           {"data": "item",
             render:function (data) {
+              console.log(data)
               if (data.expense!=null) {
                 var bus_gate_fees = Number(data.expense.amount)
                 return `${thousands_separators(bus_gate_fees)} / ${thousands_separators(data.other_fees)}`
