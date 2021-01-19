@@ -450,7 +450,7 @@
                       <td>
                         <div class="animated-checkbox">
                           <label class="mb-0">
-                            <input type="checkbox" name="incomes[]" value="${row.id}" data-amount="${Number(delivery_fees)+Number(deposit)}"><span class="label-text"> </span>
+                            <input type="checkbox" name="incomes[]" value="${row.id}" data-amount="${Number(delivery_fees)+Number(deposit)+Number(busgate_othercharges)}"><span class="label-text"> </span>
                           </label>
                         </div>
                       </td>

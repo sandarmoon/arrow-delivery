@@ -26,7 +26,7 @@
           <h3 class="tile-title d-inline-block">{{ __("Delivery Men List")}}</h3>
           <a href="{{route('delivery_men.create')}}" class="btn btn-sm btn-primary float-right"><i class="fa fa-plus" aria-hidden="true"></i> {{ __("Add New")}}</a>
           <div class="table-responsive">
-            <table class="table dataTable">
+            <table class="table table-bordered dataTable">
               <thead>
                 <tr>
                   <th>{{ __("#")}}</th>

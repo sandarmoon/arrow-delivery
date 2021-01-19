@@ -34,7 +34,7 @@
           
           
           <div class="table-responsive">
-            <table class="table" id="waystable">
+            <table class="table table-bordered" id="waystable">
               <thead>
                 <tr>
                   <th>{{ __("#")}}</th>
@@ -68,20 +68,19 @@
       }
     });
 
-    function thousands_separators(num)
-    {
+    function thousands_separators(num){
       var num_parts = num.toString().split(".");
       num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       return num_parts.join(".");
     }
 
     $('.search_btn').click(function () {
-        var sdate = $('#InputStartDate').val();
-        var edate = $('#InputEndDate').val();
-// console.log(start_date, end_date)
-        var url="{{route('getwayhistory')}}";
-        var i=1;
-         $('#waystable').DataTable({
+      var sdate = $('#InputStartDate').val();
+      var edate = $('#InputEndDate').val();
+      var url="{{route('getwayhistory')}}";
+      var i=1;
+      $('#waystable').DataTable({
+        "pageLength": 100,
         "processing": true,
         "serverSide": true,
         destroy:true,
@@ -94,37 +93,36 @@
             dataType:'json',
         },
         "columns": [
-         {"data":'DT_RowIndex'},
-        { "data": "item.codeno",},
-        { "data": "item.pickup.schedule.client.user.name" },
-        { "data": "delivery_man.user.name" },
-        {"data":"status_code",
-           render:function(data){
-            if(data=="001"){
-              return "success"
-            }else if(data=="002"){
-              return "return"
-            }else if(data=="005"){
-              return "pending"
-            }else if(data=="003"){
-              return "reject"
+          {"data":'DT_RowIndex'},
+          { "data": "item.codeno",},
+          { "data": "item.pickup.schedule.client.user.name" },
+          { "data": "delivery_man.user.name" },
+          {"data":"status_code",
+            render:function(data){
+              if(data=="001"){
+                return "success"
+              }else if(data=="002"){
+                return "return"
+              }else if(data=="005"){
+                return "pending"
+              }else if(data=="003"){
+                return "reject"
+              }
             }
-           }
-        },
-        { "data": "remark",
-          render:function(data){
-            if(data==null){
-              return "-"
-            }else{
-              return data
+          },
+          { "data": "remark",
+            render:function(data){
+              if(data==null){
+                return "-"
+              }else{
+                return data
+              }
             }
           }
-        }
         ],
         "info":false
-    });
-        
-      })
+      });
+    })
   })
 </script>
 @endsection

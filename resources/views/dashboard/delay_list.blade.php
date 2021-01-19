@@ -60,9 +60,9 @@
                         </td>
                         <td class="text-danger align-middle">{{$row->township->name}}</td>
                         <td class="align-middle">
-                          {{$row->receiver_name}} <span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
+                          <span class="d-block">{{$row->receiver_name}}</span> <span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
                         </td>
-                        <td class="align-middle">{{$row->expired_date}}</td>
+                        <td class="align-middle">{{Carbon\Carbon::parse($row->expired_date)->format('d-m-Y')}}</td>
                         <td class="align-middle">{{number_format($row->deposit)}}</td>
                         <td class="align-middle">{{number_format($row->delivery_fees)}}</td>
                         <td class="align-middle">{{number_format($row->other_fees)}}</td>

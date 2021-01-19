@@ -42,7 +42,7 @@
           
           
           <div class="table-responsive">
-            <table class="table" id="picktable">
+            <table class="table table-bordered" id="picktable">
               <thead>
                 <tr>
                   <th>{{ __("#")}}</th>

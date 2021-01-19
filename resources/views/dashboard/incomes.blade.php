@@ -18,7 +18,7 @@
           <h3 class="tile-title d-inline-block">{{ __("Incomes List")}} ({{$mytime->toFormattedDateString()}})</h3>
           <a href="{{route('incomes.create')}}" class="btn btn-sm btn-primary float-right">{{ __("Add Income")}}</a>
           <div class="table-responsive">
-            <table class="table dataTable">
+            <table class="table table-bordered dataTable">
               <thead>
                 <tr>
                   <th>#</th>
@@ -45,12 +45,14 @@
                   <td>{{number_format($row->bank_amount)}}</td>
                 </tr>
                 @endforeach
+              </tbody>
+              <tfoot>
                 <tr>
                   <td colspan="4">{{ __("Total Amount")}}:</td>
                   <td>{{number_format($ctotal)}}</td>
                   <td>{{number_format($btotal)}}</td>
                 </tr>
-              </tbody>
+              </tfoot>
             </table>
           </div>
         </div>

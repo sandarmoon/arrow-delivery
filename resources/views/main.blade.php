@@ -127,9 +127,9 @@
           <ul class="treeview-menu">
             <li><a class="treeview-item {{ Request::is('settings/cities*') ? 'active' : '' }}" href="{{route('cities.index')}}"><i class="icon fa fa-circle-o"></i> {{ __("Cities")}}</a></li>
             <li><a class="treeview-item {{ Request::is('settings/townships*') ? 'active' : '' }}" href="{{route('townships.index')}}"><i class="icon fa fa-circle-o"></i> {{ __("Townships")}}</a></li>
-            <li><a class="treeview-item {{ Request::is('settings/statuses*') ? 'active' : '' }}" href="{{route('statuses.index')}}"><i class="icon fa fa-circle-o"></i> {{ __("Delivery Status Codes")}}</a></li>
+            {{-- <li><a class="treeview-item {{ Request::is('settings/statuses*') ? 'active' : '' }}" href="{{route('statuses.index')}}"><i class="icon fa fa-circle-o"></i> {{ __("Delivery Status Codes")}}</a></li> --}}
             <li><a class="treeview-item {{ Request::is('settings/expense_types*') ? 'active' : '' }}" href="{{route('expense_types.index')}}"><i class="icon fa fa-circle-o"></i> {{ __("Expense Types")}}</a></li>
-            <li><a class="treeview-item {{ Request::is('settings/payment_types*') ? 'active' : '' }}" href="{{route('payment_types.index')}}"><i class="icon fa fa-circle-o"></i> {{ __("Payment Types")}}</a></li>
+            {{-- <li><a class="treeview-item {{ Request::is('settings/payment_types*') ? 'active' : '' }}" href="{{route('payment_types.index')}}"><i class="icon fa fa-circle-o"></i> {{ __("Payment Types")}}</a></li> --}}
             <li><a class="treeview-item {{ Request::is('settings/banks*') ? 'active' : '' }}" href="{{route('banks.index')}}"><i class="icon fa fa-circle-o"></i> {{ __("Banks")}}</a></li>
             <li><a class="treeview-item {{ Request::is('settings/sendergate*') ? 'active' : '' }}" href="{{route('sendergate.index')}}"><i class="icon fa fa-circle-o"></i> {{ __("Sender Gate")}}</a></li>
              <li><a class="treeview-item {{ Request::is('settings/senderoffice*') ? 'active' : '' }}" href="{{route('senderoffice.index')}}"><i class="icon fa fa-circle-o"></i> {{ __("Sender Post Office")}}</a></li>
@@ -156,7 +156,7 @@
         <li><a class="app-menu__item {{ Request::is('delivery_men*') ? 'active' : '' }}" href="{{route('delivery_men.index')}}"><i class="app-menu__icon fa fa-user-circle-o"></i><span class="app-menu__label">{{ __("Delivery Men")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('reject_list') ? 'active' : '' }}" href="{{route('reject_list')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label ">{{ __("Reject Ways")}}<span class=" ml-2 badge badge-danger badge-pill rejectcount"></span></span></a></li>
         <li><a class="app-menu__item {{ Request::is('delay_list') ? 'active' : '' }}" href="{{route('delay_list')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">{{ __("Delay List")}} <span class="ml-2 badge badge-danger badge-pill delaycount"></span></span></a></li>
-        {{-- <li><a class="app-menu__item {{ Request::is('return_list') ? 'active' : '' }}" href="{{route('return_list')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">Return List</span></a></li> --}}
+        <li><a class="app-menu__item {{ Request::is('daily_fix') ? 'active' : '' }}" href="{{route('daily_fix')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">Daily Fix</span></a></li>
         <li><a class="app-menu__item {{ Request::is('debt_list') ? 'active' : '' }}" href="{{route('debt_list')}}"><i class="app-menu__icon fa fa-list-alt"></i><span class="app-menu__label">{{ __("Debit List")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('incomes*') ? 'active' : '' }}" href="{{route('incomes')}}"><i class="app-menu__icon fa fa-files-o"></i><span class="app-menu__label">{{ __("Income")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('expenses*') ? 'active' : '' }}" href="{{route('expenses.index')}}"><i class="app-menu__icon fa fa-files-o"></i><span class="app-menu__label">{{ __("Expense")}}</span></a></li>
@@ -181,7 +181,7 @@
         @role('client')
         <li><a class="app-menu__item {{ Request::is('schedules*') ? 'active' : '' }}" href="{{route('schedules.index')}}"><i class="app-menu__icon fa fa-calendar-check-o"></i><span class="app-menu__label">{{ __("Pickup Appointments")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('cancel*') ? 'active' : '' }}" href="{{route('cancel.index')}}"><i class="app-menu__icon fa fa-calendar-check-o"></i><span class="app-menu__label">{{ __("Cancel List")}}</span></a></li>
-        <li><a class="app-menu__item {{ Request::is('debt_list') ? 'active' : '' }}" href="{{route('debt_list')}}"><i class="app-menu__icon fa fa-list-alt"></i><span class="app-menu__label">{{ __("Debit List")}}</span></a></li>
+        {{-- <li><a class="app-menu__item {{ Request::is('debt_list') ? 'active' : '' }}" href="{{route('debt_list')}}"><i class="app-menu__icon fa fa-list-alt"></i><span class="app-menu__label">{{ __("Debit List")}}</span></a></li> --}}
         <li><a class="app-menu__item {{ Request::is('pickup_history') ? 'active' : '' }}" href="{{route('pickup_history')}}"><i class="app-menu__icon fa fa-list-alt"></i><span class="app-menu__label">{{ __("Pickup History")}}</span></a></li>
         @endrole
 

@@ -26,7 +26,7 @@
           <h3 class="tile-title d-inline-block">Clients List</h3>
           <a href="{{route('clients.create')}}" class="btn btn-sm btn-primary float-right"><i class="fa fa-plus" aria-hidden="true"></i> Add New</a>
           <div class="table-responsive">
-            <table class="table" id="dataTable">
+            <table class="table table-bordered" id="dataTable">
               <thead>
                 <tr>
                   <th>#</th>

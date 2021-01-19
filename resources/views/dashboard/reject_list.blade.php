@@ -17,7 +17,7 @@
           @php $mytime = Carbon\Carbon::now(); @endphp
           <h3 class="tile-title d-inline-block">{{ __("Reject List")}} ({{$mytime->toFormattedDateString()}})</h3>
           <div class="table-responsive">
-            <table class="table dataTable">
+            <table class="table table-bordered dataTable">
               <thead>
                 <tr>
                   <th>#</th>

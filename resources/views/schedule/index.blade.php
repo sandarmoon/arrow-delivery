@@ -37,7 +37,7 @@
             <div class="tab-content mt-3" id="myTabContent">
               <div class="tab-pane fade @role('client'){{'active show'}}@endrole" id="schedules">
                 <div class="table-responsive">
-                  <table class="table dataTable">
+                  <table class="table table-bordered dataTable">
                     <thead>
                       <tr>
                         <th>{{ __("#")}}</th>
@@ -80,7 +80,7 @@
               </div>
               <div class="tab-pane fade @role('staff'){{'active show'}}@endrole" id="assigned">
                 <div class="table-responsive">
-                  <table class="table dataTable">
+                  <table class="table table-bordered dataTable">
                     <thead>
                       <tr>
                         <th>{{ __("#")}}</th>

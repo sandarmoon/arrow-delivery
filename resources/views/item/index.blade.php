@@ -81,7 +81,7 @@
                         </td>
                         <td class="text-danger align-middle">{{$row->township->name}}</td>
                         <td class="align-middle">
-                          {{$row->receiver_name}} <span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
+                          <span class="d-block">{{$row->receiver_name}}</span><span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
                         </td>
                         <td class="align-middle">
                           {{$row->expired_date}}
@@ -223,7 +223,7 @@
                 </div>
 
                 <div class="table-responsive">
-                  <table class="table table-bordered" >
+                  <table class="table table-bordered dataTable">
                     <thead>
                       <tr>
                         <th>{{ __("Codeno")}}</th>
