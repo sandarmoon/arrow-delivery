@@ -515,7 +515,13 @@
 
             html+=`<tr class="${allpaid}">
                   <td class="align-middle">${v.item.codeno} <span class="badge badge-danger badge-pill">${payment_type}</span></td>
-                  <td class="align-middle"><span class="d-block">${v.item.pickup.schedule.client.user.name}</span>(${v.item.pickup.schedule.client.phone_no})</td>
+                  <td class="align-middle">`
+            if (v.item.pickup == null) {
+              html+=`<span class="d-block">-</span>`
+            }else{
+              html+=`<span class="d-block">${v.item.pickup.schedule.client.user.name}</span>(${v.item.pickup.schedule.client.phone_no})`
+            }
+            html+=`</td>
                   <td class="align-middle">
                     <span class="d-block">${v.item.receiver_name}</span>
                     (${v.item.receiver_phone_no})
