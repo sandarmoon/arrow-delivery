@@ -514,7 +514,10 @@
             }
 
             html+=`<tr class="${allpaid}">
-                  <td class="align-middle">${v.item.codeno} <span class="badge badge-danger badge-pill">${payment_type}</span></td>
+                  <td class="align-middle">
+                    <span class="d-block">${v.item.codeno}</span> 
+                    <span class="badge badge-danger badge-pill">${payment_type}</span>
+                  </td>
                   <td class="align-middle">`
             if (v.item.pickup == null) {
               html+=`<span class="d-block">-</span>`
