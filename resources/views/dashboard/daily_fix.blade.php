@@ -63,7 +63,8 @@
                       <th>Delivery Date</th>
                       <th>COD Total</th>
                       <th>Delivery Charges</th>
-                      <th>Bus Gate / Other Fees</th>
+                      <th>Bus Gate</th>
+                      <th>Other Fees</th>
                       <th>Remittance Value</th>
                     </tr>
                   </thead>
@@ -72,6 +73,7 @@
                   </tbody>
                   <tfoot>
                     <tr>
+                      <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
@@ -165,44 +167,97 @@
               return `${formatDate(data)}`
             }
           },
-          {"data": "item",
-            render:function (data) {
-              if (data.paystatus == 1) {
-                return thousands_separators(Number(data.deposit)+Number(data.delivery_fees)+Number(data.other_fees))
-              }else if(data.paystatus == 2){
+          {data: function (data) {
+              if (data.item.paystatus == 1) {
+                return thousands_separators(Number(data.item.deposit)+Number(data.item.delivery_fees)+Number(data.item.other_fees))
+              }else if(data.item.paystatus == 2){
                 return 0;
-              }else if(data.paystatus == 3){
-                return thousands_separators(Number(data.delivery_fees)+Number(data.other_fees))
-              }else if(data.paystatus == 4){
-                return thousands_separators(Number(data.deposit))
+              }else if(data.item.paystatus == 3){
+                return thousands_separators(Number(data.item.delivery_fees)+Number(data.item.other_fees))
+              }else if(data.item.paystatus == 4){
+                return thousands_separators(Number(data.item.deposit))
               }
             }
           },
+
+
+
           {"data": "item.delivery_fees",
             render:function (data) {
               return `${thousands_separators(data)}`
             }
           },
-          {"data": "item",
-            render:function (data) {
-              console.log(data)
-              if (data.expense!=null) {
-                var bus_gate_fees = Number(data.expense.amount)
-                return `${thousands_separators(bus_gate_fees)} / ${thousands_separators(data.other_fees)}`
+
+
+          {data:function (data) {
+              // console.log(data)
+              if (data.item.expense!=null) {
+                var bus_gate_fees = Number(data.item.expense.amount)
+                var other_fees = data.item.other_fees;
+                return `${thousands_separators(bus_gate_fees)}`
               }else{
-                return `${thousands_separators(data.other_fees)}`
+                return `0`
               }
             }
           },
-          {"data": null,
-            render:function (data) {
-              return `${data}`
+
+          {data:function (data) {
+              // console.log(data)
+              if (data.item.expense ==null) {
+                
+                return `0`
+              }else{
+                return `${thousands_separators(data.item.other_fees)}`
+              }
+            }
+          },
+
+          { data:function (data) {
+            var cod_total = 0;
+            var delivery_fees = 0;
+            var other_fees = 0;
+            var total = 0;
+            var digit = '';
+
+              if (data.item.paystatus == 1) {
+                cod_total += data.item.deposit+data.item.delivery_fees+data.item.other_fees
+              }else if(data.item.paystatus == 2){
+                cod_total += 0;
+              }else if(data.item.paystatus == 3){
+                cod_total += data.item.delivery_fees+data.item.other_fees;
+              }else if(data.item.paystatus == 4){
+                cod_total += data.item.deposit
+              }
+              // console.log(cod_total);
+
+              if (data.item.expense != null) {
+                var bus_gate_fees = data.item.expense.amount
+                console.log(bus_gate_fees);
+                other_fees += Number(bus_gate_fees) + Number(data.item.other_fees)
+              }else{
+                other_fees += data.item.other_fees
+              }
+
+              console.log(other_fees+delivery_fees);
+
+              delivery_fees += data.item.delivery_fees;
+              total += cod_total - (other_fees+delivery_fees);
+              // if(total < 0){
+              //  var number = total.toString().split('-');
+              //  digit +=  ${thousands_separators(number[1])};
+              //  console.log(digit);
+              // }else{
+              //   digit += thousands_separators(total);
+              // }
+              return thousands_separators(total);
+
             }
           },
         ],
         footerCallback: function (row, data) {
           var table = $('#mytable').DataTable();
           var api = table,data;
+          var deposit_html = '';
           
           // Remove the formatting to get integer data for summation
           var intVal = function ( i ) {
@@ -216,16 +271,16 @@
           if(data.length > 0){
               
             // var price = data[0].item.deposit;
-            cod_total =  api
-                .column(7 )
-                .data()
-                .reduce( function (a, b) {
-                   return intVal(a) + intVal(b);
-                    
-                }, 0 );
 
-            cod_pageTotal = api
-                .column( 7, { page: 'current'} )
+            deposit =  api
+                .column(6 )
+                .data()
+                .reduce( function (a, b) { 
+                }, 0 );
+                  
+
+            deposit = api
+                .column( 6, { page: 'current'} )
                 .data()
                 .reduce( function (a, b) {
                     return intVal(a) + intVal(b) ;
@@ -233,7 +288,7 @@
                 }, 0 );
 
             delivery_fee_total = api
-                .column( 8 )
+                .column( 7 )
                 .data()
                 .reduce( function (a, b) {
                     return intVal(a) + intVal(b);
@@ -241,18 +296,84 @@
  
             // Total over this page
             delivery_fee_pageTotal = api
-                .column( 8, { page: 'current'} )
+                .column( 7, { page: 'current'} )
                 .data()
                 .reduce( function (a, b) {
                     return intVal(a) + intVal(b);
                 }, 0 );
 
+            bus_gate =  api
+                .column(8)
+                .data()
+                .reduce( function (a, b) {
+                   return intVal(a) + intVal(b);
+                    
+                }, 0 );
+
+            bus_gate_pageTotal = api
+                .column( 8, { page: 'current'} )
+                .data()
+                .reduce( function (a, b) {
+                  return intVal(a)+intVal(b);
+                    
+                }, 0 );
+
+
+            other_fees =  api
+                .column(9)
+                .data()
+                .reduce( function (a, b) {
+                   return intVal(a) + intVal(b);
+                    
+                }, 0 );
+
+            other_fees_pageTotal = api
+                .column( 9, { page: 'current'} )
+                .data()
+                .reduce( function (a, b) {
+                  return intVal(a)+intVal(b);
+                    
+                }, 0 );
+
+
+            remittance_value =  api
+                .column(10)
+                .data()
+                .reduce( function (a, b) {
+                   return intVal(a) + intVal(b);
+                    
+                }, 0 );
+
+             remittance_value_pageTotal = api
+                .column( 10, { page: 'current'} )
+                .data()
+                .reduce( function (a, b) {
+                  return intVal(a)+intVal(b);
+                    
+                }, 0 );
+
+            
+
+            $( api.column( 6 ).footer() ).html(
+                thousands_separators(deposit) ,
+            );
+
             $( api.column( 7 ).footer() ).html(
-                thousands_separators(cod_pageTotal) ,
+                thousands_separators( delivery_fee_pageTotal ),
             );
 
             $( api.column( 8 ).footer() ).html(
-                thousands_separators( delivery_fee_pageTotal ),
+                thousands_separators(bus_gate_pageTotal) ,
+            );
+
+            $( api.column( 9 ).footer() ).html(
+                thousands_separators(other_fees_pageTotal) ,
+            );
+
+            
+
+            $( api.column( 10 ).footer() ).html(
+                thousands_separators( remittance_value_pageTotal ),
             );
 
             }
