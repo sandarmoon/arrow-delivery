@@ -238,6 +238,8 @@
                     </thead>
                     <tbody class="tbody">
                     </tbody>
+                    <tfoot class="tfoot">
+                    </tfoot>
                   </table>
                 </div>
 
@@ -525,12 +527,12 @@
                   <td class="align-middle">${thousands_separators(Number(v.item.deposit)+Number(v.item.delivery_fees)+Number(v.item.other_fees))}</td>
                 </tr>`
           })
-
-          html+=`<tr>
+          $(".tbody").html(html);
+          var html2 =`<tr>
                   <td colspan="4">Total Amount</td>
                   <td colspan="4">${thousands_separators(total)} Ks</td>
                 </tr>`;
-          $(".tbody").html(html);
+          $(".tfoot").html(html2);
           if(res.length==0){
              $("#export").hide();
           }else{

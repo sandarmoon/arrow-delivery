@@ -618,17 +618,21 @@
       console.log(Number($("#InputDeposit").val()))
       var pickup_id = $("#pickup_id").val();
 
-      if($(".paystatus option:selected").val() == 2){
+      if($(".paystatus option:selected").val() == 2 || $(".paystatus option:selected").val() == 4){
         var notallpaid_deposit = 0;
         var allpaid_delivery_fees = Number($("#InputDeliveryFees").val());
+        var allpaid_other_fees = Number($("#other").val());
       }else{
-        var notallpaid_deposit=Number($("#InputDeposit").val());
         var allpaid_delivery_fees = 0;
+        var allpaid_other_fees = 0;
+      }
+      if ($(".paystatus option:selected").val() == 4) {
+        var notallpaid_deposit=Number($("#InputDeposit").val());
       }
 
       var url="{{route('lastitem')}}";
       $.get(url,{pickup_id,pickup_id},function(res){
-        let depositamount = Number(res) + (notallpaid_deposit-allpaid_delivery_fees)
+        let depositamount = Number(res) + (notallpaid_deposit-allpaid_delivery_fees-allpaid_other_fees)
         $('#depositamount').html(`${depositamount} Ks`);
         $('.depositamount').val(depositamount)
         $("#depositModal").modal('show');

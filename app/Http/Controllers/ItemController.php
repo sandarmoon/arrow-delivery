@@ -445,9 +445,10 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
 
     public function lastitem(Request $request){
       $id = $request->pickup_id;
-      $allpaid_delivery_fees = Item::where('pickup_id', $id)->where('paystatus','2')->sum('delivery_fees');
+      $allpaid_delivery_fees = Item::where('pickup_id', $id)->where('paystatus','2')->orWhere('paystatus','4')->sum('delivery_fees');
+      $allpaid_other_fees = Item::where('pickup_id', $id)->where('paystatus','2')->orWhere('paystatus','4')->sum('other_fees');
       $notallpaid_deposit = Item::where('pickup_id', $id)->where('paystatus','<>','2')->sum('deposit');
-      $depositamount = $notallpaid_deposit-$allpaid_delivery_fees;
+      $depositamount = $notallpaid_deposit-$allpaid_delivery_fees-$allpaid_other_fees;
       return $depositamount;
     }
 
