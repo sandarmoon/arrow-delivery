@@ -144,6 +144,8 @@ Route::middleware('auth')->group(function () {
   
   Route::post('waybydeliveryman','MainController@waybydeliveryman')->name('waybydeliveryman');
   Route::post('/createpdf', 'MainController@createpdf')->name('createpdf');
+  Route::post('/create_daily_fix_pdf', 'MainController@create_daily_fix_pdf')->name('create_daily_fix_pdf');
+  
 
   Route::post('makeDelivered','MainController@makeDeliver')->name('makeDeliver');
   Route::post('retuenDeliver','MainController@retuenDeliver')->name('retuenDeliver');

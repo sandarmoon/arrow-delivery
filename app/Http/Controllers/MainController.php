@@ -1123,6 +1123,33 @@ public function profit(Request $request){
     return $pdf->stream();
   }
 
+  // for daily fix
+  public function create_daily_fix_pdf(Request $request){
+    $client_id = $request->client;
+    $start_date = $request->start_date;
+    $end_date = $request->end_date;
+
+    if ($start_date != null && $end_date != null && $client_id == 0) {
+      $successways = Way::whereHas('income')->whereBetween('delivery_date', [$start_date,$end_date])->with('item.expense')->with('item.pickup.schedule')->get();
+    }else if ($start_date != null && $end_date != null) {
+      $successways = Way::whereHas('income')->whereBetween('delivery_date', [$start_date,$end_date])->with('item.expense')->with('item.pickup.schedule')->whereHas('item.pickup.schedule',function ($query) use ($client_id){
+        $query->where('client_id',$client_id);
+      })->get();
+    }else{
+      $successways = Way::whereHas('income')->whereNotNull('delivery_date')->with('item.expense')->with('item.pickup.schedule')->whereHas('item.pickup.schedule',function ($query) use ($client_id){
+        $query->where('client_id',$client_id);
+      })->get();
+    }
+    
+    $data = array('ways' => $successways, 'client' => Client::find($client_id), 'start_date' => $start_date, 'end_date' => $end_date);
+    view()->share('data',$data);
+
+    $pdf = PDF::loadView('dashboard.daily_fix_pdf')->setPaper('a4', 'landscape');
+    // download PDF file with download method
+    // return $pdf->download( $deliname.'.pdf');
+    return $pdf->stream();
+  }
+
   public function pendingwaysbytownship(Request $request){
     $id=$request->id;
     //dd($id);
@@ -1186,7 +1213,6 @@ public function profit(Request $request){
 
 
     }
-
     return Datatables::of($successways)->addIndexColumn()->toJson();
   }
 }

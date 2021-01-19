@@ -89,6 +89,15 @@
                 </table>
               </div>
             </div>
+            <div class="col-md-12">
+              <form action="{{route("create_daily_fix_pdf")}}" method="post" class="d-none" id="printpdf">
+                @csrf
+                <input type="hidden" name="client" id="client">
+                <input type="hidden" name="start_date" id="start_date">
+                <input type="hidden" name="end_date" id="end_date">
+                <button type="submit" class="btn btn-info">Print</button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -118,6 +127,10 @@
       let inputStartDate = $('#InputStartDate').val();
       let inputEndDate = $('#InputEndDate').val();
       showmytable(client_id, inputStartDate, inputEndDate);
+      $('#printpdf').removeClass('d-none')
+      $('#client').val(client_id)
+      $('#start_date').val(inputStartDate)
+      $('#end_date').val(inputEndDate)
     })
 
     function showmytable(client_id,inputStartDate,inputEndDate) {
@@ -193,7 +206,6 @@
               // console.log(data)
               if (data.item.expense!=null) {
                 var bus_gate_fees = Number(data.item.expense.amount)
-                var other_fees = data.item.other_fees;
                 return `${thousands_separators(bus_gate_fees)}`
               }else{
                 return `0`
@@ -203,12 +215,7 @@
 
           {data:function (data) {
               // console.log(data)
-              if (data.item.expense ==null) {
-                
-                return `0`
-              }else{
-                return `${thousands_separators(data.item.other_fees)}`
-              }
+              return `${thousands_separators(data.item.other_fees)}`
             }
           },
 
