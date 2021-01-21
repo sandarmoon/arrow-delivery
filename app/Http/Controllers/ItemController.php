@@ -254,6 +254,7 @@ class ItemController extends Controller
         $township = $request->receiver_township;
 
       }elseif($request->rcity==2){
+
         $validator = $request->validate([
             'mygate' => ["required"],
             
@@ -282,7 +283,9 @@ class ItemController extends Controller
         $item->receiver_phone_no=$request->receiver_phoneno;
 
         if($request->receiver_township != 0){
-        $item->township_id=$township;
+          $item->township_id=$township;
+        }else{
+          $item->township_id=$township;
         }
 
         $item->expired_date=$request->expired_date;
@@ -295,9 +298,13 @@ class ItemController extends Controller
 
         if($request->mygate!=null){
           $item->sender_gate_id=$gate;
+        }else{
+          $item->sender_gate_id=$gate;
         }
 
         if($request->myoffice!=null){
+          $item->sender_postoffice_id=$office;
+        }else{
           $item->sender_postoffice_id=$office;
         }
         $role=Auth::user()->roles()->first();

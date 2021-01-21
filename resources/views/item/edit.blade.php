@@ -148,17 +148,20 @@
                 </div>
 
                 <div class="form-group row">
-                  <div class="col">
-                    <label for="InputDeposit">Item Price:</label>
-                    <input class="form-control" id="InputDeposit" type="number" name="deposit" value="{{$item->deposit}}">
-                    <div class="form-control-feedback text-danger"> {{$errors->first('deposit') }} </div>
-                  </div>
 
                   <div class="col">
                     <label for="InputDeliveryFees">Delivery Fees:</label>
                     <input class="form-control" id="InputDeliveryFees" type="number" name="delivery_fees" value="{{$item->delivery_fees}}">
                     <div class="form-control-feedback text-danger"> {{$errors->first('delivery_fees') }} </div>
                   </div>
+                  
+                  <div class="col">
+                    <label for="InputDeposit">Item Price:</label>
+                    <input class="form-control" id="InputDeposit" type="number" name="deposit" value="{{$item->deposit}}">
+                    <div class="form-control-feedback text-danger"> {{$errors->first('deposit') }} </div>
+                  </div>
+
+                  
 
                   <div class="col">
                     <label for="InputAmount">Amount:</label>
