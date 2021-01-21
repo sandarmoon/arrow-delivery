@@ -507,7 +507,7 @@
            html+=`<span class="badge badge-danger">reject</span>`}
            html+= `<small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> ${v.item.expired_date}</small></h5>`
             html+=`<div class="card-body">
-            <h5 class="card-title">Item Code: ${v.item.codeno}}</h5>
+            <h5 class="card-title">Item Code: ${v.item.codeno}</h5>
           <h5 class="card-title">Delivered Address: `
               if(v.item.sender_gate_id!=null){
               html+=`${v.item.sender_gate.name}`}
@@ -582,7 +582,7 @@
            html+=`<span class="badge badge-danger">reject</span>`}
            html+= `<small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> ${v.item.expired_date}</small></h5>`
             html+=`<div class="card-body">
-            <h5 class="card-title">Item Code: ${v.item.codeno}}</h5>
+            <h5 class="card-title">Item Code: ${v.item.codeno}</h5>
           <h5 class="card-title">Delivered Address: `
               if(v.item.sender_gate_id!=null){
               html+=`${v.item.sender_gate.name}`}
@@ -657,7 +657,7 @@
            html+=`<span class="badge badge-danger">reject</span>`}
            html+= `<small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> ${v.item.expired_date}</small></h5>`
             html+=`<div class="card-body">
-            <h5 class="card-title">Item Code: ${v.item.codeno}}</h5>
+            <h5 class="card-title">Item Code: ${v.item.codeno}</h5>
           <h5 class="card-title">Delivered Address: `
               if(v.item.sender_gate_id!=null){
               html+=`${v.item.sender_gate.name}`}

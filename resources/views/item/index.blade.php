@@ -79,7 +79,18 @@
                           {{'-'}}
                           @endif
                         </td>
-                        <td class="text-danger align-middle">{{$row->township->name}}</td>
+                        <td class="text-danger align-middle">
+                          @if($row->township)
+                          {{$row->township->name}}
+                          @elseif($row->SenderGate)
+                          {{$row->SenderGate->name}}<br>
+                          <span class="badge badge-dark">Gate</span>
+
+                          @elseif($row->SenderPostoffice)
+                          {{$row->SenderPostoffice->name}}<br>
+                          <span class="badge badge-dark">Post Office</span>
+                          @endif
+                        </td>
                         <td class="align-middle">
                           <span class="d-block">{{$row->receiver_name}}</span><span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
                         </td>
@@ -175,7 +186,20 @@
                         @endif
                         </td>
                         <td class="align-middle">{{$way->item->receiver_name}}</td>
-                        <td class="align-middle">{{$way->item->township->name}}</td>
+
+                        <td class="align-middle">
+                          @if($way->item->township)
+                          {{$way->item->township->name}}
+                          @elseif($way->item->SenderGate)
+                          {{$way->item->SenderGate->name}}
+
+                          @elseif($way->item->SenderPostoffice)
+                          {{$way->item->SenderPostoffice->name}}
+
+                          @endif
+
+
+                        </td>
                         <td class="text-danger align-middle">
                           <span class="d-block">{{$way->delivery_man->user->name}}</span> 
                           @foreach($data as $dd)

@@ -27,6 +27,8 @@ class DeliveryMenTableSeeder extends Seeder
       $delivery_man1->phone_no = '09-123456789';
       $delivery_man1->address = 'Baho Street, Mayangone Township';
       $delivery_man1->user_id = $user1->id;
+      $delivery_man1->city_id = 1;
+
       $delivery_man1->save();
 
       $delivery_man1->townships()->attach([25,26]);
@@ -45,6 +47,8 @@ class DeliveryMenTableSeeder extends Seeder
       $delivery_man2->phone_no = '09-123456789';
       $delivery_man2->address = 'Baho Street, Mayangone Township';
       $delivery_man2->user_id = $user2->id;
+      $delivery_man2->city_id = 1;
+
       $delivery_man2->save();
 
       $delivery_man2->townships()->attach([2,3,4]);

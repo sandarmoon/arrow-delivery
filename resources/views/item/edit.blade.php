@@ -99,7 +99,7 @@
                       <option value="{{$row->id}}" @if($item->sender_gate_id==$row->id) selected @endif>{{$row->name}}</option>
                     @endforeach
                   </select>
-                  <div class="form-control-feedback text-danger"> {{$errors->first('receiver_township') }} </div>
+                  <div class="form-control-feedback text-danger"> {{$errors->first('mygate') }} {{$errors->first('receiver_township') }} {{$errors->first('myoffice') }} </div>
                 </div>
 
                 <div class="form-group myoffice">
@@ -110,10 +110,10 @@
                       <option value="{{$row->id}}" @if($item->sender_postoffice_id==$row->id) selected @endif>{{$row->name}}</option>
                     @endforeach
                   </select>
-                  <div class="form-control-feedback text-danger"> {{$errors->first('receiver_township') }} </div>
+                  <div class="form-control-feedback text-danger"> {{$errors->first('mygate') }} {{$errors->first('receiver_township') }} {{$errors->first('myoffice') }} </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group township">
                   <input type="hidden" name="oldtownship" value="{{$item->township_id}}" id="oldtownship">
                   <label for="InputReceiverTownship">Receiver Township:</label>
                   <select class="js-example-basic-single form-control mytownship" id="InputReceiverTownship" name="receiver_township">
@@ -124,7 +124,7 @@
                       @endforeach
                     </optgroup>
                   </select>
-                  <div class="form-control-feedback text-danger"> {{$errors->first('receiver_township') }} </div>
+                  <div class="form-control-feedback text-danger"> {{$errors->first('mygate') }} {{$errors->first('receiver_township') }} {{$errors->first('myoffice') }} </div>
                 </div>
 
                 <div class="form-group row">
@@ -209,8 +209,7 @@
 @section('script')
 <script type="text/javascript">
   $(document).ready(function(){
-    $(".mygate").hide();
-    $(".myoffice").hide();
+    
     setTimeout(function(){ $('.myalert').hide(); showDiv2() },3000);
     var today = new Date();
     var numberofdays = 3;
@@ -328,7 +327,7 @@
           $(".paystatus").val(1);
           $(".paystatus").attr('readonly',false);
           $(".pickdate").val(incityday);
-          $('#InputDeposit').prop('disabled',false);
+          $('#InputDeposit').prop('readonly',false);
           getTownship(id);
 
           let oldtownship = $('#oldtownship').val();
@@ -380,35 +379,67 @@
     var checked=$("input[name='rcity']:checked").val();
     console.log(checked);
     if(checked==1){
-      getTownship(checked);
+      // getTownship(checked);
       $(".mygate").hide();
       $(".myoffice").hide();
+      $('.township').show();
+      $('#InputDeposit').prop("readonly",false);
+
+      var paystatus = $('.paystatus :checked').val();
+      if(paystatus == 2){
+        $('#InputDeposit').prop('readonly',true);
+      }
+      if(paystatus == 3){
+        $('#InputDeposit').prop('readonly',true);
+      }
+
+
     }else if(checked==2){
-      getTownship(checked);
+      // getTownship(checked);
       $(".mygate").show();
       $(".myoffice").hide();
+      $('.township').hide();
+          $(".paystatus").attr('readonly',true);
+
+      $('#InputDeposit').prop("readonly",true);
     }else if(checked==3){
       $(".mygate").hide();
       $(".myoffice").show();
-      getTownship(checked);
+      $('.township').hide();
+
+      $('#InputDeposit').prop("readonly",true);
+      $(".paystatus").attr('readonly',true);
+
+
+      // getTownship(checked);
     }
 
     $("#gate").click(function(){
       $(".mygate").show();
       $(".myoffice").hide();
+      $(".township").hide();
+      $('#InputDeliveryFees').val(1000);
+      $('#InputAmount').val($('#InputDeliveryFees').val());
     })
 
     $("#incity").click(function(){
       $(".mygate").hide();
       $(".myoffice").hide();
+      $(".township").show();
+
     })
 
     $("#post").click(function(){
       $(".mygate").hide();
       $(".myoffice").show();
+      $(".township").hide();
+      $('#InputDeliveryFees').val(1000);
+      $('#InputAmount').val($('#InputDeliveryFees').val());
     })
 
     $('.js-example-basic-single').select2({width:'100%'});
+
+
 
     // if type is allpaid, set item price into 0
     $('.paystatus').change(function () {

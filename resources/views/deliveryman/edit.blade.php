@@ -62,6 +62,25 @@
               <div class="form-control-feedback text-danger"> {{$errors->first('address') }} </div>
             </div>
 
+             <div class="form-group">
+              <input type="checkbox" name="agent" class="agent" id="agentcheck" @if($deliveryMan->city->name != "Yangon") checked="" @endif>
+              <label for="agentcheck">For agent</label>
+            </div>
+
+            
+            <div class="form-group citydiv">
+                <label for="city">{{ __("City")}}:</label>
+                <select class="js-example-basic-multiple form-control" name="city" >
+                  <option>{{{ __("Choose City")}}}</option>
+                  @foreach($cities as $row)
+                  @if($row->name != "Yangon")
+                  <option value="{{$row->id}}" @if($deliveryMan->city_id == $row->id) selected="selected" @endif>{{$row->name}}</option>
+                  @endif
+                  @endforeach
+                   
+                </select>
+            </div>
+
             <div class="form-group">
               <label for="township">{{ __("Delivery Townships")}}:</label>
               @php
@@ -105,6 +124,23 @@
     $(".cpsw").hide();
       }
     })
+
+    if ($('.agent').is(":checked"))
+      {
+        $('.citydiv').show();
+      }else{
+        $('.citydiv').hide();
+      }
+
+
+    $('.agent').click(function(){
+        if ($('.agent').is(":checked"))
+        {
+          $('.citydiv').show();
+        }else{
+          $('.citydiv').hide();
+        }
+      })
   })
 </script>
 @endsection

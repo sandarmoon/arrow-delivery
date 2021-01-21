@@ -83,12 +83,29 @@ class ItemController extends Controller
         'receiver_name'  => ['required','string'],
         'receiver_phoneno'=>['required','string'],
         'receiver_address'=>['required','string'],
-        'receiver_township'=>['required','not_in:null'],
+        // 'receiver_township'=>['required','not_in:null'],
         'expired_date'=>['required','date'],
         // 'deposit'=>['required'],
         'delivery_fees'=>['required'],
         'amount'=>['required'],
       ]);
+
+      if($request->rcity==1){
+        $validator = $request->validate([
+            'receiver_township'=> ["required"],
+        ]);
+      }elseif($request->rcity==2){
+        $validator = $request->validate([
+            'mygate' => ["required"],
+            
+        ]);
+      }elseif($request->rcity==3){
+        $validator = $request->validate([
+           
+            'myoffice'=> ["required"],
+        ]);
+      }
+      // dd($request->mygate);
 
       if($validator){
         //dd('c');
@@ -98,7 +115,11 @@ class ItemController extends Controller
         $item->receiver_name=tounicode($request->receiver_name);
         $item->receiver_address=tounicode($request->receiver_address);
         $item->receiver_phone_no=$request->receiver_phoneno;
+
+        if($request->receiver_township != 0){
         $item->township_id=$request->receiver_township;
+        }
+
         $item->expired_date=$request->expired_date;
         $item->deposit=$request->deposit;
         $item->delivery_fees=$request->delivery_fees;
@@ -212,23 +233,58 @@ class ItemController extends Controller
      */
     public function update(Request $request, Item $item)
     {
+      // dd($request);
       $validator = $request->validate([
         'receiver_name'  => ['required','string'],
         'receiver_phoneno'=>['required','string'],
         'receiver_address'=>['required','string'],
-        'receiver_township'=>['required'],
+        // 'receiver_township'=>['required'],
         'expired_date'=>['required','date'],
-        'deposit'=>['required'],
+        // 'deposit'=>['required'],
         'delivery_fees'=>['required'],
         'amount'=>['required'],
       ]);
+
+      if($request->rcity==1){
+        $validator = $request->validate([
+            'receiver_township'=> ["required"],
+        ]);
+        $gate = null;
+        $office = null;
+        $township = $request->receiver_township;
+
+      }elseif($request->rcity==2){
+        $validator = $request->validate([
+            'mygate' => ["required"],
+            
+        ]);
+
+        $gate = $request->mygate;
+        $office = null;
+        $township = null;
+
+
+      }elseif($request->rcity==3){
+        $validator = $request->validate([
+           
+            'myoffice'=> ["required"],
+        ]);
+        $gate = null;
+        $office = $request->myoffice;
+        $township = null;
+      }
+      // dd($request->deposit);
 
       if($validator){
         $item->codeno=$request->codeno;
         $item->receiver_name=tounicode($request->receiver_name);
         $item->receiver_address=tounicode($request->receiver_address);
         $item->receiver_phone_no=$request->receiver_phoneno;
-        $item->township_id=$request->receiver_township;
+
+        if($request->receiver_township != 0){
+        $item->township_id=$township;
+        }
+
         $item->expired_date=$request->expired_date;
         $item->deposit=$request->deposit;
         $item->delivery_fees=$request->delivery_fees;
@@ -238,10 +294,11 @@ class ItemController extends Controller
         $item->remark=$request->remark;
 
         if($request->mygate!=null){
-          $item->sender_gate_id=$request->mygate;
+          $item->sender_gate_id=$gate;
         }
+
         if($request->myoffice!=null){
-          $item->sender_postoffice_id=$request->myoffice;
+          $item->sender_postoffice_id=$office;
         }
         $role=Auth::user()->roles()->first();
         $rolename=$role->name;

@@ -55,6 +55,24 @@
               <div class="form-control-feedback text-danger"> {{$errors->first('address') }} </div>
             </div>
 
+            <div class="form-group">
+              <input type="checkbox" name="agent" class="agent" id="agentcheck">
+              <label for="agentcheck">For agent</label>
+            </div>
+
+            <div class="form-group citydiv">
+              <label for="township">{{ __("City")}}:</label>
+              <select class="js-example-basic-multiple form-control" name="city" id="city">
+                <option>{{{ __("Choose City")}}}</option>
+                @foreach($cities as $row)
+                @if($row->name != "Yangon")
+                <option value="{{$row->id}}">{{$row->name}}</option>
+                @endif
+                @endforeach
+                 
+              </select>
+            </div>
+
            <div class="form-group">
               <label for="township">{{ __("Delivery Townships")}}:</label>
               <select class="js-example-basic-multiple form-control" name="township[]" multiple="multiple" id="township">
@@ -81,6 +99,17 @@
 <script type="text/javascript">
   $(document).ready(function() {
     $('.js-example-basic-multiple').select2();
+    $('.citydiv').hide();
+    
+    $('.agent').click(function(){
+        if ($('.agent').is(":checked"))
+        {
+          $('.citydiv').show();
+        }else{
+          $('.citydiv').hide();
+        }
+      })
+   
   });
 </script>
 @endsection

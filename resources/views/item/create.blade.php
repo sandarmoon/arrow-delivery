@@ -99,7 +99,7 @@
                       <option value="{{$row->id}}">{{$row->name}}</option>
                     @endforeach
                   </select>
-                  <div class="form-control-feedback text-danger"> {{$errors->first('receiver_township') }} </div>
+                  {{-- <div class="form-control-feedback text-danger"> {{$errors->first('mygate') }} </div> --}}
                 </div>
 
                 <div class="form-group myoffice">
@@ -110,7 +110,7 @@
                       <option value="{{$row->id}}">{{$row->name}}</option>
                     @endforeach
                   </select>
-                  <div class="form-control-feedback text-danger"> {{$errors->first('receiver_township') }} </div>
+                  {{-- <div class="form-control-feedback text-danger"> </div> --}}
                 </div>
 
                 <div class="form-group township">
@@ -121,7 +121,7 @@
                       <option value="{{$row->id}}">{{$row->name}}</option>
                     @endforeach
                   </select>
-                  <div class="form-control-feedback text-danger"> {{$errors->first('receiver_township') }} </div>
+                  <div class="form-control-feedback text-danger"> {{$errors->first('receiver_township') }} {{$errors->first('mygate') }}  {{$errors->first('myoffice') }} </div>
                 </div>
 
                 <div class="form-group row">
@@ -571,16 +571,25 @@
     $("#gate").click(function(){
       $(".mygate").show();
       $(".myoffice").hide();
+      $('.township').hide();
+      $('#InputDeliveryFees').val(1000);
+      $('#InputAmount').val($('#InputDeliveryFees').val());
     })
 
     $("#incity").click(function(){
       $(".mygate").hide();
       $(".myoffice").hide();
+      $('.township').show();
+
     })
 
     $("#post").click(function(){
       $(".mygate").hide();
       $(".myoffice").show();
+      $('.township').hide();
+      $('#InputDeliveryFees').val(1000);
+      $('#InputAmount').val($('#InputDeliveryFees').val());
+
     })
 
     // Single select example if using params obj or configuration seen above

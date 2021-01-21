@@ -7,6 +7,7 @@ use App\User;
 use App\Township;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use App\City;
 
 class DeliveryMenController extends Controller
 {
@@ -28,8 +29,9 @@ class DeliveryMenController extends Controller
      */
     public function create()
     {
+        $cities = City::all();
         $townships=Township::orderBy('name','asc')->get();
-        return view('deliveryman.create',compact('townships'));
+        return view('deliveryman.create',compact('townships','cities'));
     }
 
     /**
@@ -59,6 +61,13 @@ class DeliveryMenController extends Controller
             $delivery_man->phone_no =$request->phone;
             $delivery_man->address = $request->address;
             $delivery_man->user_id = $user->id;
+
+            if($request->agent){
+                $delivery_man->city_id = $request->city;
+            }else{
+                $delivery_man->city_id = 1;
+            }
+
             $delivery_man->save();
             $delivery_man->townships()->attach($request->township);
            
@@ -89,9 +98,10 @@ class DeliveryMenController extends Controller
      */
     public function edit(DeliveryMan $deliveryMan)
     {
-         $townships=Township::orderBy('name','asc')->get();
+        $cities = City::all();
+        $townships=Township::orderBy('name','asc')->get();
         $deliveryMan=$deliveryMan;
-        return view('deliveryman.edit',compact('deliveryMan','townships'));
+        return view('deliveryman.edit',compact('deliveryMan','townships','cities'));
     }
 
     /**
@@ -124,6 +134,11 @@ class DeliveryMenController extends Controller
             $deliveryMan->phone_no =$request->phone;
             $deliveryMan->address = $request->address;
             $deliveryMan->user_id = $user->id;
+            if($request->agent){
+                $deliveryMan->city_id = $request->city;
+            }else{
+                $deliveryMan->city_id = 1;
+            }
             $deliveryMan->save();
             if($request->township!=null){
                  $deliveryMan->townships()->detach();

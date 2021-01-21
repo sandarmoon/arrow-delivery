@@ -29,7 +29,7 @@ class CreateItemsTable extends Migration
             // 0,1 (ပုံမှန်ဆို မပေးရသေးတာ)
             
             $table->unsignedBigInteger('pickup_id');
-            $table->unsignedBigInteger('township_id');
+            $table->unsignedBigInteger('township_id')->nullable();
             $table->unsignedBigInteger('staff_id');
             $table->string('error_remark')->nullable();
             $table->unsignedBigInteger('sender_gate_id')->nullable();
