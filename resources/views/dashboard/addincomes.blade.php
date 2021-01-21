@@ -200,7 +200,21 @@
                       html+=` <span class="badge badge-success">Only Item Price</span>`
                     }
                     html+=`</td>
-                    <td>${row.item.township.township_name}</td>
+                    <td>`
+                    if(row.item.township){
+                      html += `${row.item.township.township_name}`
+
+                    }else if(row.item.sendergate){
+
+                        html += `${row.item.sendergate.gate_name}<br>
+                        <span class="badge badge-dark">Gate</span>`
+                    }else if(row.item.senderpostoffice){
+
+                      html += `${row.item.senderpostoffice.postoffice_name}<br>
+                      <span class="badge badge-dark">Post office</span>`
+
+                    }
+                    html+=`</td>
                     <td>
                       ${row.item.receiver_name}
                     </td>`

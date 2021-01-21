@@ -454,7 +454,18 @@
                           </label>
                         </div>
                       </td>
-                      <td>${row.receiver_name} - ${row.township.name}`;
+                      <td>${row.receiver_name} -`;
+                      
+                      if(row.township){
+                      html2 += `${row.township.name}`;
+
+                    }else if(row.sender_gate){
+                        html2 += `${row.sender_gate.name}`;
+
+                    }else if(row.sender_postoffice){
+                      html2 += `${row.sender_postoffice.name}`;
+
+                    };
 
             if(row.paystatus == 2){
               html2 +=` <span class="badge badge-info">All Paid</span>`;

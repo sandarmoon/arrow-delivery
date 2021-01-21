@@ -5,6 +5,9 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\TownshipResource;
 use App\Township;
+use App\SenderGate;
+use App\SenderPostoffice;
+
 class ItemResource extends JsonResource
 {
     /**
@@ -27,6 +30,10 @@ class ItemResource extends JsonResource
             'paystatus' => $this->paystatus,
             'status' => $this->status,
             'township'=>new TownshipResource(Township::find($this->township_id)),
+            'senderpostoffice'=>new SenderPostofficeResource(SenderPostoffice::find($this->sender_postoffice_id)),
+            'sendergate'=>new SenderGateResource(SenderGate::find($this->sender_gate_id)),
+
+
         ];
     }
 }

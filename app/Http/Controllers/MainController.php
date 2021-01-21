@@ -218,7 +218,7 @@ class MainController extends Controller
     })->where('status',0)->where(function ($query) {
         $query->where('paystatus', 2)
             ->orWhere('paystatus', 4);
-    })->with('way')->with('township')->get();
+    })->with('way')->with('township')->with('SenderGate')->with('SenderPostoffice')->get();
    
     $rejects =  Way::with('item.pickup.schedule')->whereHas('item.pickup.schedule', function($query) use ($id){
       $query->where('client_id', $id);
@@ -270,13 +270,14 @@ class MainController extends Controller
 
   public function fix_debit(Request $request)
   {
+    // dd($request);
     // dd(json_decode($request->expenses)[0]->amount);
     $request->validate([
       'client' => 'required'
     ]);
 
     $notiarray=explode(",", $request->noti);
-    //dd($notiarray);
+    // dd($notiarray);
     $mytime = Carbon\Carbon::now();
     $date=$mytime->toDateString();
 
@@ -288,7 +289,9 @@ class MainController extends Controller
     // $expenses = Expense::where('client_id',$id)->where('status',2)->with('expense_type')->get();
     if ($request->expenses) {
       $expenses = json_decode($request->expenses);
+
       foreach ($expenses as $row) {
+        // dd($row);
         $expense = Expense::find($row->id);
         $expense->status = 1;
         $expense->save();
@@ -484,6 +487,7 @@ public function profit(Request $request){
   // get the success ways by deliveryman
   public function successways($id)
   {
+    
     $paymenttypes=PaymentType::all();
     $banks=Bank::all();
     $ways =Way::withTrashed()->doesntHave('income')->where('ways.delivery_man_id',$id)
