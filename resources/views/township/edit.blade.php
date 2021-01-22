@@ -19,7 +19,7 @@
           <form action="{{route('townships.update',$township->id)}}" method="POST">
             @csrf
             @method('put')
-            <div class="row my-3">
+            {{-- <div class="row my-3">
               <div class="col-4">
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="rcity" id="incity" value="1" @if($township->status==1) checked @endif>
@@ -47,7 +47,7 @@
                 </div>
               </div>
               <div class="form-control-feedback text-danger"> {{$errors->first('rcity') }} </div>
-            </div>
+            </div> --}}
 
             <div class="form-group">
               <label for="InputCityName">{{ __("Name")}}:</label>
@@ -61,7 +61,7 @@
                <div class="form-control-feedback text-danger"> {{$errors->first('delifee') }} </div>
             </div>
 
-            <div class="form-group">
+            {{-- <div class="form-group">
               <label for="city">{{ __("City")}}</label>
               <select class="form-control" id="city" name="city">
                 <option>Choose City</option>
@@ -69,7 +69,7 @@
                 <option value="{{$row->id}}_{{$row->name}}" @if($township->city_id==$row->id) selected @endif>{{$row->name}}</option>
                 @endforeach
               </select>
-            </div>
+            </div> --}}
 
             <div class="form-group">
               <button class="btn btn-primary" type="submit">{{ __("Save")}}</button>

@@ -19,7 +19,7 @@
           <form action="{{route('townships.store')}}" method="POST">
             @csrf
 
-            <div class="row my-3">
+            {{-- <div class="row my-3">
               <div class="col-4">
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="rcity" id="incity" value="1" checked>
@@ -47,7 +47,7 @@
                 </div>
               </div>
               <div class="form-control-feedback text-danger"> {{$errors->first('rcity') }} </div>
-            </div>
+            </div> --}}
             <div class="form-group townshipname">
               <label for="InputCityName">{{ __("Name")}}:</label>
               <input class="form-control" id="InputCityName" type="text" placeholder="Enter name" name="name">
@@ -60,7 +60,7 @@
                <div class="form-control-feedback text-danger"> {{$errors->first('delifee') }} </div>
             </div>
 
-            <div class="form-group cityname">
+            {{-- <div class="form-group cityname">
               <label for="city">{{ __("City")}}:</label>
               <select class="form-control" id="city" name="city">
                 <option>Choose City</option>
@@ -69,7 +69,7 @@
                 @endforeach
               </select>
               <div class="form-control-feedback text-danger"> {{$errors->first('city') }} </div>
-            </div>
+            </div> --}}
 
             <div class="form-group">
               <button class="btn btn-primary" type="submit">Save</button>

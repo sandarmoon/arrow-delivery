@@ -38,32 +38,34 @@ class TownshipController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->name);
         $validator = $request->validate([
-            'rcity'  => ['required'],
+            // 'rcity'  => ['required'],
+            'name' => ['required'],
             'delifee'=>['required','numeric'],
-            'city'=>['required']
+            // 'city'=>['required']
         ]);
 
-        $city=explode('_', $request->city);
+        // $city=explode('_', $request->city);
         //dd($city);
         if($validator){
-            $gate=" Gate";
-            $post=" Post Office";
+            // $gate=" Gate";
+            // $post=" Post Office";
             $township=new Township;
-            if($request->rcity==2){
-               $township->name=$city[1] .$gate; 
-               //dd("gate");
-            }
-             else if($request->rcity==3){
-               $township->name=$city[1] .$post; 
-               //dd("post");
-            }else{
-                 $township->name=$request->name;
-            }
-           
+            // if($request->rcity==2){
+            //    $township->name=$city[1] .$gate; 
+            //    //dd("gate");
+            // }
+            //  else if($request->rcity==3){
+            //    $township->name=$city[1] .$post; 
+            //    //dd("post");
+            // }else{
+            //      $township->name=$request->name;
+            // }
+            $township->name=$request->name;
             $township->delivery_fees=$request->delifee;
-            $township->city_id=$city[0];
-            $township->status=$request->rcity;
+            // $township->city_id=$city;
+            // $township->status=$request->rcity;
             $township->save();
             return redirect()->route('townships.index')->with("successMsg",'New Township is ADDED in your data');
         }
@@ -107,31 +109,30 @@ class TownshipController extends Controller
     public function update(Request $request, Township $township)
     {
         $validator = $request->validate([
-            'rcity'  => ['required'],
+            'name'  => ['required'],
             'delifee'=>['required','numeric'],
-            'city'=>['required']
+            // 'city'=>['required']
         ]);
-        $city=explode('_', $request->city);
+        // $city=explode('_', $request->city);
         //dd($city);
 
         if($validator){
-            $gate="Gate";
-            $post="post office";
-            $township=$township;
-            if($request->rcity==2){
-               $township->name=$request->name; 
-               //dd("gate");
-            }
-             else if($request->rcity==3){
-               $township->name=$request->name; 
-               //dd("post");
-            }else{
-                 $township->name=$request->name;
-            }
-           
+            // $gate="Gate";
+            // $post="post office";
+            // $township=$township;
+            // if($request->rcity==2){
+            //    $township->name=$request->name; 
+            //    //dd("gate");
+            // }
+            //  else if($request->rcity==3){
+            //    $township->name=$request->name; 
+            //    //dd("post");
+            // }else{
+            //      $township->name=$request->name;
+            // }
+            $township->name=$request->name;
             $township->delivery_fees=$request->delifee;
-            $township->city_id=$city[0];
-            $township->status=$request->rcity;
+            
             $township->save();
             return redirect()->route('townships.index')->with("successMsg",'Update successfully');
         }

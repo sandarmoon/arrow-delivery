@@ -31,7 +31,7 @@
                 <tr>
                   <th>{{ __("#")}}</th>
                   <th>{{ __("Name")}}</th>
-                  <th>{{ __("City")}}</th>
+                 {{--  <th>{{ __("City")}}</th> --}}
                   <th>{{ __("Delivery Fees")}}</th>
                   <th>{{ __("Actions")}}</th>
                 </tr>
@@ -42,7 +42,7 @@
                 <tr>
                   <td>{{$i++}}</td>
                   <td>{{$row->name}}</td>
-                  <td>{{$row->city->name}}</td>
+                  {{-- <td>{{$row->city->name}}</td> --}}
                   <td>{{number_format($row->delivery_fees)}} Ks</td>
                   <td>
                     <a href="{{route('townships.edit',$row->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
