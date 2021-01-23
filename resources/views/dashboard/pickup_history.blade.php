@@ -160,10 +160,11 @@
             }
           },
           { "data": "schedule.quantity" },
-          { "data": "items",
+          { "data": null,
              render:function (data) {
-              let total=allpaid_delivery_fees=carry_fees=0;
-              for(row of data){
+              let items = data.items
+              let total=allpaid_delivery_fees=carry_fees=prepaidtotal=0;
+              for(row of items){
                 if ((row.paystatus == 2 || row.paystatus == 4 ) && row.status==0) {
                   allpaid_delivery_fees += (Number(row.delivery_fees)+Number(row.other_fees))
                 }
@@ -173,7 +174,12 @@
                   allpaid_delivery_fees += carry_fees
                 }
               }
-              return thousands_separators(data.reduce((acc, row) => acc + Number(row.deposit), 0) - allpaid_delivery_fees);
+              total = items.reduce((acc, row) => acc + Number(row.deposit), 0)
+              if (data.expenses!=null) {
+                prepaidtotal = data.expenses.reduce((acc,row) => acc + Number(row.amount), 0)
+              }
+
+              return thousands_separators(total-allpaid_delivery_fees-prepaidtotal)
              }
           },
           { "data": "id",

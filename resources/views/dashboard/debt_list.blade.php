@@ -487,6 +487,12 @@
 
           for(let row of response.carryfees){
             let busgate_othercharges = row.amount;
+            let gate_or_postoffice = ''
+            if (row.item.sender_gate != null) {
+              gate_or_postoffice = row.item.sender_gate.name
+            }else{
+              gate_or_postoffice = row.item.sender_postoffice.name
+            }
             html2 +=`<tr>
                       <td>
                         <div class="animated-checkbox">
@@ -495,7 +501,7 @@
                           </label>
                         </div>
                       </td>
-                      <td>${row.item.receiver_name} - ${row.item.township.name} <span class="badge badge-info">carryfees</span></td>
+                      <td>${row.item.receiver_name} - ${gate_or_postoffice} <span class="badge badge-info">carryfees</span></td>
                       <td></td>
                       <td>${0}</td>
                       <td>${0}</td>

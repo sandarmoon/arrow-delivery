@@ -58,7 +58,17 @@
                             <span class="badge badge-danger">{{$row->codeno}}</span>
                           @endif
                         </td>
-                        <td class="text-danger align-middle">{{$row->township->name}}</td>
+                        <td class="text-danger align-middle">
+                          @if($row->township)
+                            {{$row->township->name}}
+                          @elseif($row->SenderGate)
+                            {{$row->SenderGate->name}}<br>
+                            <span class="badge badge-dark">Gate</span>
+                          @elseif($row->SenderPostoffice)
+                            {{$row->SenderPostoffice->name}}<br>
+                            <span class="badge badge-dark">Post Office</span>
+                          @endif
+                        </td>
                         <td class="align-middle">
                           <span class="d-block">{{$row->receiver_name}}</span> <span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
                         </td>

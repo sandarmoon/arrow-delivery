@@ -47,9 +47,19 @@
                     $sub += $carry_fees;
                   @endphp
                 @endif
+
+                @php $prepaidtotal=0; @endphp
+                @if(count($row->pickup->expenses)>0)
+                  @php 
+                    foreach ($row->pickup->expenses as $expense) {
+                      $prepaidtotal += $expense->amount;
+                    }
+                  @endphp
+                @endif
                 <tr>
-                  <td>{{$i++}}</td>
-                  <td>{{$row->codeno}}
+                  <td class="align-middle">{{$i++}}</td>
+                  <td class="align-middle">
+                    <span class="d-block">{{$row->codeno}}</span>
                     @if(($row->paystatus == 2 || $row->paystatus == 4) && ($row->status == 0))
                       @php $allpaid_color="text-danger"; @endphp
                       @if($row->paystatus == 2)
@@ -64,10 +74,18 @@
                       @php $allpaid_color=""; @endphp
                     @endif
                   </td>
-                  <td>{{$row->township->name}}</td>
-                  <td>{{$row->receiver_name}}</td>
-                  <td>{{$row->receiver_phone_no}}</td>
-                  <td>
+                  <td class="align-middle">
+                    @if($row->township)
+                    {{$row->township->name}}
+                    @elseif($row->SenderGate)
+                    {{$row->SenderGate->name}}
+                    @elseif($row->SenderPostoffice)
+                    {{$row->SenderPostoffice->name}}
+                    @endif
+                  </td>
+                  <td class="align-middle">{{$row->receiver_name}}</td>
+                  <td class="align-middle">{{$row->receiver_phone_no}}</td>
+                  <td class="align-middle">
                     @if($row->way==null)
                     <span class="badge badge-primary">
                       delay
@@ -91,11 +109,11 @@
                     @endif
 
                   </td>
-                  <td class="{{$allpaid_color}}">{{number_format($row->delivery_fees)}}</td>
-                  <td class="{{$allpaid_color}}">
+                  <td class="{{$allpaid_color}} align-middle">{{number_format($row->delivery_fees)}}</td>
+                  <td class="{{$allpaid_color}} align-middle">
                     {{number_format($row->other_fees+$carry_fees)}}
                   </td>
-                  <td>{{number_format($row->deposit)}}</td>
+                  <td class="align-middle">{{number_format($row->deposit)}}</td>
                 </tr>
                 @endforeach
 
@@ -104,6 +122,14 @@
                 <tr>
                   <td colspan="7">Total Amount</td>
                   <td colspan="2">{{number_format($total-$sub)}} Ks</td>
+                </tr>
+                <tr>
+                  <td colspan="7">Prepaid Amount</td>
+                  <td colspan="2">{{number_format($prepaidtotal)}} Ks</td>
+                </tr>
+                <tr>
+                  <td colspan="7">Balance</td>
+                  <td colspan="2">{{number_format($total-$sub-$prepaidtotal)}} Ks</td>
                 </tr>
               </tfoot>
             </table>

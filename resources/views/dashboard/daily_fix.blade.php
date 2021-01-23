@@ -193,8 +193,6 @@
             }
           },
 
-
-
           {"data": "item.delivery_fees",
             render:function (data) {
               return `${thousands_separators(data)}`
@@ -227,27 +225,27 @@
             var digit = '';
 
               if (data.item.paystatus == 1) {
-                cod_total += data.item.deposit+data.item.delivery_fees+data.item.other_fees
+                cod_total += Number(data.item.deposit)+Number(data.item.delivery_fees)+Number(data.item.other_fees)
               }else if(data.item.paystatus == 2){
                 cod_total += 0;
               }else if(data.item.paystatus == 3){
-                cod_total += data.item.delivery_fees+data.item.other_fees;
+                cod_total += Number(data.item.delivery_fees)+Number(data.item.other_fees);
               }else if(data.item.paystatus == 4){
-                cod_total += data.item.deposit
+                cod_total += Number(data.item.deposit)
               }
               // console.log(cod_total);
 
               if (data.item.expense != null) {
-                var bus_gate_fees = data.item.expense.amount
+                var bus_gate_fees = Number(data.item.expense.amount)
                 console.log(bus_gate_fees);
                 other_fees += Number(bus_gate_fees) + Number(data.item.other_fees)
               }else{
-                other_fees += data.item.other_fees
+                other_fees += Number(data.item.other_fees)
               }
 
               console.log(other_fees+delivery_fees);
 
-              delivery_fees += data.item.delivery_fees;
+              delivery_fees += Number(data.item.delivery_fees);
               total += cod_total - (other_fees+delivery_fees);
               // if(total < 0){
               //  var number = total.toString().split('-');

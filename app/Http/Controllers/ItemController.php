@@ -372,8 +372,7 @@ class ItemController extends Controller
         //dd($datecode);
         $pickup = Pickup::find($pid);
         // $townships=Township::all();
-        $townships = Township::orderBy('name','asc')->where('status',1)->get();
-
+        $townships = Township::orderBy('name','asc')->get();
         $sendergates=SenderGate::orderBy('name','asc')->get();
         $senderoffice=SenderPostoffice::orderBy('name','asc')->get();
 

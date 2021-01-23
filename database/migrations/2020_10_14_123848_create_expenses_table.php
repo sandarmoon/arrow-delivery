@@ -31,6 +31,7 @@ class CreateExpensesTable extends Migration
 
             $table->smallInteger('status'); // 0 (unpaid) / 1 (paid)
 
+            $table->date('expense_date')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

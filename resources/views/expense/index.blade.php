@@ -67,20 +67,25 @@
                  @foreach($expenses as $row)
                 <tr>
                   <td class="align-middle">{{$i++}}</td>
-                  <td class="align-middle">{{$row->created_at->format('d-m-Y')}}</td>
+                  <td class="align-middle">
+                    @if($row->expense_date == null)
+                    {{Carbon\Carbon::parse($row->created_at)->format('d-m-Y')}}
+                    @else
+                    {{Carbon\Carbon::parse($row->expense_date)->format('d-m-Y')}}
+                    @endif
+                  </td>
                   <td class="align-middle">{{number_format($row->amount)}} Ks</td>
                   <td class="align-middle">{{$row->expense_type->name}}</td>
                   <td class="align-middle">{{$row->description}}</td>
                   <td class="align-middle">
                     @if($row->expense_type_id!=1)
-                    <a href="{{route('expenses.edit',$row->id)}}" class="btn btn-warning">Edit</a>
-                    @endif
-                    {{-- <form action="{{ route('expenses.destroy',$row->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
-
+                    <a href="{{route('expenses.edit',$row->id)}}" class="btn btn-warning btn-sm">Edit</a>
+                    <form action="{{ route('expenses.destroy',$row->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                       @csrf
                       @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                  </form> --}}
+                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                    @endif
                   </td>
                 </tr>
                 @endforeach
@@ -141,10 +146,14 @@
         },
         "columns": [
           {"data":'DT_RowIndex'},
-          {"data": "created_at",
+          {"data": null,
             sortable:false,
             render:function(data){
-              return `${formatDate(data)}`;
+              if (data.expense_date == null) {
+                return `${formatDate(data.created_at)}`;
+              }else{
+                return `${formatDate(data.expense_date)}`;
+              }
             }
           },
           { "data": "amount",
@@ -154,12 +163,16 @@
           },
           { "data": "expense_type.name" },
           { "data": "description"},
-          { "data": "id",
+          { "data": null,
             sortable:false,
             render:function(data){
-              var routeurl="{{route('expenses.edit',':id')}}";
-              routeurl=routeurl.replace(':id',data);
-              return `<a class="btn btn-warning " href="${routeurl}" data-id="${data}">Edit</a>`;
+              if (data.expense_type_id != 1) {
+                var routeurl="{{route('expenses.edit',':id')}}";
+                routeurl=routeurl.replace(':id',data.id);
+                return `<a class="btn btn-warning btn-sm" href="${routeurl}" data-id="${data.id}">Edit</a>`;
+              }else{
+                return ''
+              }
             }
           }
         ],

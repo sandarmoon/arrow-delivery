@@ -56,7 +56,7 @@
                         @role('staff')
                           <td class="text-danger">{{$row->client->user->name}}</td>
                         @endrole
-                        <td class="align-middle">{{\Carbon\Carbon::parse($row->pickup_date)->format('d/m/Y')}}</td>
+                        <td class="align-middle">{{\Carbon\Carbon::parse($row->pickup_date)->format('d-m-Y')}}</td>
                         <td class="align-middle">{{$row->remark}}</td>
                         <td class="align-middle">{{$row->quantity}}</td>
                         <td class="align-middle">
@@ -98,6 +98,22 @@
                     <tbody class="assigntbody">
                       @php $i=1; @endphp
                       @foreach($pickups as $row)
+                      @if($row->items)
+                        @php 
+                          $allpaid_delivery_fees=$notallpaid_deposit= 0; 
+                          foreach ($row->items as $item) {
+                            if ($item->paystatus == "2" || $item->paystatus == "4") {
+                              $allpaid_delivery_fees += ($item->delivery_fees+$item->other_fees);
+                            }
+
+                            if ($item->paystatus != "2") {
+                              $notallpaid_deposit += $item->deposit;
+                            }
+                          }
+
+                          $depositamount = $notallpaid_deposit-$allpaid_delivery_fees;
+                        @endphp
+                      @endif
                       <tr>
                         <td class="align-middle">{{$i++}}</td>
                         @role('staff')<td class="text-danger align-middle">{{$row->schedule->client->user->name}}</td>@endrole
@@ -111,13 +127,18 @@
 
                            @endforeach
                         </td>
-                        <td class="align-middle">{{$row->schedule->quantity}}</td>
-                        <td class="align-middle">{{number_format($row->schedule->amount)}}</td>
+                        <td class="align-middle">{{$row->schedule->quantity}} </td>
+                        <td class="align-middle">
+                          @if(count($row->items)>0)
+                          <strike>{{number_format($row->schedule->amount)}}</strike>
+                          @else
+                            {{number_format($row->schedule->amount)}}
+                          @endif
+                           / {{number_format($depositamount)}}</td>
                         {{-- @php
                           $total_item_price = $row->item->sum('deposit');
                         @endphp --}}
                         {{-- <td class="align-middle">{{$total_item_price}}</td> --}}
-
                         <td class="align-middle">
                           @if($row->expense)
                             {{number_format($row->expense->amount)}}
@@ -136,7 +157,9 @@
                           @elseif($row->status == 4 && $row->schedule->quantity == count(($row->items)))
                             <button type="button" class="btn btn-sm btn-info">{{ __("completed")}}</button>
                             @if($row->expense)
-                              <button type="button" class="btn btn-sm btn-warning editprepaid" data-id="{{$row->id}}" data-amount="{{$row->expense->amount}}">Edit Prepaid Amount</button>
+                              <button type="button" class="btn btn-sm btn-warning editprepaid" data-id="{{$row->id}}" data-amount="{{$row->expense->amount}}" data-client_id="{{$row->schedule->client_id}}">Edit Prepaid Amount</button>
+                            @else
+                              <button type="button" class="btn btn-sm btn-success editprepaid" data-id="{{$row->id}}" data-amount="0" data-client_id="{{$row->schedule->client_id}}">Add Prepaid Amount</button>
                             @endif
                           @elseif($row->status==2)
                             <a href="{{route('checkitem',$row->id)}}" class="btn btn-sm btn-danger">{{ __("fail")}}</a>
@@ -308,6 +331,7 @@
           <div class="form-group prepaidamount">
             <label for="prepaidamount">{{ __("Amount")}}:</label>
             <input type="number" id="prepaidamount" class="form-control" name="prepaidamount">
+            <input type="hidden" id="client_id" class="form-control" name="client_id">
             <span class="Equantity error d-block" ></span>
           </div>
         </div>
@@ -402,13 +426,16 @@
         $('#editprepaid').modal('show');
         var id=$(this).data('id');
         var amount = $(this).data('amount');
+        var client_id = $(this).data('client_id');
         $("#pickup_id").val(id);
         $("#prepaidamount").val(amount);
+        $("#client_id").val(client_id);
       })
 
       $(".prepaidamountsave").click(function(){
         var pickup_id=$("#pickup_id").val();
         var prepaidamount=$("#prepaidamount").val();
+        var client_id=$("#client_id").val();
         // var bank_id=$("#bank").val();
         var url="{{route('editprepaidamount')}}";
           

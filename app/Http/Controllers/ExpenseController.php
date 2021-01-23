@@ -58,6 +58,7 @@ class ExpenseController extends Controller
             $bank= Bank::find($request->bank);
             if($request->amount <= $bank->amount){
             $expense=new Expense;
+            $expense->expense_date=$request->expense_date;
             $expense->description=$request->description;
             $expense->amount=$request->amount;
             $expense->expense_type_id=$request->expensetype;
@@ -130,6 +131,7 @@ class ExpenseController extends Controller
             $bank= Bank::find($request->bank);
             if($request->amount <= $bank->amount){
             $expense=$expense;
+            $expense->expense_date=$request->expense_date;
             $expense->description=$request->description;
             $expense->amount=$request->amount;
             $expense->expense_type_id=$request->expensetype;

@@ -42,4 +42,9 @@ class Pickup extends Model
   {
     return $this->hasOne('App\Expense');
   }
+
+  public function expenses()
+  {
+    return $this->hasMany('App\Expense');
+  }
 }

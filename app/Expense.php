@@ -8,7 +8,7 @@ class Expense extends Model
 {
   use SoftDeletes;
 	protected $fillable=[
-  	'amount', 'guest_amount', 'description', 'expense_type_id' , 'status', 'client_id', 'staff_id', 'city_id', 'item_id'
+  	'amount', 'guest_amount', 'description', 'expense_type_id' , 'status', 'client_id', 'staff_id', 'city_id', 'item_id', 'expense_date'
   ];
 
   public function expense_type()

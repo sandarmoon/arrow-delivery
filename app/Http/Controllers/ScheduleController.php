@@ -242,11 +242,6 @@ class ScheduleController extends Controller
             $schedule->quantity=$request->quantity;
             $schedule->amount=$request->amount;
         }
-            if($request->hasfile('file')){
-                $schedule->status=1;
-            }else{
-              $schedule->status=0;  
-            }
             $schedule->save();
             if($request->deliveryman){
                 $pickup=Pickup::where('schedule_id',$schedule->id)->first();

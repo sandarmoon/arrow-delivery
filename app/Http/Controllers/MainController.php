@@ -224,7 +224,7 @@ class MainController extends Controller
       $query->where('client_id', $id);
     })->where('status_code','003')->where('refund_date',null)->get();
 
-    $carryfees = Expense::where('client_id',$id)->where('status',2)->where('expense_type_id',5)->with('item.township')->get();
+    $carryfees = Expense::where('client_id',$id)->where('status',2)->where('expense_type_id',5)->with('item.township')->with('item.SenderGate')->with('item.SenderPostoffice')->get();
 
     $myarray=[];
     foreach ($rejects as $income) {
@@ -640,7 +640,7 @@ public function profit(Request $request){
       $expense->staff_id = Auth::user()->staff->id;
       $expense->city_id = 1;
       $expense->item_id = $income->way->item_id;
-      $expense->status = 2;
+      $expense->status = 1;
       $expense->save();
     }
 
@@ -950,20 +950,49 @@ public function profit(Request $request){
     
     if($validator){
       $id=$request->pickup_id;
+      $client_id = $request->client_id;
       $prepaidamount=$request->prepaidamount;
 
       $expense=Expense::where('pickup_id',$id)->first();
-      $oldexpense = $expense->amount;
+      if (isset($expense)) {
+        $oldexpense = $expense->amount;
+      }else{
+        $expense = new Expense;
+        $oldexpense = 0;
+        $expense->client_id=$client_id;
+
+        $user=Auth::user();
+        $staffid=$user->staff->id;
+
+        $expense->staff_id=$staffid;
+        $expense->status=1;
+        $expense->description="Client Deposit";
+        $expense->pickup_id = $id;
+        $expense->city_id=1;
+        $expense->expense_type_id=1;
+      }
       $expense->amount=$prepaidamount;
       $expense->save();
 
       $transaction=Transaction::where('expense_id',$expense->id)->first();
-      $transaction->amount=$prepaidamount;
+      if (isset($transaction)) {
+        $transaction->amount=$prepaidamount;
+      }else{
+        $transaction = new Transaction;
+        $transaction->amount=$prepaidamount;
+        $transaction->bank_id=1;
+      }
       $transaction->save();
 
       $bank=$transaction->bank;
-      $bank->amount += $oldexpense;
-      $bank->amount -= $transaction->amount;
+      if (isset($bank)) {
+        $bank->amount += $oldexpense;
+        $bank->amount -= $transaction->amount;
+      }else{
+        $bank = new Bank;
+        $bank->amount -= $transaction->amount;
+      }
+      
       $bank->save();
 
       return response()->json(['success'=>'successfully!']);
@@ -1033,20 +1062,20 @@ public function profit(Request $request){
     $pickups="";
     if($rolename=="client"){
       $client_id=Auth::user()->client->id;
-      $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
+      $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
         $query->where('client_id', $client_id)->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
       })->where("status",1)->get();
     }else if($rolename=="staff"){
       if($client_id==null){
-        $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($sdate,$edate){
+        $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($sdate,$edate){
           $query->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
         })->where("status",4)->with('items.expense')->get();
       }else if($sdate==null && $edate==null){
-        $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id){
+        $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id){
           $query->where('client_id', $client_id);
         })->where("status",4)->with('items.expense')->get();
       }else{
-        $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
+        $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
           $query->where('client_id', $client_id)->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
         })->where("status",4)->with('items.expense')->get();
       }

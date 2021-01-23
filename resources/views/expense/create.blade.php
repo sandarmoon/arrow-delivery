@@ -19,8 +19,14 @@
           <form action="{{route('expenses.store')}}" method="POST">
             @csrf
             <div class="form-group">
+              <label for="expense_date">{{ __("Expense Date")}}:</label>
+              <input type="date" class="form-control" id="expense_date" name="expense_date"  placeholder="Enter expense_date">
+              <div class="form-control-feedback text-danger"> {{$errors->first('expense_date') }} </div>
+            </div>
+
+            <div class="form-group">
               <label for="description">{{ __("Description")}}:</label>
-              <textarea class="form-control" id="description" name="description"type="text" placeholder="Enter description"></textarea>
+              <textarea class="form-control" id="description" name="description" placeholder="Enter description"></textarea>
               <div class="form-control-feedback text-danger"> {{$errors->first('description') }} </div>
             </div>
 
