@@ -224,7 +224,7 @@ class MainController extends Controller
       $query->where('client_id', $id);
     })->where('status_code','003')->where('refund_date',null)->get();
 
-    $carryfees = Expense::where('client_id',$id)->where('status',2)->where('expense_type_id',5)->with('item.township')->with('item.SenderGate')->with('item.SenderPostoffice')->get();
+    $carryfees = Expense::where('client_id',$id)->where('status',1)->where('expense_type_id',5)->with('item.township')->with('item.SenderGate')->with('item.SenderPostoffice')->get();
 
     $myarray=[];
     foreach ($rejects as $income) {
