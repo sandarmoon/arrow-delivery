@@ -137,7 +137,7 @@
                       <tr>
                         <th>{{ __("#")}}</th>
                         <th>{{ __("Codeno")}}</th>
-                        <th>{{ __("Expired Date")}}</th>
+                        <th>{{ __("Assign Date")}}</th>
                         <th>{{ __("Client Name")}}</th>
                         <th>{{ __("Customer Name")}}</th>
                         <th>{{ __("Township")}}</th>
@@ -177,7 +177,7 @@
                             <span class="badge badge-danger">{{'reject'}}</span>
                           @endif
                         </td>
-                        <td class="align-middle">{{Carbon\Carbon::parse($way->item->expired_date)->format('d-m-Y')}}</td>
+                        <td class="align-middle">{{Carbon\Carbon::parse($way->created_at)->format('d-m-Y')}}</td>
                         <td class="align-middle">
                         @if(isset($way->item->pickup->schedule))
                         {{$way->item->pickup->schedule->client->user->name}}
@@ -249,6 +249,7 @@
                     <thead>
                       <tr>
                         <th>{{ __("Codeno")}}</th>
+                        <th>{{ __("Assign Date")}}</th>
                         <th>{{ __("Client Info")}}</th>
                         <th>{{ __("Receiver Info")}}</th>
                         <th>{{ __("Receiver Address")}}</th>
@@ -540,6 +541,7 @@
                     <span class="d-block">${v.item.codeno}</span> 
                     <span class="badge badge-danger badge-pill">${payment_type}</span>
                   </td>
+                  <td>${formatDate(v.created_at)}</td>
                   <td class="align-middle">`
             if (v.item.pickup == null) {
               html+=`<span class="d-block">-</span>`
@@ -560,7 +562,7 @@
           })
           $(".tbody").html(html);
           var html2 =`<tr>
-                  <td colspan="4">Total Amount</td>
+                  <td colspan="5">Total Amount</td>
                   <td colspan="4">${thousands_separators(total)} Ks</td>
                 </tr>`;
           $(".tfoot").html(html2);
@@ -572,6 +574,13 @@
           $("#exportid").val(id);
         })
       })
+
+      function formatDate (input) {
+        var datePart = input.match(/\d+/g),
+        year = datePart[0].substring(0,4), // get only two digits
+        month = datePart[1], day = datePart[2];
+        return day+'-'+month+'-'+year;
+      }
 
       function thousands_separators(num){
         var num_parts = num.toString().split(".");
