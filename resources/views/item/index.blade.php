@@ -191,17 +191,12 @@
                           @if($way->item->township)
                           {{$way->item->township->name}}
                           @elseif($way->item->SenderGate)
-                          {{$way->item->SenderGate->name}}
+                          {{$way->item->SenderGate->name}}<br>
                           <span class="badge badge-dark">Gate</span>
-
                           @elseif($way->item->SenderPostoffice)
-                          {{$way->item->SenderPostoffice->name}}
+                          {{$way->item->SenderPostoffice->name}}<br>
                           <span class="badge badge-dark">Post Office</span>
-
-
                           @endif
-
-
                         </td>
                         <td class="text-danger align-middle">
                           <span class="d-block">{{$way->delivery_man->user->name}}</span> 

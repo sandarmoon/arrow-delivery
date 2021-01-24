@@ -1230,17 +1230,17 @@ public function profit(Request $request){
 
     if ($start_date != null && $end_date != null && $client_id == 0) {
 
-      $successways = Way::whereHas('income')->whereBetween('delivery_date', [$start_date,$end_date])->with('item.expense')->with('item.pickup.schedule')->get();
+      $successways = Way::whereHas('income')->whereBetween('delivery_date', [$start_date,$end_date])->with('item.pickup.expenses')->with('item.expense')->with('item.pickup.schedule')->get();
 
     }else if ($start_date != null && $end_date != null) {
 
-      $successways = Way::whereHas('income')->whereBetween('delivery_date', [$start_date,$end_date])->with('item.expense')->with('item.pickup.schedule')->whereHas('item.pickup.schedule',function ($query) use ($client_id){
+      $successways = Way::whereHas('income')->whereBetween('delivery_date', [$start_date,$end_date])->with('item.pickup.expenses')->with('item.expense')->with('item.pickup.schedule')->whereHas('item.pickup.schedule',function ($query) use ($client_id){
         $query->where('client_id',$client_id);
       })->get();
 
     }else{
 
-      $successways = Way::whereHas('income')->whereNotNull('delivery_date')->with('item.expense')->with('item.pickup.schedule')->whereHas('item.pickup.schedule',function ($query) use ($client_id){
+      $successways = Way::whereHas('income')->whereNotNull('delivery_date')->with('item.pickup.expenses')->with('item.expense')->with('item.pickup.schedule')->whereHas('item.pickup.schedule',function ($query) use ($client_id){
         $query->where('client_id',$client_id);
       })->get();
 
