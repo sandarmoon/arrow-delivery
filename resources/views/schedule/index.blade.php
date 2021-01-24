@@ -127,7 +127,7 @@
 
                            @endforeach
                         </td>
-                        <td class="align-middle">{{$row->schedule->quantity}} </td>
+                        <td class="align-middle">{{$row->schedule->quantity}} / {{count($row->items)}}</td>
                         <td class="align-middle">
                           @if(count($row->items)>0)
                           <strike>{{number_format($row->schedule->amount)}}</strike>
@@ -147,7 +147,7 @@
                           @endif
                         </td>
                         <td class="align-middle">
-                          @if($row->status==1 && $row->schedule->quantity > count($row->items))
+                          @if($row->status==1 && $row->schedule->quantity != count($row->items))
                             @role('staff')
                               <a href="{{route('items.collect',['cid'=>$row->schedule->client->id,'pid'=>$row->id])}}" class="btn btn-sm btn-primary">{{ __("Collect")}}</a>
                             @endrole
@@ -171,11 +171,13 @@
 
                           @if($row->status != 4 || $row->schedule->quantity != count(($row->items)))
                             <a href="{{route('schedules.edit',$row->schedule->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
+                            @if(count($row->items) == 0)
                             <form action="{{ route('schedules.destroy',$row->schedule->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                               @csrf
                               @method('DELETE')
                               <button type="submit" class="btn btn-sm btn-danger">{{ __("Delete")}}</button>
                             </form>
+                            @endif
                           @endif
                         </td>
                       </tr>

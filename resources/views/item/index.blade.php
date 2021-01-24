@@ -95,7 +95,7 @@
                           <span class="d-block">{{$row->receiver_name}}</span><span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
                         </td>
                         <td class="align-middle">
-                          {{$row->expired_date}}
+                          <span class="d-block">{{Carbon\Carbon::parse($row->expired_date)->format('d-m-Y')}}</span>
                           @if($row->error_remark !== null)
                             <span class="badge badge-warning">{{ __("date changed")}}</span>
                           @endif

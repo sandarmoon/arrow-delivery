@@ -705,8 +705,14 @@ public function profit(Request $request){
   // for way page => delivery man view
   public function pending_ways($value='')
   {
-    // pending_ways assigned for that user (must delivery_date and refund_date equal NULL)
-    $pending_ways = Way::where('delivery_man_id',Auth::user()->delivery_man->id)->where('status_code','!=',001)->where('status_code','!=',002)->where('deleted_at',null)->orderBy('id','desc')->get();
+    $deliveryman = Auth::user()->delivery_man;
+    if ($deliveryman->city_id == 1) {
+      $pending_ways = Way::where('delivery_man_id',Auth::user()->delivery_man->id)->whereDate('created_at', Carbon\Carbon::today())->where('status_code','!=',001)->where('status_code','!=',002)->where('deleted_at',null)->orderBy('id','desc')->get();
+    }else{
+      // pending_ways assigned for that user (must delivery_date and refund_date equal NULL)
+      $pending_ways = Way::where('delivery_man_id',Auth::user()->delivery_man->id)->where('status_code','!=',001)->where('status_code','!=',002)->where('deleted_at',null)->orderBy('id','desc')->get();
+    }
+    
     //dd($ways);
 
     foreach ($pending_ways as $way) {

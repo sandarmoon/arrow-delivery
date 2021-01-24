@@ -147,7 +147,8 @@
             @elseif($row->status_code == '003')
             <span class="badge badge-danger">{{'reject'}}</span>
             @endif
-            <small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> {{$row->item->expired_date}}</small></h5>
+          </h5>
+            {{-- <small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> {{$row->item->expired_date}}</small> --}}
           <div class="card-body">
             <h5 class="card-title">{{ __("Item Code")}}: {{$row->item->codeno}}</h5>
             <h5 class="card-title">{{ __("Delivered Address")}}: 

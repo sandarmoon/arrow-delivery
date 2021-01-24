@@ -336,9 +336,12 @@ class ItemController extends Controller
      */
     public function destroy(Item $item)
     {
-        $item=$item;
-        $item->delete();
-       return redirect()->route('items.index')->with('successMsg','Existing Item is DELETED in your data');
+      $item->delete();
+      $pickup = $item->pickup;
+      $pickup->status = 1;
+      $pickup->save();
+      
+      return redirect()->route('items.index')->with('successMsg','Existing Item is DELETED in your data');
     }
 
     // here accept client id
