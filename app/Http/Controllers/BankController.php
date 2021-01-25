@@ -14,6 +14,7 @@ class BankController extends Controller
      */
     public function index()
     {
+        $helo="helow orld";
          $banks=Bank::all();
         return view('bank.index',compact('banks'));
     }
