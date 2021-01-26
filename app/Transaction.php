@@ -9,7 +9,7 @@ class Transaction extends Model
 {
   use SoftDeletes;
 
-  protected $fillable = ['bank_id', 'income_id', 'expense_id', 'tobank_id', 'amount', 'description'];
+  protected $fillable = ['bank_id', 'income_id', 'expense_id', 'tobank_id', 'amount', 'description', 'item_id'];
 
   public function bank()
   {
@@ -24,6 +24,11 @@ class Transaction extends Model
   public function income()
   {
     return $this->belongsTo('App\Income');
+  }
+
+  public function item()
+  {
+    return $this->belongsTo('App\Item');
   }
 
   public function expense()

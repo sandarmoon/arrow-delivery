@@ -31,8 +31,15 @@
                 </tr>
               </thead>
               <tbody>
-                @php $i=1;$total=0;$sub=0; $allpaid_color=""; @endphp
+                @php $i=1;$total=$os_pay_amount_total=$sub=0; $allpaid_color=""; @endphp
                 @foreach($items as $row)
+                @php
+                  $os_pay_amount = 0;
+                  if ($row->os_pay_amount != null) {
+                    $os_pay_amount = $row->os_pay_amount;
+                    $os_pay_amount_total += $os_pay_amount;
+                  }
+                @endphp
                 @php 
                   $carry_fees = 0;
                   $total+=$row->deposit;
@@ -109,7 +116,11 @@
                     @endif
 
                   </td>
-                  <td class="{{$allpaid_color}} align-middle">{{number_format($row->delivery_fees)}}</td>
+                  <td class="{{$allpaid_color}} align-middle">{{number_format($row->delivery_fees)}}
+                    @if($os_pay_amount > 0)
+                      / <span class="text-danger">{{number_format($os_pay_amount)}}</span>
+                    @endif
+                  </td>
                   <td class="{{$allpaid_color}} align-middle">
                     {{number_format($row->other_fees+$carry_fees)}}
                   </td>
@@ -121,7 +132,7 @@
               <tfoot>
                 <tr>
                   <td colspan="7">Total Amount</td>
-                  <td colspan="2">{{number_format($total-$sub)}} Ks</td>
+                  <td colspan="2">{{number_format($total-$sub-$os_pay_amount_total)}} Ks</td>
                 </tr>
                 <tr>
                   <td colspan="7">Prepaid Amount</td>
@@ -129,7 +140,7 @@
                 </tr>
                 <tr>
                   <td colspan="7">Balance</td>
-                  <td colspan="2">{{number_format($total-$sub-$prepaidtotal)}} Ks</td>
+                  <td colspan="2">{{number_format($total-$sub-$os_pay_amount_total-$prepaidtotal)}} Ks</td>
                 </tr>
               </tfoot>
             </table>

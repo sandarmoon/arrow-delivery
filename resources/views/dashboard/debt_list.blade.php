@@ -248,7 +248,7 @@
             </div>
             <div class="col-md-8">
               <select class="form-control payment_method" name="payment_method">
-                <option value="" data-amount="0">Choose Bank</option>
+                {{-- <option value="" data-amount="0">Choose Bank</option> --}}
                 @foreach($banks as $bank)
                 <option value="{{$bank->id}}" data-amount="{{$bank->amount}}">{{$bank->name}} ({{$bank->amount}})</option>
                 @endforeach
@@ -438,6 +438,8 @@
 
             if((row.paystatus == 2 || row.paystatus == 4) && (row.status == 0)){
               delivery_fees = Number(row.delivery_fees);
+            }else if(row.os_pay_amount != null){
+              delivery_fees = Number(row.os_pay_amount);
             }
 
             let delivered_date = "-"

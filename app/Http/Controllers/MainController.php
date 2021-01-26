@@ -217,7 +217,8 @@ class MainController extends Controller
       $query->where('client_id',$id);
     })->where('status',0)->where(function ($query) {
         $query->where('paystatus', 2)
-            ->orWhere('paystatus', 4);
+            ->orWhere('paystatus', 4)
+            ->orWhere('os_pay_amount','!=',null);
     })->with('way')->with('township')->with('SenderGate')->with('SenderPostoffice')->get();
    
     $rejects =  Way::with('item.pickup.schedule')->whereHas('item.pickup.schedule', function($query) use ($id){
