@@ -71,7 +71,7 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-      // dd($request);
+       // dd($request);
 
       $qty=$request->qty;
        // dd($qty);
@@ -97,6 +97,7 @@ class ItemController extends Controller
       }elseif($request->rcity==2){
         $validator = $request->validate([
             'mygate' => ["required"],
+            'townshipgate'=>["required"]
             
         ]);
       }elseif($request->rcity==3){
@@ -131,6 +132,7 @@ class ItemController extends Controller
 
         if($request->mygate!=null){
           $item->sender_gate_id=$request->mygate;
+          $item->township_id=$request->townshipgate;
         }
 
         if($request->myoffice!=null){
@@ -217,11 +219,12 @@ class ItemController extends Controller
      */
     public function edit(Item $item)
     {
-      $townships=Township::orderBy('name','asc')->get();
+      $townships=Township::whereNull('sender_gate_id')->orderBy('name','asc')->get();
+      $gateTownships=Township::whereNotNull('sender_gate_id')->orderBy('name','asc')->get();
       $sendergates=SenderGate::orderBy('name','asc')->get();
       $senderoffice=SenderPostoffice::orderBy('name','asc')->get();
       $deliverymen = DeliveryMan::all();
-      return view('item.edit',compact('item','townships','sendergates','senderoffice','deliverymen'));
+      return view('item.edit',compact('item','townships','sendergates','gateTownships','senderoffice','deliverymen'));
     }
 
     /**
@@ -249,7 +252,7 @@ class ItemController extends Controller
         $validator = $request->validate([
             'receiver_township'=> ["required"],
         ]);
-        $gate = null;
+        $gate = $request->mygate;
         $office = null;
         $township = $request->receiver_township;
 
@@ -257,6 +260,7 @@ class ItemController extends Controller
 
         $validator = $request->validate([
             'mygate' => ["required"],
+            'gateTownships' => ["required"],
             
         ]);
 
@@ -301,6 +305,14 @@ class ItemController extends Controller
         }else{
           $item->sender_gate_id=$gate;
         }
+
+
+        if($request->gateTownships !=null){
+          $item->township_id=$request->gateTownships;
+        }else{
+          $item->township_id=$request->oldtownship;
+        }
+        
 
         if($request->myoffice!=null){
           $item->sender_postoffice_id=$office;
@@ -375,13 +387,14 @@ class ItemController extends Controller
         //dd($datecode);
         $pickup = Pickup::find($pid);
         // $townships=Township::all();
-        $townships = Township::orderBy('name','asc')->get();
+        $townships = Township::whereNull('sender_gate_id')->orderBy('name','asc')->get();
         $sendergates=SenderGate::orderBy('name','asc')->get();
         $senderoffice=SenderPostoffice::orderBy('name','asc')->get();
+        $gateTownships=Township::whereNotNull('sender_gate_id')->orderBy('name','asc')->get();
 
         $pickupeditem = Item::where('pickup_id',$pickup->id)->orderBy('id','desc')->first();
         $banks = Bank::orderBy('name','asc')->get();
-        return view('item.create',compact('banks','client','pickup','townships','itemcode','pickupeditem','sendergates','senderoffice'));
+        return view('item.create',compact('banks','client','pickup','townships','itemcode','pickupeditem','sendergates','gateTownships','senderoffice'));
     }
 
 

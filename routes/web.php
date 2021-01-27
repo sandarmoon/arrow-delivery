@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     // Settings => (cities, townships, statuses, expense_types, payment_types, banks)
     Route::resource('cities','CityController');
     Route::resource('townships','TownshipController');
+    Route::resource('gatetownships','GateTownshipController');
     Route::resource('statuses','StatusController');
     Route::resource('expense_types','ExpenseTypeController');
     Route::resource('payment_types','PaymentTypeController');
@@ -160,3 +161,12 @@ Route::resource('profiles','ProfileController');
 Auth::routes(['register'=>false]);
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+
+//for aye chan start
+
+Route::get('/printPickup/{id}','MainController@printPickup')->name('printPickup');
+
+Route::post('/assignList','MainController@assignList')->name('assignList');
+
+Route::get('getTownshipgate/{gid}','GateTownshipController@getTownshipgate')->name('getTownshipgate');

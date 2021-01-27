@@ -44,9 +44,9 @@ class ScheduleController extends Controller
         // dd($notipickup->pickup);
         array_push($data, $notipickup->pickup);
       }
-      // dd($data);
+       // dd($schedules);
       $deliverymen=DeliveryMan::all();
-      return view('schedule.index',compact('schedules','deliverymen','pickups','data'));
+      return view('schedule.index2',compact('schedules','deliverymen','pickups','data'));
     }
 
     // public function getAssignedPickups($value='')

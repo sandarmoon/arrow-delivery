@@ -19,7 +19,7 @@
 
          
       <div class="row">
-              <div class="form-group col-md-3">
+            <div class="form-group col-md-3">
               <label for="InputStartDate">{{ __("Start Date")}}:</label>
               <input type="date" class="form-control" id="InputStartDate" name="start_date">
             </div>
@@ -27,6 +27,17 @@
               <label for="InputEndDate">{{ __("End Date")}}:</label>
               <input type="date" class="form-control" id="InputEndDate" name="end_date">
             </div>
+            @role('staff')
+            <div class="form-group col-md-3">
+              <label for="InputClient">{{ __("Select Client")}}:</label>
+                <select class="js-example-basic-single" id="InputClient" name="client">
+                  <option value="">Choose Client</option>
+                    @foreach($clients as $client)
+                      <option value="{{$client->id}}" data-name="{{$client->clientname}}">{{$client->clientname}}</option>
+                    @endforeach
+                </select>
+            </div>
+            @endrole
             <div class="form-group col-md-3">
               <button class="btn btn-primary search_btn mt-4" type="button">{{ __("Search")}}</button>
             </div>
@@ -39,6 +50,9 @@
                 <tr>
                   <th>{{ __("#")}}</th>
                   <th>{{ __("Item Code")}}</th>
+                  <th>{{ __("Receiver Name ")}}</th>
+                  <th>{{ __("Amount")}}</th>
+                  <th>{{ __("Place")}}</th>
                   <th>{{ __("Client")}}</th>
                   <th>{{ __("Delivery Man")}}</th>
                   <th>{{ __("ways state")}}</th>
@@ -61,7 +75,7 @@
 @section('script')
 <script type="text/javascript">
   $(document).ready(function(){
-
+     $('.js-example-basic-single').select2({width:'100%'});
     $.ajaxSetup({
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -77,6 +91,11 @@
     $('.search_btn').click(function () {
       var sdate = $('#InputStartDate').val();
       var edate = $('#InputEndDate').val();
+
+      var client_id=$("#InputClient").val();
+      var client_name=$("#InputClient option:selected").data('name');
+      console.log(client_id,client_name);
+
       var url="{{route('getwayhistory')}}";
       var i=1;
       $('#waystable').DataTable({
@@ -89,12 +108,26 @@
         "ajax": {
             url: url,
             type: "POST",
-            data:{sdate:sdate,edate:edate},
+            data:{sdate:sdate,edate:edate,client_id:client_id},
             dataType:'json',
         },
         "columns": [
           {"data":'DT_RowIndex'},
           { "data": "item.codeno",},
+          {"data":"item.receiver_name"},
+          {"data":"item.amount"},
+          {"data":function(data){
+            if(data.item.township_id != undefined && data.item.sender_gate_id == undefined && data.item.sender_postoffice_id == undefined){
+              // console.log('hi township');
+              return data.item.township.name;
+            }else if(data.item.township_id == undefined && data.item.sender_gate_id != undefined && data.item.sender_postoffice_id == undefined){
+              // console.log('hi gate');
+              return data.item.sender_gate.name;
+            }else if(data.item.township_id == undefined && data.item.sender_gate_id == undefined && data.item.sender_postoffice_id != undefined){
+              // console.log('hi office');
+              return data.item.sender_postoffice.name;
+            }
+          }},
           { "data": "item.pickup.schedule.client.user.name" },
           { "data": "delivery_man.user.name" },
           {"data":"status_code",
@@ -123,6 +156,8 @@
         "info":false
       });
     })
+
+
   })
 </script>
 @endsection

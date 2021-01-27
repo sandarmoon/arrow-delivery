@@ -139,6 +139,7 @@
                     <th>Delivery Fees</th>
                     <th>Item Price</th>
                     <th>Subtotal</th>
+                    <th>Actual Amount</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -226,12 +227,27 @@
                       }
                       html+=`</td><td>${thousands_separators(row.item.deposit)}</td>
                               <td>${thousands_separators(Number(row.item.deposit)+Number(row.item.delivery_fees)+Number(row.item.other_fees))}</td>`
+
                     }else{
                       html+=`<td>-</td>
                             <td>-</td>
                             <td>-</td>
                             <td>-</td>`
                     }
+                    html+=`<td> hello`
+                    // if(row.item.paystatus == 1){
+                    //   html+=`${thousands_separators(Number(row.item.deposit)+Number(row.item.delivery_fees)+Number(row.item.other_fees))}`
+                    // }else if(row.item.paystatus == 2){
+                    //   html+=0;
+                    // }else if(row.item.paystatus == 3){
+                    //   html+=`${thousands_separators(row.item.delivery_fees)}`
+                    // }else if(row.item.paystatus==3){
+
+                    // }else if(row.item.paystatus==4){
+
+                    // }
+
+                    html+=`</td>`
                     
                     if(row.status_code=="001"){
                       html+=`<td><button class="btn btn-sm btn-primary btnsave" data-id="${row.id}" data-amount="${row.item.item_amount}" data-deliveryfee="${row.item.delivery_fees+row.item.other_fees}" data-deposit="${row.item.deposit}" data-paystatus="${row.item.paystatus}">save</button></td>`

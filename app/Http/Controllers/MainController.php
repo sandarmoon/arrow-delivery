@@ -33,6 +33,7 @@ use App\Schedule;
 use App\Staff;
 use App\Transaction;
 use PDF;
+use App\Http\Resources\WayHistoryResource;
 
 class MainController extends Controller
 {
@@ -1026,15 +1027,51 @@ public function profit(Request $request){
 
   public function way_history($value='')
   {
-    return view('dashboard.way_history');
+    $clients=DB::table('clients')
+                ->join('users', 'users.id', '=', 'clients.user_id')
+                ->select('clients.*', 'users.name as clientname')
+                ->orderBy('users.name')
+                ->get();
+    return view('dashboard.way_history',compact('clients'));
   }
 
 
   public function getwayhistory(Request $request){
     $sdate = $request->sdate;
     $edate = $request->edate;
-   // dd($sdate);
-    $ways = Way::withTrashed()->with('item.pickup.schedule.client.user','delivery_man.user')->whereBetween('updated_at', [$sdate.' 00:00:00',$edate.' 23:59:59'])->get();
+    $client_id=$request->client_id;
+    $ways=null;
+    // dd($client_id);
+   /* $ways = Way::withTrashed()->with('item.pickup.schedule.client.user','delivery_man.user')->whereBetween('updated_at', [$sdate.' 00:00:00',$edate.' 23:59:59'])->get();*/
+
+    if($client_id!=null && $sdate==null && $edate==null ){
+        $ways=Way::withTrashed()
+               ->with(['item.pickup.schedule.client.user',
+                'item.township','item.SenderGate','item.SenderPostoffice',
+                'delivery_man.user'])
+                ->whereHas('item.pickup.schedule.client',function($q) use ($client_id){
+                  return $q->where('id',$client_id);
+                })->get();
+       
+      }else if($sdate!=null && $edate!=null && $client_id == null){
+
+        $ways=Way::withTrashed()
+         ->with('item.pickup.schedule.client.user','item.township','item.SenderGate','item.SenderPostoffice','delivery_man.user')
+        ->whereBetween('updated_at', [$sdate.' 00:00:00',$edate.' 23:59:59'])->get();
+        
+      }else{
+        $ways=Way::withTrashed()
+                ->with(['item.pickup.schedule.client.user','item.township','item.SenderGate','item.SenderPostoffice','delivery_man.user'])
+                ->whereHas('item.pickup.schedule.client',function($q) use ($client_id){
+                  return $q->where('id',$client_id);
+                })
+                ->whereBetween('updated_at', [$sdate.' 00:00:00',$edate.' 23:59:59'])->get();
+               
+                // dd($ways);
+      }
+      // dd('je');
+      
+
    // ->where('status_code','!=','005')
     return Datatables::of($ways)->addIndexColumn()->toJson();
   }
@@ -1071,19 +1108,27 @@ public function profit(Request $request){
       $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
         $query->where('client_id', $client_id)->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
       })->where("status",1)->get();
+
     }else if($rolename=="staff"){
+
       if($client_id==null){
-        $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($sdate,$edate){
+
+        $pickups=Pickup::with('expenses')->with('schedule.client')->whereHas('schedule',function ($query) use ($sdate,$edate){
           $query->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
         })->where("status",4)->with('items.expense')->get();
+      
       }else if($sdate==null && $edate==null){
-        $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id){
+
+        $pickups=Pickup::with('expenses')->with('schedule.client')->whereHas('schedule',function ($query) use ($client_id){
           $query->where('client_id', $client_id);
         })->where("status",4)->with('items.expense')->get();
+
       }else{
-        $pickups=Pickup::with('expenses')->with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
+
+        $pickups=Pickup::with('expenses')->with('schedule.client')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
           $query->where('client_id', $client_id)->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
         })->where("status",4)->with('items.expense')->get();
+
       }
     }
     return Datatables::of($pickups)->addIndexColumn()->toJson();
@@ -1258,5 +1303,80 @@ public function profit(Request $request){
 
     }
     return Datatables::of($successways)->addIndexColumn()->toJson();
+  }
+
+  public function printPickup($id){
+     $data=Pickup::find($id);
+    // $items=Item::where('pickup_id',$id)->get();
+     $os_name=$data->schedule->client->user->name;
+     
+      $item_amount=$data->items->sum('deposit');
+
+      $total_qty=$data->items->count('id');
+
+      $prepaid_amount=$data->expensePrepaid->sum('amount');
+
+      $delivery_amount=0;
+
+      $pickup_date=date('d/m/Y',strtotime($data->created_at));
+      
+      $deli=array();
+
+      foreach($data->items as $i){
+        if($i->paystatus ==2 || $i->paystatus ==4){
+          // array_push($deli, $i->delivery_fees);
+           $delivery_amount+=$i->delivery_fees;
+        }
+      }
+      // dd($deli);
+
+      $final_total_amount=($item_amount - $delivery_amount)-$prepaid_amount;
+
+
+      $data=array(
+        'date'=>$pickup_date,
+        'os_name'=>$os_name,
+        'qty'=>$total_qty,
+        'item_amount'=>$item_amount,
+        'delivery_amount'=>$delivery_amount,
+        'prepaid_amount'=>$prepaid_amount,
+        'final_amount'=>$final_total_amount
+      );
+
+       view()->share('data',$data);
+    $pdf = PDF::loadView('dashboard.pickupAssignpdf')->setPaper('a4', 'landscape');
+    // download PDF file with download method
+    // return $pdf->download( $deliname.'.pdf');
+    return $pdf->stream();
+    
+  }
+
+  public function assignList(Request $request){
+    $sdate=$request->sdate;
+    $edate=$request->edate;
+    $pickups=null;
+    if($sdate == null && $edate ==null){
+        $pickups=Pickup::with('schedule.client.user','delivery_man.user','expenses','items')
+        ->whereHas('schedule',function($q){
+          return $q->whereDate('pickup_date',Carbon\Carbon::today());
+        })
+      ->orderBy('id','desc')->get();
+
+    }else{
+
+      $pickups=Pickup::with('schedule.client.user','delivery_man.user','expenses','items')
+        ->whereHas('schedule',function($q) use($sdate,$edate){
+          return $q->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
+          
+        })
+      ->orderBy('id','desc')->get();
+
+    }
+
+    
+
+      // dd('heo');
+     
+       return Datatables::of($pickups)->addIndexColumn()->toJson();
   }
 }

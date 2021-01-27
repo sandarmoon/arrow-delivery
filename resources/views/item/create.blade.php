@@ -91,16 +91,26 @@
                   <div class="form-control-feedback text-danger"> {{$errors->first('rcity') }} </div>
                 </div>
 
-                <div class="form-group mygate">
-                  <label for="mygate">{{ __("Sender Gate")}}:</label><br>
-                  <select class="js-example-basic-single " id="mygate" name="mygate" >
-                    <option value="">{{ __("Choose Gate")}}</option>
-                    @foreach($sendergates as $row)
-                      <option value="{{$row->id}}">{{$row->name}}</option>
-                    @endforeach
-                  </select>
-                  {{-- <div class="form-control-feedback text-danger"> {{$errors->first('mygate') }} </div> --}}
+                <div class="form-row mygate">
+                  <div class="form-group col-md-6 ">
+                    <label for="mygate">{{ __("Sender Gate")}}:</label><br>
+                    <select class="js-example-basic-single " id="mygate" name="mygate" >
+                      <option value="">{{ __("Choose Gate")}}</option>
+                      @foreach($sendergates as $row)
+                        <option value="{{$row->id}}">{{$row->name}}</option>
+                      @endforeach
+                    </select>
+                    {{-- <div class="form-control-feedback text-danger"> {{$errors->first('mygate') }} </div> --}}
+                  </div>
+
+                  <div class="form-group col-md-6 township-gate ">
+                   
+                    {{-- <div class="form-control-feedback text-danger"> {{$errors->first('mygate') }} </div> --}}
+                  </div>
                 </div>
+
+                
+
 
                 <div class="form-group myoffice">
                   <label for="myoffice">{{ __("Sender PostOffice")}}:</label><br>
@@ -396,7 +406,9 @@
     // $(".township").hide();
     // for in city
     var today = new Date();
-    var numberofdays = 3;
+
+    //changin from 3 to 2
+    var numberofdays = 2;
     today.setDate(today.getDate() + numberofdays); 
     var day = ("0" + today.getDate()).slice(-2);
     var month = ("0" + (today.getMonth() + 1)).slice(-2);
@@ -659,6 +671,44 @@
         $('#InputDeposit').prop('readonly',false);
       }
     })
+
+    //start here
+
+    $('#mygate').change(function(){
+     let id=$(this).val();
+     let url="{{route('getTownshipgate',':id')}}";
+     url=url.replace(':id',id);
+      $.ajax({
+          url:url,
+          type:'get',
+          success:function(res){
+            let html=``;
+            if(res!= undefined){
+              html=`
+              
+                    <label for="mygate">{{ __("Township Gate")}}:</label><br>
+                      
+                  
+
+              <select id="js-example-basic-single-township" class=" form-control" name="townshipgate" >
+                      <option value="">{{ __("Choose Gate")}}</option>`
+                      $.each(res,function(i,v){
+                        html+=`
+                        <option value="${v.id}">${v.name}</option>
+                     `
+                      })
+
+                  html+=  `</select> `
+
+            }
+            $('.township-gate').html(html);
+          }
+      })
+    })
+
+    $('#js-example-basic-single-township').select2();
+
+    //end here
   })
 </script>
 @endsection

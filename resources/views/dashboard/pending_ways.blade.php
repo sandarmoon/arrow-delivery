@@ -1,3 +1,4 @@
+ <!-- changing  from  Return to Change and Reject to return  -->
 @extends('main')
 @section('content')
   <main class="app-content">
@@ -65,9 +66,9 @@
                         @if($way->status_code == '001')
                         <span class="badge badge-info">{{'success'}}</span>
                         @elseif($way->status_code == '002')
-                        <span class="badge badge-warning">{{'return'}}</span>
+                        <span class="badge badge-warning">{{'change'}}</span>
                         @elseif($way->status_code == '003')
-                        <span class="badge badge-danger">{{'reject'}}</span>
+                        <span class="badge badge-danger">{{'return'}}</span>
                         @endif
 
                       </td>
@@ -80,8 +81,9 @@
                       <td>
                         @if($way->status_code == 005)
                             <a href="#" class="btn btn-info btn-sm success" data-id="{{$way->id}}">Success</a>
-                            <a href="#" class="btn btn-warning btn-sm return" data-id="{{$way->id}}">Return</a>
-                            <a href="#" class="btn btn-danger btn-sm reject" data-id="{{$way->id}}">Reject</a>
+                           
+                            <a href="#" class="btn btn-warning btn-sm return" data-id="{{$way->id}}">Change</a>
+                            <a href="#" class="btn btn-danger btn-sm reject" data-id="{{$way->id}}">Return</a>
                         @endif
                         <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$way->item->id}}">Detail</a> 
                       </td>
@@ -185,17 +187,17 @@
             @if($row->status_code == '001')
             <span class="badge badge-info">{{'success'}}</span>
             @elseif($row->status_code == '002')
-            <span class="badge badge-warning">{{'return'}}</span>
+            <span class="badge badge-warning">{{'change'}}</span>
             @elseif($row->status_code == '003')
-            <span class="badge badge-danger">{{'reject'}}</span>
+            <span class="badge badge-danger">{{'return'}}</span>
             @endif
             {{-- <small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> {{$row->item->expired_date}}</small> --}}
           </h5>
           <div class="card-body">
             <h5 class="card-title">{{ __("Item Code")}}: {{$row->item->codeno}}</h5>
-            <h5 class="card-title">{{ __("Delivered Address")}}: 
+            <h5 class="card-title">{{ __("Delivered Address")}}: <br/>
               @if($row->item->sender_gate_id != null)
-                {{$row->item->SenderGate->name}}
+                {{$row->item->SenderGate->name}}/{{$row->item->township->name}}
               @elseif($row->item->sender_postoffice_id != null)
                 {{$row->item->SenderPostoffice->name}}
               @else
@@ -228,8 +230,8 @@
             </p>
             @if($row->status_code == 005)
             <a href="#" class="btn btn-info btn-sm success" data-id="{{$row->id}}">{{ __("Success")}}</a>
-            <a href="#" class="btn btn-warning btn-sm return" data-id="{{$row->id}}">{{ __("Return")}}</a>
-            <a href="#" class="btn btn-danger btn-sm reject" data-id="{{$row->id}}">{{ __("Reject")}}</a>
+            <a href="#" class="btn btn-warning btn-sm return" data-id="{{$row->id}}">{{ __("Change")}}</a>
+            <a href="#" class="btn btn-danger btn-sm reject" data-id="{{$row->id}}">{{ __("Return")}}</a>
             @endif
             <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$row->item->id}}">Detail</a> 
           </div>
@@ -268,7 +270,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title rcode" id="exampleModalLabel">Return</h5>
+          <h5 class="modal-title rcode" id="exampleModalLabel">Change</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -300,7 +302,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title rcode" id="exampleModalLabel">Reject</h5>
+          <h5 class="modal-title rcode" id="exampleModalLabel">Return</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -413,7 +415,7 @@
               $('span.error').removeClass('text-danger');
               $('.alertsuccess').removeClass('d-none');
               $('.alertsuccess').show();
-              $('.alertsuccess').text('successfully added to return list');
+              $('.alertsuccess').text('successfully added to change list');
               $('.alertsuccess').fadeOut(3000);
               location.href="{{route('pending_ways')}}";
             }
@@ -459,7 +461,7 @@
               $('span.error').removeClass('text-danger');
               $('.alertsuccess').removeClass('d-none');
               $('.alertsuccess').show();
-              $('.alertsuccess').text('successfully added to reject list');
+              $('.alertsuccess').text('successfully added to return list');
               $('.alertsuccess').fadeOut(3000);
               location.href="{{route('pending_ways')}}";
             }
@@ -502,9 +504,9 @@
             if(v.status_code=='001'){
             html+=`<span class="badge badge-info">success</span>`}
             else if(v.status_code == '002'){
-            html+=`<span class="badge badge-warning">return</span>`}
+            html+=`<span class="badge badge-warning">change</span>`}
             else if(v.status_code == '003'){
-           html+=`<span class="badge badge-danger">reject</span>`}
+           html+=`<span class="badge badge-danger">return</span>`}
            html+= `<small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> ${v.item.expired_date}</small></h5>`
             html+=`<div class="card-body">
             <h5 class="card-title">Item Code: ${v.item.codeno}</h5>
@@ -542,8 +544,8 @@
             
             if(v.status_code=="005"){
            html+=`<a href="#" class="btn btn-info btn-sm success" data-id="${v.id}">Success</a>
-            <a href="#" class="btn btn-warning btn-sm return" data-id="${v.id}">Return</a>
-            <a href="#" class="btn btn-danger btn-sm reject" data-id="${v.id}">Reject</a>`
+            <a href="#" class="btn btn-warning btn-sm return" data-id="${v.id}">Change</a>
+            <a href="#" class="btn btn-danger btn-sm reject" data-id="${v.id}">Return</a>`
           }
           html+=`<a href="#" class="btn btn-sm btn-primary detail" data-id="${v.item.id}">Detail</a> 
           </div>
@@ -557,8 +559,11 @@
 
 
      $("#dgate").change(function(){
+      // $('#doffice').select2('destroy');
+       // $("#doffice").val(null).trigger("change"); 
+      
         var id=$(this).val();
-        //alert(id);
+        // alert(id);
         $.ajaxSetup({
         headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -577,9 +582,9 @@
             if(v.status_code=='001'){
             html+=`<span class="badge badge-info">success</span>`}
             else if(v.status_code == '002'){
-            html+=`<span class="badge badge-warning">return</span>`}
+            html+=`<span class="badge badge-warning">change</span>`}
             else if(v.status_code == '003'){
-           html+=`<span class="badge badge-danger">reject</span>`}
+           html+=`<span class="badge badge-danger">return</span>`}
            html+= `<small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> ${v.item.expired_date}</small></h5>`
             html+=`<div class="card-body">
             <h5 class="card-title">Item Code: ${v.item.codeno}</h5>
@@ -617,8 +622,8 @@
             
             if(v.status_code=="005"){
            html+=`<a href="#" class="btn btn-info btn-sm success" data-id="${v.id}">Success</a>
-            <a href="#" class="btn btn-warning btn-sm return" data-id="${v.id}">Return</a>
-            <a href="#" class="btn btn-danger btn-sm reject" data-id="${v.id}">Reject</a>`
+            <a href="#" class="btn btn-warning btn-sm return" data-id="${v.id}">Change</a>
+            <a href="#" class="btn btn-danger btn-sm reject" data-id="${v.id}">Return</a>`
           }
           html+=`<a href="#" class="btn btn-sm btn-primary detail" data-id="${v.item.id}">Detail</a> 
           </div>
@@ -632,6 +637,9 @@
  
 
      $("#doffice").change(function(){
+
+       $("#dgate").val(null).trigger("change"); 
+      
         var id=$(this).val();
         //alert(id);
         $.ajaxSetup({
@@ -652,9 +660,9 @@
             if(v.status_code=='001'){
             html+=`<span class="badge badge-info">success</span>`}
             else if(v.status_code == '002'){
-            html+=`<span class="badge badge-warning">return</span>`}
+            html+=`<span class="badge badge-warning">change</span>`}
             else if(v.status_code == '003'){
-           html+=`<span class="badge badge-danger">reject</span>`}
+           html+=`<span class="badge badge-danger">return</span>`}
            html+= `<small class="float-right"><i class="fa fa-calendar-check-o" aria-hidden="true"></i> ${v.item.expired_date}</small></h5>`
             html+=`<div class="card-body">
             <h5 class="card-title">Item Code: ${v.item.codeno}</h5>
@@ -692,8 +700,8 @@
             
             if(v.status_code=="005"){
            html+=`<a href="#" class="btn btn-info btn-sm success" data-id="${v.id}">Success</a>
-            <a href="#" class="btn btn-warning btn-sm return" data-id="${v.id}">Return</a>
-            <a href="#" class="btn btn-danger btn-sm reject" data-id="${v.id}">Reject</a>`
+            <a href="#" class="btn btn-warning btn-sm return" data-id="${v.id}">Change</a>
+            <a href="#" class="btn btn-danger btn-sm reject" data-id="${v.id}">Return</a>`
           }
           html+=`<a href="#" class="btn btn-sm btn-primary detail" data-id="${v.item.id}">Detail</a> 
           </div>

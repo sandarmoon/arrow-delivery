@@ -8,7 +8,7 @@ class Township extends Model
 {
   use SoftDeletes;
   protected $fillable=[
-  	'name', 'delivery_fees', 'status', 'city_id'
+  	'name', 'delivery_fees', 'status', 'city_id','sender_gate_id'
   ];
 
   public function city()
@@ -29,5 +29,9 @@ class Township extends Model
   public function items()
   {
     return $this->hasMany('App\Item');
+  }
+
+  public function SenderGate(){
+    return $this->belongsTo('App\SenderGate');
   }
 }

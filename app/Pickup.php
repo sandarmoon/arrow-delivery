@@ -47,4 +47,8 @@ class Pickup extends Model
   {
     return $this->hasMany('App\Expense');
   }
+
+  public function expensePrepaid(){
+    return $this->hasMany('App\Expense')->where('expense_type_id',1);
+  }
 }

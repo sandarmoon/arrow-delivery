@@ -91,15 +91,40 @@
                   <div class="form-control-feedback text-danger"> {{$errors->first('rcity') }} </div>
                 </div>
 
-                <div class="form-group mygate">
-                  <label for="mygate">{{ __("Sender Gate")}}:</label><br>
-                  <select class="js-example-basic-single" id="mygate" name="mygate"  >
-                    <option value="">{{ __("Choose Gate")}}</option>
-                    @foreach($sendergates as $row)
-                      <option value="{{$row->id}}" @if($item->sender_gate_id==$row->id) selected @endif>{{$row->name}}</option>
-                    @endforeach
-                  </select>
-                  <div class="form-control-feedback text-danger"> {{$errors->first('mygate') }} {{$errors->first('receiver_township') }} {{$errors->first('myoffice') }} </div>
+                <div class="form-row mygate">
+                  <div class="form-group col-md-6 ">
+                    <label for="mygate">{{ __("Sender Gate")}}:</label><br>
+                    <select class="js-example-basic-single " id="mygate" name="mygate" >
+                      <option value="">{{ __("Choose Gate")}}</option>
+                      @foreach($sendergates as $row)
+                        <option value="{{$row->id}}"
+
+                          @if($row->id ==$item->sender_gate_id)
+                          selected="selected" 
+                          @endif
+
+                          >{{$row->name}}</option>
+                      @endforeach
+                    </select>
+                    {{-- <div class="form-control-feedback text-danger"> {{$errors->first('mygate') }} </div> --}}
+                  </div>
+
+                  <div class="form-group col-md-6 ">
+                    <label for="mygate">{{ __("Sender Gate")}}:</label><br>
+                    <select class=" form-control" id="gateTownships" name="gateTownships" >
+                      <option data-group="0" value="">{{ __("Choose Gate")}}</option>
+                      @foreach($gateTownships as $row)
+                        <option data-group="{{$row->sender_gate_id}}" value="{{$row->id}}"
+
+                          @if($row->id ==$item->township_id)
+                          selected="selected" 
+                          @endif
+
+                          >{{$row->name}}</option>
+                      @endforeach
+                    </select>
+                    {{-- <div class="form-control-feedback text-danger"> {{$errors->first('mygate') }} </div> --}}
+                  </div>
                 </div>
 
                 <div class="form-group myoffice">
@@ -455,6 +480,29 @@
         $('#InputDeposit').prop('readonly',false);
       }
     })
+
+
+
+    $('#mygate').change(function(){
+      let gid=$(this).val();
+      let townshipgate=$('#gateTownships');
+
+       // $('#gateTownships').val(gid);
+       $('#gateTownships').val('');
+      $('option', townshipgate).filter(function(){
+            if (
+                 $(this).attr('data-group') === gid 
+              || $(this).attr('data-group') === 'SHOW'
+            ) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+       $('#gateTownships').trigger('change');
+      // $('#mygate').trigger('change');
+    })
+    
   })
 </script>
 @endsection

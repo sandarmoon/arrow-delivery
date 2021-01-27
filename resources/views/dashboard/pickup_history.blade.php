@@ -133,6 +133,7 @@
       var client_id=$("#InputClient").val();
       var client_name=$("#InputClient option:selected").data('name');
       // console.log(start_date, end_date)
+      console.log(client_id);
       var url="{{route('pickupbyclient')}}";
       var i=1;
       $('#picktable').DataTable({
@@ -154,10 +155,7 @@
               return formatDate(data)
             }
           },
-          { "data": null,
-            render:function (data) {
-              return client_name
-            }
+          { "data": 'schedule.client.owner'
           },
           { "data": "schedule.quantity" },
           { "data": null,

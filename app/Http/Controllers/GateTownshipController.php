@@ -4,22 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Township;
 use App\City;
+use App\SenderGate;
 use Illuminate\Http\Request;
 
-class TownshipController extends Controller
+class GateTownshipController extends Controller
 {
-    /**
+     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $townships=Township::whereNull('sender_gate_id')->get();
-        $gatetownships=Township::whereNotNull('sender_gate_id')->get();
-
-        // dd($townships);
-        return view('township.index',compact('townships','gatetownships'));
+        $gatetownships=Township::whereNull('sender_gate_id')->get();
+        return view('township.index',compact('gatetownships'));
     }
 
     /**
@@ -29,8 +27,10 @@ class TownshipController extends Controller
      */
     public function create()
     {
-        $cities=City::orderBy('name','asc')->get();
-        return view('township.create',compact('cities'));
+
+        $gates=SenderGate::all();
+        // dd($gates);
+        return view('township.gate.create',compact('gates'));
     }
 
     /**
@@ -45,7 +45,7 @@ class TownshipController extends Controller
         $validator = $request->validate([
             // 'rcity'  => ['required'],
             'name' => ['required'],
-            'delifee'=>['required','numeric'],
+            'gate'=>['required'],
             // 'city'=>['required']
         ]);
 
@@ -66,7 +66,8 @@ class TownshipController extends Controller
             //      $township->name=$request->name;
             // }
             $township->name=$request->name;
-            $township->delivery_fees=$request->delifee;
+            $township->delivery_fees=0;
+            $township->sender_gate_id=$request->gate;
             // $township->city_id=$city;
             // $township->status=$request->rcity;
             $township->save();
@@ -95,11 +96,13 @@ class TownshipController extends Controller
      * @param  \App\Township  $township
      * @return \Illuminate\Http\Response
      */
-    public function edit(Township $township)
+    public function edit($id)
     {
-        $cities=City::orderBy('name','asc')->get();
-        $township=$township;
-        return view('township.edit',compact('cities','township'));
+    	// dd($id);
+        $gates=SenderGate::all();
+        $township=Township::find($id);
+        // dd($township);
+        return view('township.gate.edit',compact('gates','township'));
     }
 
     /**
@@ -109,12 +112,13 @@ class TownshipController extends Controller
      * @param  \App\Township  $township
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Township $township)
+    public function update(Request $request,  $township)
     {
+    	$township=Township::find($township);
         $validator = $request->validate([
             'name'  => ['required'],
-            'delifee'=>['required','numeric'],
-            // 'city'=>['required']
+            // 'delifee'=>['required','numeric'],
+            'gate'=>['required']
         ]);
         // $city=explode('_', $request->city);
         //dd($city);
@@ -134,7 +138,8 @@ class TownshipController extends Controller
             //      $township->name=$request->name;
             // }
             $township->name=$request->name;
-            $township->delivery_fees=$request->delifee;
+            $township->delivery_fees=0;
+            $township->sender_gate_id=$request->gate;
             
             $township->save();
             return redirect()->route('townships.index')->with("successMsg",'Update successfully');
@@ -151,10 +156,15 @@ class TownshipController extends Controller
      * @param  \App\Township  $township
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Township $township)
+    public function destroy($township)
     {
-         $township=$township;
+         $township=Township::find($township);
         $township->delete();
        return redirect()->route('townships.index')->with('successMsg','Existing Township is DELETED in your data');
+    }
+
+    public function getTownshipgate($gid){
+        $data=Township::where('sender_gate_id',$gid)->get();
+        return $data;
     }
 }
