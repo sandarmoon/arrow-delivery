@@ -78,14 +78,14 @@
                   <td class="align-middle">{{$row->expense_type->name}}</td>
                   <td class="align-middle">{{$row->description}}</td>
                   <td class="align-middle">
-                    @if($row->expense_type_id!=1)
+                    {{-- @if($row->expense_type_id!=1) --}}
                     <a href="{{route('expenses.edit',$row->id)}}" class="btn btn-warning btn-sm">Edit</a>
                     <form action="{{ route('expenses.destroy',$row->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                       @csrf
                       @method('DELETE')
                       <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>
-                    @endif
+                    {{-- @endif --}}
                   </td>
                 </tr>
                 @endforeach
