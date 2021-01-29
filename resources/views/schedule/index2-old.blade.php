@@ -110,30 +110,12 @@
                         <th>{{ __("Remark")}}</th>
                         <th>{{ __("Delivery Man")}}</th>
                         <th>{{ __("Quantity")}}</th>
-                        <th>{{ __("InStock")}}</th>
-                        <th>{{ __("Estimation")}}</th>
                         <th>{{ __("Amount")}}</th>
                         {{-- <th>{{ __("Total Item Price")}}</th> --}}
-                        <th>{{ __("Prepaid ")}}</th>
+                        <th>{{ __("Prepaid Amount")}}</th>
                         <th>{{ __("Actions")}}</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      
-                    </tbody>
-                    <tfoot>
-                      <td></td>
-                     @role('staff') <td></td>@endrole
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tfoot>
 
                   </table>
                 </div>
@@ -456,30 +438,15 @@
         "columns":[
           {"data":'DT_RowIndex'},
           {"data":"schedule.client.user.name"},
-          {"data":"schedule.pickup_date",
-            render:function(data){
-              var mydate = moment(data, 'YYYY/MM/DD'); 
-
-              //format that date into a different format
-             return  moment(mydate).format("DD/MM/YYYY");
-              
-            }
-          },
+          {"data":"schedule.pickup_date"},
           {"data":"schedule.remark"},
           {"data":"delivery_man.user.name"},
           {"data":function(data){
             
              let html='';
-             html=`${data.schedule.quantity}`;
+             html=`${data.schedule.quantity}/${data.items.length}`;
              return html;
           }},
-          {"data":function(data){
-            
-             let html='';
-             html=`${data.items.length}`;
-             return html;
-          }},
-          {"data":"schedule.amount"},
            {"data":function(data){
 
             let item=data.items;
@@ -501,12 +468,12 @@
               depositamount= notallpaid_deposit-allpaid_delivery;
             }
 
-            // if(item.length >0){
-            //   html=`<strike>${data.schedule.amount}</strike>`
-            // }else{
-            //   html=data.schedule.amount
-            // }
-            html=`${depositamount}`
+            if(item.length >0){
+              html=`<strike>${data.schedule.amount}</strike>`
+            }else{
+              html=data.schedule.amount
+            }
+            html+=`/${depositamount}`
 
             return html;
           }},
@@ -613,7 +580,7 @@
 
         "footerCallback":function(row,data,start,end,display){
            var api = this.api(), data;
-           // var currentPosition = api.colReorder.transpose( 6 );
+
            console.log(data);
             // Remove the formatting to get integer data for summation
             var intVal = function ( i ) {
@@ -622,113 +589,16 @@
                     typeof i === 'number' ?
                         i : 0;
             };
-
-            // for qty
-             // Total over all pages
-            totalqty = api
-                .column( 5 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Total over this page
-            pageTotalqty = api
-                .column( 5, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Update footer
-            $( api.column( 5 ).footer() ).html(
-                // pageTotalqty +' ('+ totalqty +' total)'
-                pageTotalqty 
-            );
-
-
-            // for instock
-             totalqty = api
-                .column( 6 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Total over this page
-            pageTotalqty = api
-                .column( 6, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Update footer
-            $( api.column( 6 ).footer() ).html(
-                pageTotalqty 
-            );
-
-             // for estimation
-             totalqty = api
-                .column( 7 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Total over this page
-            pageTotalqty = api
-                .column( 7, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Update footer
-            $( api.column( 7 ).footer() ).html(
-                pageTotalqty 
-            );
-
-             // for amount
-             totalqty = api
-                .column( 8 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Total over this page
-            pageTotalqty = api
-                .column( 8, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Update footer
-            $( api.column( 8 ).footer() ).html(
-                pageTotalqty 
-            );
-            // for Prepaid
-             totalqty = api
-                .column( 9 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Total over this page
-            pageTotalqty = api
-                .column( 9, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Update footer
-            $( api.column( 9 ).footer() ).html(
-                pageTotalqty 
-            );
+            // // Total over all pages
+            // total = api
+            //     .column( 7 )
+            //     .data()
+            //     .reduce( function (a, b) {
+            //       console.log(a);
+            //       console.log(b);
+            //         // return intVal(a) + intVal(b);
+            //     }, 0 );
+            //     console.log(total);
         }
       })
     }

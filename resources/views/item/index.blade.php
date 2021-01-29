@@ -172,9 +172,9 @@
                           @if($way->status_code == '001')
                             <span class="badge badge-info">{{'success'}}</span>
                           @elseif($way->status_code == '002')
-                            <span class="badge badge-warning">{{'return'}}</span>
+                            <span class="badge badge-warning">{{'change'}}</span>
                           @elseif($way->status_code == '003')
-                            <span class="badge badge-danger">{{'reject'}}</span>
+                            <span class="badge badge-danger">{{'return'}}</span>
                           @endif
                         </td>
                         <td class="align-middle">{{Carbon\Carbon::parse($way->created_at)->format('d-m-Y')}}</td>

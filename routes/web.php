@@ -170,3 +170,5 @@ Route::get('/printPickup/{id}','MainController@printPickup')->name('printPickup'
 Route::post('/assignList','MainController@assignList')->name('assignList');
 
 Route::get('getTownshipgate/{gid}','GateTownshipController@getTownshipgate')->name('getTownshipgate');
+
+Route::get('/goDailyfixprint/{pid}','MainController@goDailyfixprint')->name('goDailyfixprint');

@@ -1344,7 +1344,7 @@ public function profit(Request $request){
       );
 
        view()->share('data',$data);
-    $pdf = PDF::loadView('dashboard.pickupAssignpdf')->setPaper('a4', 'landscape');
+    $pdf = PDF::loadView('dashboard.pickupAssignpdf1')->setPaper('a4', 'landscape');
     // download PDF file with download method
     // return $pdf->download( $deliname.'.pdf');
     return $pdf->stream();
@@ -1378,5 +1378,20 @@ public function profit(Request $request){
       // dd('heo');
      
        return Datatables::of($pickups)->addIndexColumn()->toJson();
+  }
+
+  public function goDailyfixprint($pid){
+    $clients=DB::table('clients')
+            ->join('users', 'users.id', '=', 'clients.user_id')
+            ->select('clients.*', 'users.name as clientname')
+            ->orderBy('users.name')
+            ->get();
+
+    $items=Item::whereHas('pickup',function($q)use($pid){
+      $q->where('pickup_id',$pid);
+    })->get();
+    // dd($items);
+
+    return view('dashboard.daily_fix_from_print',compact('items','clients'));
   }
 }
