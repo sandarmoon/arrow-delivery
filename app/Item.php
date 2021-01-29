@@ -10,7 +10,7 @@ class Item extends Model
 {
   use SoftDeletes,TounicodeTrait;
 	protected $fillable=[
-    'codeno', 'expired_date', 'deposit', 'amount', 'delivery_fees', 'other_fees', 'receiver_name', 'receiver_address', 'receiver_phone_no', 'remark', 'paystatus', 'client_id', 'township_id','staff_id','error_remark','sender_gate_id','sender_postoffice_id', 'status'
+    'codeno', 'expired_date', 'deposit', 'amount', 'delivery_fees', 'other_fees', 'receiver_name', 'receiver_address', 'receiver_phone_no', 'remark', 'paystatus', 'client_id', 'township_id','staff_id','error_remark','sender_gate_id','sender_postoffice_id', 'status', 'os_pay_amount'
   ];
 
   public function pickup()

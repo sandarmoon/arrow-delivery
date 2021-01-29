@@ -218,7 +218,8 @@ class MainController extends Controller
       $query->where('client_id',$id);
     })->where('status',0)->where(function ($query) {
         $query->where('paystatus', 2)
-            ->orWhere('paystatus', 4);
+            ->orWhere('paystatus', 4)
+            ->orWhere('os_pay_amount','!=',null);
     })->with('way')->with('township')->with('SenderGate')->with('SenderPostoffice')->get();
    
     $rejects =  Way::with('item.pickup.schedule')->whereHas('item.pickup.schedule', function($query) use ($id){
@@ -292,9 +293,8 @@ class MainController extends Controller
       $expenses = json_decode($request->expenses);
 
       foreach ($expenses as $row) {
-        // dd($row);
-        $expense = Expense::find($row->id);
-        $expense->status = 1;
+        $expense = Expense::where('pickup_id',$row->id)->first();
+        $expense->status = 2;
         $expense->save();
 
         // insert into transaction (expense_id - ဘာနဲ့ရှင်းလိုက်တာလဲ)
@@ -312,6 +312,11 @@ class MainController extends Controller
           $bank->amount = $bank->amount-$expense->amount;
         }
         $bank->save();
+
+        // pickup ထဲမှာ ရှင်းပြီးလုပ်ပေးပါ
+        $pickup = Pickup::find($row->id);
+        $pickup->status = 5;
+        $pickup->save();
       }
     }
 
@@ -320,7 +325,7 @@ class MainController extends Controller
       $carryfees = json_decode($request->carryfees);
       foreach ($carryfees as $row) {
         $expense = Expense::find($row->id);
-        $expense->status = 1;
+        $expense->status = 2;
         $expense->save();
 
         // insert into transaction (expense_id - ဘာနဲ့ရှင်းလိုက်တာလဲ)
@@ -341,9 +346,6 @@ class MainController extends Controller
       }
     }
 
-    // $rejects =  Way::with('item.pickup.schedule')->whereHas('item.pickup.schedule', function($query) use ($id){
-    //     $query->where('client_id', $id);
-    // })->where('status_code','003')->where('refund_date',null)->get();
     if ($request->rejects) {
       $rejects = json_decode($request->rejects);
       foreach ($rejects as $row) {
@@ -374,49 +376,30 @@ class MainController extends Controller
       }
     }
 
-    // $incomes = Income::whereIn('payment_type_id',[4,5,6])->with('way.item.pickup.schedule')->whereHas('way.item.pickup.schedule',function ($query) use ($id){
-    //   $query->where('client_id', $id);
-    // })->get();
     if ($request->incomes) {
       $incomes = json_decode($request->incomes);
       foreach ($incomes as $row) {
-        $income = Income::find($row->id);
-        $income->delivery_fees = $income->way->item->delivery_fees;
-        $income->deposit = $income->way->item->deposit;
-        $income->amount = $income->way->item->amount;
-        $income->cash_amount = $income->way->item->amount;
-        // $income->payment_type_id = 1;
-        $income->save();
+        $item = Item::find($row->id);
+        $item->status = 1;
+        $item->save();
 
         // insert into transaction ဘာနဲ့ရှင်းလိုက်တာလဲ
         $bank = Bank::find($request->payment_method);
 
         $transaction = new Transaction;
         $transaction->bank_id = $request->payment_method;
-        $transaction->income_id = $income->id;
+        $transaction->item_id = $item->id;
         $transaction->description = "Fix Debit List";
 
-        if ($income->payment_type_id == 4) {
-          $transaction->amount = $income->amount;
-          $transaction->save();
+        $transaction->amount = $row->amount;
+        $transaction->save();
 
-          $bank->amount = $bank->amount+$income->amount;
-          $bank->save();
-        }else if($income->payment_type_id == 5){
-          $transaction->amount = $income->deposit;
-          $transaction->save();
-
-          $bank->amount = $bank->amount+$income->deposit;
-          $bank->save();
-        }else if($income->payment_type_id == 6){
-          $transaction->amount = $income->delivery_fees;
-          $transaction->save();
-
-          $bank->amount = $bank->amount+$income->delivery_fees;
-          $bank->save();
-        }
+        $bank->amount = $bank->amount+$row->amount;
+        $bank->save();
       }
     }
+
+
 
     return back();
   }

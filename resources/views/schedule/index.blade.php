@@ -183,13 +183,15 @@
                           @elseif($row->status==3)
                             <a href="#" class="btn btn-sm btn-secondary addamount" data-id="{{$row->schedule->id}}">{{ __("Add amount and qty")}}</a>
 
-                          @else
                             <button type="button" class="btn btn-sm btn-danger">{{ __("pending")}}</button>
                           @endif
                           {{-- end here --}}
                           {{-- start again here --}}
                           @if($row->status != 4 || $row->schedule->quantity != count(($row->items)))
+                            @if($row->status != 5)
                             <a href="{{route('schedules.edit',$row->schedule->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
+                            @endif
+                            
                             @if(count($row->items) == 0)
                             <form action="{{ route('schedules.destroy',$row->schedule->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                               @csrf
@@ -199,6 +201,12 @@
                             @endif
                           @endif
                           {{-- end again here --}}
+
+
+                          @if($row->status == 5)
+                            <button type="button" class="btn btn-sm btn-success">Cleared</button>
+                          @endif
+
                         </td>
                       </tr>
                       @endforeach

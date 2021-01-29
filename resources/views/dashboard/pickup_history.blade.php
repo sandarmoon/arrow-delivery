@@ -161,7 +161,7 @@
           { "data": null,
              render:function (data) {
               let items = data.items
-              let total=allpaid_delivery_fees=carry_fees=prepaidtotal=0;
+              let total=allpaid_delivery_fees=carry_fees=prepaidtotal=os_pay_amount=0;
               for(row of items){
                 if ((row.paystatus == 2 || row.paystatus == 4 ) && row.status==0) {
                   allpaid_delivery_fees += (Number(row.delivery_fees)+Number(row.other_fees))
@@ -171,13 +171,17 @@
                   carry_fees = Number(row.expense.amount)
                   allpaid_delivery_fees += carry_fees
                 }
+
+                if(row.os_pay_amount != null){
+                  os_pay_amount = Number(row.os_pay_amount)
+                }
               }
               total = items.reduce((acc, row) => acc + Number(row.deposit), 0)
               if (data.expenses!=null) {
                 prepaidtotal = data.expenses.reduce((acc,row) => acc + Number(row.amount), 0)
               }
 
-              return thousands_separators(total-allpaid_delivery_fees-prepaidtotal)
+              return thousands_separators(total-allpaid_delivery_fees-prepaidtotal-os_pay_amount)
              }
           },
           { "data": "id",

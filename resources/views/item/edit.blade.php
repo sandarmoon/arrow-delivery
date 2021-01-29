@@ -167,17 +167,22 @@
                   </div>
 
                   <div class="col">
-                    <label for="other">{{ __("Other Charges")}}:</label>
-                    <input class="form-control" id="other" type="number" name="othercharges" value="{{$item->other_fees}}">
+                    <label for="InputDeliveryFees">Delivery Fees:</label>
+                    <input class="form-control" id="InputDeliveryFees" type="number" name="delivery_fees" value="{{$item->delivery_fees}}">
+                    <div class="form-control-feedback text-danger"> {{$errors->first('delivery_fees') }} </div>
+                  </div>
+
+                  <div class="col">
+                    <label for="os_pay_amount">{{ __("Delivery Fees By OS")}}:</label>
+                    <input class="form-control" id="os_pay_amount" type="number" name="os_pay_amount" value="{{$item->os_pay_amount}}">
                   </div>
                 </div>
 
                 <div class="form-group row">
 
                   <div class="col">
-                    <label for="InputDeliveryFees">Delivery Fees:</label>
-                    <input class="form-control" id="InputDeliveryFees" type="number" name="delivery_fees" value="{{$item->delivery_fees}}">
-                    <div class="form-control-feedback text-danger"> {{$errors->first('delivery_fees') }} </div>
+                    <label for="other">{{ __("Other Charges")}}:</label>
+                    <input class="form-control" id="other" type="number" name="othercharges" value="{{$item->other_fees}}">
                   </div>
                   
                   <div class="col">
@@ -478,6 +483,15 @@
       }else{
         $("#InputDeposit").val("");
         $('#InputDeposit').prop('readonly',false);
+      }
+
+      // for os_pay_amount field
+      if( type == 2 || type == 4 ){
+        $("#os_pay_amount").val(0);
+        $('#os_pay_amount').prop('readonly',true);
+      }else{
+        $("#os_pay_amount").val("");
+        $('#os_pay_amount').prop('readonly',false);
       }
     })
 

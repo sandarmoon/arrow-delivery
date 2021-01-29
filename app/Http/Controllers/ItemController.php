@@ -130,6 +130,10 @@ class ItemController extends Controller
         $item->remark=$request->remark;
         $item->pickup_id=$request->pickup_id;
 
+        if($request->os_pay_amount > 0){
+          $item->os_pay_amount=$request->os_pay_amount;
+        }
+
         if($request->mygate!=null){
           $item->sender_gate_id=$request->mygate;
           $item->township_id=$request->townshipgate;
@@ -286,6 +290,10 @@ class ItemController extends Controller
         $item->receiver_address=tounicode($request->receiver_address);
         $item->receiver_phone_no=$request->receiver_phoneno;
 
+        if($request->os_pay_amount > 0){
+          $item->os_pay_amount=$request->os_pay_amount;
+        }
+        
         if($request->receiver_township != 0){
           $item->township_id=$township;
         }else{
