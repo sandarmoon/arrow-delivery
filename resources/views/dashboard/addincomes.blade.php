@@ -139,7 +139,7 @@
                     <th>Delivery Fees</th>
                     <th>Item Price</th>
                     <th>Subtotal</th>
-                    <th>Actual Amount</th>
+                    <th>Accepted Amount</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -160,16 +160,20 @@
                 $("#bank").html(hh);
           console.log(response.ways)
           for(let row of response.ways){
-            console.log(row);
+            // console.log(row);
+            let acceptedAmount = 0;
             if (row.item.paystatus==1) {
-              total+=Number(row.item.item_amount)
+              acceptedAmount = Number(row.item.item_amount)
             }else if(row.item.paystatus==2){
-              total+=0
+              acceptedAmount = 0
             }else if(row.item.paystatus==3){
-              total+=Number(row.item.delivery_fees)+Number(row.item.other_fees)
+              acceptedAmount = Number(row.item.delivery_fees)+Number(row.item.other_fees)
             }else if(row.item.paystatus==4){
-              total+=Number(row.item.deposit)
+              acceptedAmount = Number(row.item.deposit)
             }
+
+            total+= acceptedAmount
+
 
             if (row.status_code=="002") {
               color = "table-warning"
@@ -220,7 +224,7 @@
                       ${row.item.receiver_name}
                     </td>`
                     if(row.delivery_date){
-                      html+=`<td>${row.delivery_date}</td>`
+                      html+=`<td>${formatDate(row.delivery_date)}</td>`
                       html+=`<td>${thousands_separators(row.item.delivery_fees)}`
                       if(row.item.other_fees > 0){
                         html += `+ ${thousands_separators(row.item.other_fees)}`
@@ -234,20 +238,7 @@
                             <td>-</td>
                             <td>-</td>`
                     }
-                    html+=`<td> hello`
-                    // if(row.item.paystatus == 1){
-                    //   html+=`${thousands_separators(Number(row.item.deposit)+Number(row.item.delivery_fees)+Number(row.item.other_fees))}`
-                    // }else if(row.item.paystatus == 2){
-                    //   html+=0;
-                    // }else if(row.item.paystatus == 3){
-                    //   html+=`${thousands_separators(row.item.delivery_fees)}`
-                    // }else if(row.item.paystatus==3){
-
-                    // }else if(row.item.paystatus==4){
-
-                    // }
-
-                    html+=`</td>`
+                    html+=`<td>${thousands_separators(acceptedAmount)}</td>`
                     
                     if(row.status_code=="001"){
                       html+=`<td><button class="btn btn-sm btn-primary btnsave" data-id="${row.id}" data-amount="${row.item.item_amount}" data-deliveryfee="${row.item.delivery_fees+row.item.other_fees}" data-deposit="${row.item.deposit}" data-paystatus="${row.item.paystatus}">save</button></td>`
@@ -259,8 +250,8 @@
               html+=`</tr>`;
           }
           html+=`<tr>
-                    <td colspan="5">Total:</td>
-                    <td colspan="4">${thousands_separators(total)} Ks</td>
+                    <td colspan="8">Total:</td>
+                    <td colspan="2">${thousands_separators(total)} Ks</td>
                   </tr>`;
           $('#incomeform').html(html);
         })
@@ -362,6 +353,14 @@
         })
       })
     })
+
+    // Y/M/D into D/M/Y
+    function formatDate (input) {
+      var datePart = input.match(/\d+/g),
+      year = datePart[0].substring(0,4), // get only two digits
+      month = datePart[1], day = datePart[2];
+      return day+'-'+month+'-'+year;
+    }
 
     function thousands_separators(num){
       var num_parts = num.toString().split(".");

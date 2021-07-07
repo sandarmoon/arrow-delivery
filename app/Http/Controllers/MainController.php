@@ -1355,15 +1355,13 @@ public function profit(Request $request){
       ->orderBy('id','desc')->get();
 
     }
-
-    
-
-      // dd('heo');
      
-       return Datatables::of($pickups)->addIndexColumn()->toJson();
+    return Datatables::of($pickups)->addIndexColumn()->toJson();
   }
 
   public function goDailyfixprint($pid){
+    $pickup = Pickup::find($pid);
+
     $clients=DB::table('clients')
             ->join('users', 'users.id', '=', 'clients.user_id')
             ->select('clients.*', 'users.name as clientname')
@@ -1373,8 +1371,7 @@ public function profit(Request $request){
     $items=Item::whereHas('pickup',function($q)use($pid){
       $q->where('pickup_id',$pid);
     })->get();
-    // dd($items);
 
-    return view('dashboard.daily_fix_from_print',compact('items','clients'));
+    return view('dashboard.daily_fix_from_print',compact('items','clients','pickup'));
   }
 }

@@ -275,6 +275,14 @@
     $('#debits').hide();
     // $('.search_btn').hide();
 
+    // Y/M/D into D/M/Y
+    function formatDate (input) {
+      var datePart = input.match(/\d+/g),
+      year = datePart[0].substring(0,4), // get only two digits
+      month = datePart[1], day = datePart[2];
+      return day+'-'+month+'-'+year;
+    }
+
     function thousands_separators(num){
       var num_parts = num.toString().split(".");
       num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -384,8 +392,8 @@
                       </div>
                     </td>`
                     
-            let mydate=new Date(row.created_at);
-            html+=`<td>${mydate.getDate()}-${mydate.getMonth()+1}-${mydate.getFullYear()}</td>`
+            // let mydate=new Date(row.created_at);
+            html+=`<td>${formatDate(row.created_at)}</td>`
                   
             html+=`<td> ${row.items.length}</td>
                     <td> ${thousands_separators(unpaid_total_item_price)} </td>

@@ -78,30 +78,9 @@
                   </table>
                 </div>
               </div>
-
-              {{-- Assign table datatabljs --}}
-              <div class="tab-pane fade @role('staff'){{'active show'}}@endrole" id="assigned" >
-                  
-                  {{-- filter start here --}}
-                  <div class="row">
-                    <div class="form-group col-md-3">
-                      <label for="InputStartDate">{{ __("Start Date")}}:</label>
-                      <input type="date" class="form-control" id="InputStartDate" name="start_date">
-                    </div>
-                    <div class="form-group col-md-3">
-                      <label for="InputEndDate">{{ __("End Date")}}:</label>
-                      <input type="date" class="form-control" id="InputEndDate" name="end_date">
-                    </div>
-
-                    <div class="form-group col-md-3">
-                      <button class="btn btn-primary search_btn mt-4" type="button">{{ __("Search")}}</button>
-                    </div>
-                  </div>
-                  {{-- filter end here --}}
-
-
+              <div class="tab-pane fade @role('staff'){{'active show'}}@endrole" id="assigned">
                 <div class="table-responsive">
-                  <table class="table table-bordered " style="width: 100%;" id="assign-table">
+                  <table class="table table-bordered dataTable">
                     <thead>
                       <tr>
                         <th>{{ __("#")}}</th>
@@ -110,31 +89,128 @@
                         <th>{{ __("Remark")}}</th>
                         <th>{{ __("Delivery Man")}}</th>
                         <th>{{ __("Quantity")}}</th>
-                        <th>{{ __("InStock")}}</th>
-                        <th>{{ __("Estimation")}}</th>
                         <th>{{ __("Amount")}}</th>
                         {{-- <th>{{ __("Total Item Price")}}</th> --}}
-                        <th>{{ __("Prepaid ")}}</th>
+                        <th>{{ __("Prepaid Amount")}}</th>
                         <th>{{ __("Actions")}}</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      
-                    </tbody>
-                    <tfoot>
-                      <td></td>
-                     @role('staff') <td></td>@endrole
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tfoot>
+                    <tbody class="assigntbody">
+                      {{$pickups}}
+                      @php $i=1; @endphp
+                      @foreach($pickups as $row)
+                      @if($row->items)
+                        @php 
+                          $allpaid_delivery_fees=$notallpaid_deposit= 0; 
+                          foreach ($row->items as $item) {
+                            if ($item->paystatus == "2" || $item->paystatus == "4") {
+                              $allpaid_delivery_fees += ($item->delivery_fees+$item->other_fees);
+                            }
 
+                            if ($item->paystatus != "2") {
+                              $notallpaid_deposit += $item->deposit;
+                            }
+                          }
+
+                          $depositamount = $notallpaid_deposit-$allpaid_delivery_fees;
+
+                        @endphp
+
+                      @endif
+                      {{$depositamount}}
+                      <tr>
+                        <td class="align-middle">{{$i++}}</td>
+                        @role('staff')
+                        <td class="text-danger align-middle">{{$row->schedule->client->user->name}}</td>
+                        @endrole
+                        <td class="align-middle">{{\Carbon\Carbon::parse($row->schedule->pickup_date)->format('d-m-Y')}}</td>
+
+                        <td class="align-middle">{{$row->schedule->remark}}</td>
+
+                        <td class="text-danger align-middle">{{$row->delivery_man->user->name}}
+                          @foreach($data as $dd)
+                            @if($dd->id==$row->id)
+                            <span class="badge badge-info seen">seen</span>
+                            @endif
+
+                           @endforeach
+                        </td>
+
+                        <td class="align-middle">{{$row->schedule->quantity}} / {{count($row->items)}}</td>
+
+                        <td class="align-middle">
+                          @if(count($row->items)>0)
+                          <strike>{{number_format($row->schedule->amount)}}</strike>
+                          @else
+                            {{number_format($row->schedule->amount)}}
+                          @endif
+                           / {{number_format($depositamount)}}</td>
+                        {{-- @php
+                          $total_item_price = $row->item->sum('deposit');
+                        @endphp --}}
+                        {{-- <td class="align-middle">{{$total_item_price}}</td> --}}
+                        <td class="align-middle">
+                          @if($row->expense)
+                            {{number_format($row->expense->amount)}}
+                          @else
+                            {{'-'}}
+                          @endif
+                        </td>
+                        <td class="align-middle">
+                          {{-- start here --}}
+                          @if($row->status==1 && $row->schedule->quantity != count($row->items))
+
+                            @role('staff')
+                              <a href="{{route('items.collect',['cid'=>$row->schedule->client->id,'pid'=>$row->id])}}" class="btn btn-sm btn-primary">{{ __("Collect")}}</a>
+                            @endrole
+                            @role('client')
+                              <button type="button" class="btn btn-sm btn-info">{{ __("Brought")}}</button>
+                            @endrole
+
+                          @elseif($row->status == 4 && $row->schedule->quantity == count(($row->items)))
+
+                            <button type="button" class="btn btn-sm btn-info">{{ __("completed")}}</button>
+                            <a type="button" class="btn btn-sm btn-secondary" href="{{route('printPickup',$row->id)}}">{{ __("Print")}}</a>
+                            @if($row->expense)
+                              <button type="button" class="btn btn-sm btn-warning editprepaid" data-id="{{$row->id}}" data-amount="{{$row->expense->amount}}" data-client_id="{{$row->schedule->client_id}}">Edit Prepaid Amount</button>
+                            @else
+                              <button type="button" class="btn btn-sm btn-success editprepaid" data-id="{{$row->id}}" data-amount="0" data-client_id="{{$row->schedule->client_id}}">Add Prepaid Amount</button>
+                            @endif
+
+                          @elseif($row->status==2)
+                            <a href="{{route('checkitem',$row->id)}}" class="btn btn-sm btn-danger">{{ __("fail")}}</a>
+
+                          @elseif($row->status==3)
+                            <a href="#" class="btn btn-sm btn-secondary addamount" data-id="{{$row->schedule->id}}">{{ __("Add amount and qty")}}</a>
+
+                            <button type="button" class="btn btn-sm btn-danger">{{ __("pending")}}</button>
+                          @endif
+                          {{-- end here --}}
+                          {{-- start again here --}}
+                          @if($row->status != 4 || $row->schedule->quantity != count(($row->items)))
+                            @if($row->status != 5)
+                            <a href="{{route('schedules.edit',$row->schedule->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
+                            @endif
+                            
+                            @if(count($row->items) == 0)
+                            <form action="{{ route('schedules.destroy',$row->schedule->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
+                              @csrf
+                              @method('DELETE')
+                              <button type="submit" class="btn btn-sm btn-danger">{{ __("Delete")}}</button>
+                            </form>
+                            @endif
+                          @endif
+                          {{-- end again here --}}
+
+
+                          @if($row->status == 5)
+                            <button type="button" class="btn btn-sm btn-success">Cleared</button>
+                          @endif
+
+                        </td>
+                      </tr>
+                      @endforeach
+                    </tbody>
                   </table>
                 </div>
               </div>
@@ -300,23 +376,11 @@
 @section('script')
   <script type="text/javascript">
     $(document).ready(function () {
-      // for loading assign date for today  start
-
-      // for loading assign date for today  end
-
-
-
-
-
-      
       $.ajaxSetup({
          headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
       });
-
-      getData('','');
-       
 
       $('.assign').click(function () {
         $('#assignModal').modal('show');
@@ -342,7 +406,7 @@
         $(".stafffile").attr("src",file);
       })
 
-      $("#assign-table").on('click','.addamount',function(e){
+      $(".assigntbody").on('click','.addamount',function(e){
         e.preventDefault();
         $('#addamount').modal('show');
         var id=$(this).data('id');
@@ -387,7 +451,7 @@
 
       setTimeout(function(){ $('.myalert').hide(); showDiv2() },3000);
 
-      $("#assign-table").on('click','.editprepaid',function(e){
+      $(".assigntbody").on('click','.editprepaid',function(e){
         e.preventDefault();
         $('#editprepaid').modal('show');
         var id=$(this).data('id');
@@ -431,306 +495,9 @@
         })
       })
 
-      $('.search_btn').click(function(){
-        var sdate = $('#InputStartDate').val();
-        var edate = $('#InputEndDate').val();
-          getData(sdate,edate);
-      })
-      
-
-     
+      // $('#schedule-table').Datatable({
+        
+      // })
     })
-
-    function getData(sdate,edate){
-      let url="{{route('assignList')}}";
-      $('#assign-table').DataTable({
-        "processing": true,
-        "serverSide": true,
-        "destroy":true,
-        "ajax": {
-            url: url,
-            type: "POST",
-            data:{sdate:sdate,edate:edate},
-            dataType:'json',
-        },
-        "columns":[
-          {"data":'DT_RowIndex'},
-          {"data":"schedule.client.user.name"},
-          {"data":"schedule.pickup_date",
-            render:function(data){
-              var mydate = moment(data, 'YYYY/MM/DD'); 
-
-              //format that date into a different format
-             return  moment(mydate).format("DD/MM/YYYY");
-              
-            }
-          },
-          {"data":"schedule.remark"},
-          {"data":"delivery_man.user.name"},
-          {"data":function(data){
-            
-             let html='';
-             html=`${data.schedule.quantity}`;
-             return html;
-          }},
-          {"data":function(data){
-            
-             let html='';
-             html=`${data.items.length}`;
-             return html;
-          }},
-          {"data":"schedule.amount"},
-           {"data":function(data){
-
-            let item=data.items;
-            let html='';
-            let allpaid_delivery=0;
-            let notallpaid_deposit=0;
-            let depositamount=0;
-
-            if(item.length >0){
-              $.each(item,function(i,v){
-                  if(v.paystatus == '2' && v.paystatus =='4'){
-                    allpaid_delivery=Number(v.delivery_fees)+Number(v.deposit);
-                  }
-
-                  if (v.paystatus != "2") {
-                    notallpaid_deposit += v.deposit;
-                  }
-              })
-              depositamount= notallpaid_deposit-allpaid_delivery;
-            }
-
-            // if(item.length >0){
-            //   html=`<strike>${data.schedule.amount}</strike>`
-            // }else{
-            //   html=data.schedule.amount
-            // }
-            html=`${depositamount}`
-
-            return html;
-          }},
-          {"data":function(data){
-            let expenses=data.expenses;
-            let total_expense=0;
-            if(expenses.length >0){
-              $.each(expenses,function(i,v){
-                total_expense+=Number(v.amount);
-              })
-            }
-            return total_expense;
-          }},
-
-          {"data":function(data){
-            let expenses=data.expenses;
-            let html='';
-            let url="items/collectitem/"+data.schedule.client.id+'/'+data.id;
-
-            let url2="{{route('goDailyfixprint',':id')}}";
-            url2=url2.replace(':id', data.id);
-
-            let url3="{{route('checkitem',':id')}}";
-            url3=url3.replace(':id', data.id);
-
-            let url4="{{route('schedules.edit',':id')}}";
-            url4=url4.replace(':id', data.schedule.id);
-
-            let url5="{{ route('schedules.destroy',':id') }}";
-            url5=url5.replace(':id',data.schedule.id);
-
-            let total_expense=0;
-            // let data=['cid'=>$row->schedule->client->id,'pid'=>$row->id];
-
-            //start here
-             if(data.status==1 && data.schedule.quantity != data.items.length){
-
-              html=`@role('staff')
-                <a href="${url}" class=" d-inline btn btn-sm btn-primary">{{ __("Collect")}}</a>
-              @endrole
-              @role('client')
-                <button type="button" class=" d-inline btn btn-sm btn-info">{{ __("Brought")}}</button>
-              @endrole`
-
-
-
-
-             }else if(data.status == 4 && data.schedule.quantity == (data.items).length){
-
-                 html+=`<button type="button" class=" d-inline btn btn-sm btn-info">{{ __("completed")}}</button>
-               <a type="button" class=" d-inline btn btn-sm btn-secondary" href="${url2}">{{ __("Print")}}</a>`
-
-                if(expenses.length >0){
-                    $.each(expenses,function(i,v){
-                      total_expense+=Number(v.amount);
-                    })
-                  html+=`<button type="button" class=" d-inline btn btn-sm btn-warning editprepaid" data-id="${data.id}" data-amount="${total_expense}" data-client_id="${data.schedule.client_id}">Edit Prepaid Amount</button>`
-                }
-                else{
-                  html+=`<button type="button" class=" d-inline btn btn-sm btn-success editprepaid" data-id="${data.id}" data-amount="0" data-client_id="${data.schedule.client_id}">Add Prepaid Amount</button> `
-                }
-                
-
-
-
-
-             }else if(data.status==2){
-
-              html+=`<a href="${url3}" class="btn btn-sm btn-danger">{{ __("fail")}}</a>`
-
-             }else if(data.status==3){
-
-              html+= `<a href="#" class="btn btn-sm btn-secondary addamount" data-id="${data.schedule_id}">{{ __("Add amount and qty")}}</a>`
-
-             }else{
-              html+=  `<button type="button" class="btn btn-sm btn-danger">{{ __("pending")}}</button>`;
-             }
-             //end here
-
-             // start again here
-             if(data.status != 4 || data.schedule.quantity != (data.items).length){
-
-              html+=`<a href="${url4}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>`
-
-              if((data.items).length == 0){
-               html+= `<form action="${url5}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-danger">{{ __("Delete")}}</button>
-                </form>`
-              }
-                
-
-             }
-             // end again here
-
-             return html;
-
-
-          }}
-         
-
-        ],
-
-        "footerCallback":function(row,data,start,end,display){
-           var api = this.api(), data;
-           // var currentPosition = api.colReorder.transpose( 6 );
-           console.log(data);
-            // Remove the formatting to get integer data for summation
-            var intVal = function ( i ) {
-                return typeof i === 'string' ?
-                    i.replace(/[\$,]/g, '')*1 :
-                    typeof i === 'number' ?
-                        i : 0;
-            };
-
-            // for qty
-             // Total over all pages
-            totalqty = api
-                .column( 5 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Total over this page
-            pageTotalqty = api
-                .column( 5, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Update footer
-            $( api.column( 5 ).footer() ).html(
-                // pageTotalqty +' ('+ totalqty +' total)'
-                pageTotalqty 
-            );
-
-
-            // for instock
-             totalqty = api
-                .column( 6 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Total over this page
-            pageTotalqty = api
-                .column( 6, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Update footer
-            $( api.column( 6 ).footer() ).html(
-                pageTotalqty 
-            );
-
-             // for estimation
-             totalqty = api
-                .column( 7 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Total over this page
-            pageTotalqty = api
-                .column( 7, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Update footer
-            $( api.column( 7 ).footer() ).html(
-                pageTotalqty 
-            );
-
-             // for amount
-             totalqty = api
-                .column( 8 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Total over this page
-            pageTotalqty = api
-                .column( 8, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Update footer
-            $( api.column( 8 ).footer() ).html(
-                pageTotalqty 
-            );
-            // for Prepaid
-             totalqty = api
-                .column( 9 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Total over this page
-            pageTotalqty = api
-                .column( 9, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
- 
-            // Update footer
-            $( api.column( 9 ).footer() ).html(
-                pageTotalqty 
-            );
-        }
-      })
-    }
   </script>
 @endsection

@@ -20,7 +20,7 @@
           
           <div class="row">
             <div class="col-md-12">
-              <form method="#" action="#" class="myform">
+              {{-- <form method="#" action="#" class="myform">
                 <div class="form-group row">
                   <div class="col-md-3">
                     <label for="InputClient">{{ __("Select Client")}}:</label>
@@ -45,7 +45,50 @@
                     <input class="btn btn-primary mt-4" type="submit" value="{{ __("Search")}}">
                   </div>
                 </div>
-              </form>
+              </form> --}}
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Pickup Date</th>
+                    <th>Client</th>
+                    <th>Qty</th>
+                    <th>Amount</th>
+                    <th>Deposit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{Carbon\Carbon::parse($pickup->schedule->pickup_date)->format('d-m-Y')}}</td>
+                    <td>{{$pickup->schedule->client->user->name}}</td>
+                    <td>{{count($pickup->items)}}</td>
+                    @php
+                    $allpaid_delivery_fees=$notallpaid_deposit=$allpaid_other_fees=0;
+
+                    if(count($pickup->items) >0){
+                      foreach ($pickup->items as $key => $value) {
+                        if($value->paystatus == 2 || $value->paystatus == 4){
+                          $allpaid_delivery_fees += $value->delivery_fees;
+                          $allpaid_other_fees += $value->other_fees;
+                          if ($value->paystatus == 4) {
+                            $notallpaid_deposit += $value->deposit;
+                          }
+                        }else{
+                          $notallpaid_deposit += $value->deposit;
+                        }
+                      }
+                    }
+                    @endphp
+                    <td>{{number_format($notallpaid_deposit-$allpaid_delivery_fees-$allpaid_other_fees)}}</td>
+                    <td>
+                      @if(isset($pickup->expense))
+                      {{number_format($pickup->expense->amount)}}
+                      @else
+                      {{0}}
+                      @endif
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -75,6 +118,7 @@
                         <td>{{$i++}}</td>
                         <td>{{$item->codeno}}</td>
                         <td>
+                          @if(isset($item->way))
                           @php $status=$item->way->status->codeno @endphp
 
                             @if($status == '001')
@@ -86,6 +130,9 @@
                             @else
                             <span class="text-dark">assigned</span>
                             @endif
+                          @else
+                            <span class="text-primary">collected</span>
+                          @endif
                         </td>
 
                         <td>{{$item->receiver_name}}</td>
@@ -105,28 +152,29 @@
                           @endif
                         </td>
                         <td>
-                         
-                          {{ Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item->way->updated_at)->format('d-m-Y')}}
+                          @if(isset($item->way))
+                            {{ Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item->way->updated_at)->format('d-m-Y')}}
+                          @else
+                            {{'-'}}
+                          @endif
                         </td>
 
                         <td>
                           @php
                           $cod=0;
-                           if ($item->paystatus == 1) {
-                            $cod=number_format(($item->deposit)+($item->delivery_fees)+($item->other_fees),3,',');
-                          }else if($item->paystatus == 2){
-                            $cod= 0;
+                          if ($item->paystatus == 1) {
+                            $cod= $item->deposit+$item->delivery_fees+$item->other_fees;
                           }else if($item->paystatus == 3){
-                            $cod= number_format(($item->delivery_fees)+($item->other_fees),3,',');
+                            $cod= $item->delivery_fees+$item->other_fees;
                           }else if($item->paystatus == 4){
-                            $cod= number_format(($item->deposit),3,',');
+                            $cod= $item->deposit;
                           }
                           $totalcod+=$cod;
-                          echo $cod;
                           @endphp
+                          {{number_format($cod)}}
                         </td>
                         <td>
-                          {{$item->delivery_fees}}
+                          {{number_format($item->delivery_fees)}}
                           @php 
 
                           $total_del+=$item->delivery_fees;
@@ -143,11 +191,11 @@
                             $bus= 0;
                           }
                           $totalbusgate+=$bus;
-                          echo $bus;
+                          echo number_format($bus);
                           @endphp
                         </td>
                         <td>
-                          {{$item->other_fees}}
+                          {{number_format($item->other_fees)}}
                           @php
                             $totalotherfees+=$item->other_fees;
                            @endphp
@@ -183,47 +231,43 @@
 
                               $delivery_fees += ($item->delivery_fees);
                               $total += $cod_total - ($other_fees+$delivery_fees);
-                              echo $total;
+                              echo number_format($total);
                               $totalremitt+=$total;
                               @endphp
 
                         </td>
                       </tr>
-
-                      @php 
-
-
-
-                      @endphp
                     @endforeach
-                    
                   </tbody>
                   <tfoot>
                     <tr>
                       <td colspan="6" align="right">Current</td>
-                      <td>{{$totalcod}}</td>
-                      <td>{{$total_del}}</td>
-                      <td>{{$totalbusgate}}</td>
-                      <td>{{$totalotherfees}}</td>
-                      <td>{{$totalremitt}}</td>
-                      
+                      <td>{{number_format($totalcod)}}</td>
+                      <td>{{number_format($total_del)}}</td>
+                      <td>{{number_format($totalbusgate)}}</td>
+                      <td>{{number_format($totalotherfees)}}</td>
+                      <td>{{number_format($totalremitt)}}</td>
                     </tr>
                   </tfoot>
                 </table>
               </div>
             </div>
+
+
             <div class="col-md-12">
-              <form action="{{route("create_daily_fix_pdf")}}" method="post" class="d-none" id="printpdf">
+              <form action="{{route("create_daily_fix_pdf")}}" method="post">
+                {{-- class="d-none" id="printpdf" --}}
                 @csrf
-                <input type="hidden" name="client" id="client">
+                <input type="hidden" name="client" id="client" value="{{$pickup->schedule->client_id}}">
                 <input type="hidden" name="start_date" id="start_date">
                 <input type="hidden" name="end_date" id="end_date">
                 <button type="submit" class="btn btn-info">Print</button>
               </form>
             </div>
+
           </div>
 
-          <div class="row" id="jsloadingview">
+          {{-- <div class="row" id="jsloadingview">
             <div class="col-md-12">
               <div class="table-responsive">
                 <table class="table table-bordered" id="mytable">
@@ -272,8 +316,7 @@
                 <button type="submit" class="btn btn-info">Print</button>
               </form>
             </div>
-          </div>
-
+          </div> --}}
 
         </div>
       </div>
@@ -285,283 +328,276 @@
 <script type="text/javascript">
   $(document).ready(function(){
 
-    function thousands_separators(num){
-      var num_parts = num.toString().split(".");
-      num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      return num_parts.join(".");
-    }
-
     $.ajaxSetup({
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       }
     });
 
-    $('.myform').on('submit',function (e) {
-      e.preventDefault();
-      let client_id = $('#InputClient').val();
-      let inputStartDate = $('#InputStartDate').val();
-      let inputEndDate = $('#InputEndDate').val();
-      showmytable(client_id, inputStartDate, inputEndDate);
-      $('#printpdf').removeClass('d-none')
-      $('#client').val(client_id)
-      $('#start_date').val(inputStartDate)
-      $('#end_date').val(inputEndDate)
-    })
+    // $('.myform').on('submit',function (e) {
+    //   e.preventDefault();
+    //   let client_id = $('#InputClient').val();
+    //   let inputStartDate = $('#InputStartDate').val();
+    //   let inputEndDate = $('#InputEndDate').val();
+    //   showmytable(client_id, inputStartDate, inputEndDate);
+    //   $('#printpdf').removeClass('d-none')
+    //   $('#client').val(client_id)
+    //   $('#start_date').val(inputStartDate)
+    //   $('#end_date').val(inputEndDate)
+    // })
 
-    function showmytable(client_id,inputStartDate,inputEndDate) {
-      // alert('hi')
-      var url="{{route('getsuccessways')}}";
-      $('#mytable').dataTable({
-        "destroy": true,
-        "pageLength": 100,
-        "bPaginate": true,
-        "bLengthChange": true,
-        "bFilter": true,
-        "bSort": true,
-        "bInfo": true,
-        "bAutoWidth": true,
-        "bStateSave": true,
-        "aoColumnDefs": [
-          { 'bSortable': false, 'aTargets': [ -1,0] }
-        ],
-        "bserverSide": true,
-        "bprocessing":true,
-        "ajax": {
-          data: {client_id:client_id, inputStartDate:inputStartDate, inputEndDate:inputEndDate},
-          url: url,
-          type: "POST",
-          dataType:'json',
-        },
-        "columns": [
-          {"data":'DT_RowIndex'},
-          {"data": "item.codeno"},
-          {"data": null,
-            render:function (data) {
-              return 'completed'
-            }
-          },
-          {"data": "item.receiver_name",
-            render:function (data) {
-              return `${data}`
-            }
-          },
-          {"data": "item.receiver_address",
-            render:function (data) {
-              return `${data}`
-            }
-          },
-          {"data": "updated_at",
-            render:function (data) {
-              return `${formatDate(data)}`
-            }
-          },
-          {data: function (data) {
-              if (data.item.paystatus == 1) {
-                return thousands_separators(Number(data.item.deposit)+Number(data.item.delivery_fees)+Number(data.item.other_fees))
-              }else if(data.item.paystatus == 2){
-                return 0;
-              }else if(data.item.paystatus == 3){
-                return thousands_separators(Number(data.item.delivery_fees)+Number(data.item.other_fees))
-              }else if(data.item.paystatus == 4){
-                return thousands_separators(Number(data.item.deposit))
-              }
-            }
-          },
+    // function showmytable(client_id,inputStartDate,inputEndDate) {
+    //   var url="{{route('getsuccessways')}}";
+    //   $('#mytable').dataTable({
+    //     "destroy": true,
+    //     "pageLength": 100,
+    //     "bPaginate": true,
+    //     "bLengthChange": true,
+    //     "bFilter": true,
+    //     "bSort": true,
+    //     "bInfo": true,
+    //     "bAutoWidth": true,
+    //     "bStateSave": true,
+    //     "aoColumnDefs": [
+    //       { 'bSortable': false, 'aTargets': [ -1,0] }
+    //     ],
+    //     "bserverSide": true,
+    //     "bprocessing":true,
+    //     "ajax": {
+    //       data: {client_id:client_id, inputStartDate:inputStartDate, inputEndDate:inputEndDate},
+    //       url: url,
+    //       type: "POST",
+    //       dataType:'json',
+    //     },
+    //     "columns": [
+    //       {"data":'DT_RowIndex'},
+    //       {"data": "item.codeno"},
+    //       {"data": null,
+    //         render:function (data) {
+    //           return 'completed'
+    //         }
+    //       },
+    //       {"data": "item.receiver_name",
+    //         render:function (data) {
+    //           return `${data}`
+    //         }
+    //       },
+    //       {"data": "item.receiver_address",
+    //         render:function (data) {
+    //           return `${data}`
+    //         }
+    //       },
+    //       {"data": "updated_at",
+    //         render:function (data) {
+    //           return `${formatDate(data)}`
+    //         }
+    //       },
+    //       {data: function (data) {
+    //           if (data.item.paystatus == 1) {
+    //             return thousands_separators(Number(data.item.deposit)+Number(data.item.delivery_fees)+Number(data.item.other_fees))
+    //           }else if(data.item.paystatus == 2){
+    //             return 0;
+    //           }else if(data.item.paystatus == 3){
+    //             return thousands_separators(Number(data.item.delivery_fees)+Number(data.item.other_fees))
+    //           }else if(data.item.paystatus == 4){
+    //             return thousands_separators(Number(data.item.deposit))
+    //           }
+    //         }
+    //       },
 
-          {"data": "item.delivery_fees",
-            render:function (data) {
-              return `${thousands_separators(data)}`
-            }
-          },
+    //       {"data": "item.delivery_fees",
+    //         render:function (data) {
+    //           return `${thousands_separators(data)}`
+    //         }
+    //       },
 
 
-          {data:function (data) {
-              // console.log(data)
-              if (data.item.expense!=null) {
-                var bus_gate_fees = Number(data.item.expense.amount)
-                return `${thousands_separators(bus_gate_fees)}`
-              }else{
-                return `0`
-              }
-            }
-          },
+    //       {data:function (data) {
+    //           // console.log(data)
+    //           if (data.item.expense!=null) {
+    //             var bus_gate_fees = Number(data.item.expense.amount)
+    //             return `${thousands_separators(bus_gate_fees)}`
+    //           }else{
+    //             return `0`
+    //           }
+    //         }
+    //       },
 
-          {data:function (data) {
-              // console.log(data)
-              return `${thousands_separators(data.item.other_fees)}`
-            }
-          },
+    //       {data:function (data) {
+    //           // console.log(data)
+    //           return `${thousands_separators(data.item.other_fees)}`
+    //         }
+    //       },
 
-          { data:function (data) {
-            var cod_total = 0;
-            var delivery_fees = 0;
-            var other_fees = 0;
-            var total = 0;
-            var digit = '';
+    //       { data:function (data) {
+    //         var cod_total = 0;
+    //         var delivery_fees = 0;
+    //         var other_fees = 0;
+    //         var total = 0;
+    //         var digit = '';
 
-              if (data.item.paystatus == 1) {
-                cod_total += Number(data.item.deposit)+Number(data.item.delivery_fees)+Number(data.item.other_fees)
-              }else if(data.item.paystatus == 2){
-                cod_total += 0;
-              }else if(data.item.paystatus == 3){
-                cod_total += Number(data.item.delivery_fees)+Number(data.item.other_fees);
-              }else if(data.item.paystatus == 4){
-                cod_total += Number(data.item.deposit)
-              }
-              // console.log(cod_total);
+    //           if (data.item.paystatus == 1) {
+    //             cod_total += Number(data.item.deposit)+Number(data.item.delivery_fees)+Number(data.item.other_fees)
+    //           }else if(data.item.paystatus == 2){
+    //             cod_total += 0;
+    //           }else if(data.item.paystatus == 3){
+    //             cod_total += Number(data.item.delivery_fees)+Number(data.item.other_fees);
+    //           }else if(data.item.paystatus == 4){
+    //             cod_total += Number(data.item.deposit)
+    //           }
+    //           // console.log(cod_total);
 
-              if (data.item.expense != null) {
-                var bus_gate_fees = Number(data.item.expense.amount)
-                console.log(bus_gate_fees);
-                other_fees += Number(bus_gate_fees) + Number(data.item.other_fees)
-              }else{
-                other_fees += Number(data.item.other_fees)
-              }
+    //           if (data.item.expense != null) {
+    //             var bus_gate_fees = Number(data.item.expense.amount)
+    //             console.log(bus_gate_fees);
+    //             other_fees += Number(bus_gate_fees) + Number(data.item.other_fees)
+    //           }else{
+    //             other_fees += Number(data.item.other_fees)
+    //           }
 
-              console.log(other_fees+delivery_fees);
+    //           console.log(other_fees+delivery_fees);
 
-              delivery_fees += Number(data.item.delivery_fees);
-              total += cod_total - (other_fees+delivery_fees);
-              // if(total < 0){
-              //  var number = total.toString().split('-');
-              //  digit +=  ${thousands_separators(number[1])};
-              //  console.log(digit);
-              // }else{
-              //   digit += thousands_separators(total);
-              // }
-              return thousands_separators(total);
+    //           delivery_fees += Number(data.item.delivery_fees);
+    //           total += cod_total - (other_fees+delivery_fees);
+    //           // if(total < 0){
+    //           //  var number = total.toString().split('-');
+    //           //  digit +=  ${thousands_separators(number[1])};
+    //           //  console.log(digit);
+    //           // }else{
+    //           //   digit += thousands_separators(total);
+    //           // }
+    //           return thousands_separators(total);
 
-            }
-          },
-        ],
-        footerCallback: function (row, data) {
-          var table = $('#mytable').DataTable();
-          var api = table,data;
-          var deposit_html = '';
+    //         }
+    //       },
+    //     ],
+    //     footerCallback: function (row, data) {
+    //       var table = $('#mytable').DataTable();
+    //       var api = table,data;
+    //       var deposit_html = '';
           
-          // Remove the formatting to get integer data for summation
-          var intVal = function ( i ) {
-              return typeof i === 'string' ?
-                  i.replace(/[\$,]/g, '')*1 :
-                  typeof i === 'number' ?
-                      i : 0;
-          };
+    //       // Remove the formatting to get integer data for summation
+    //       var intVal = function ( i ) {
+    //           return typeof i === 'string' ?
+    //               i.replace(/[\$,]/g, '')*1 :
+    //               typeof i === 'number' ?
+    //                   i : 0;
+    //       };
 
-          // Total over all pages
-          if(data.length > 0){
+    //       // Total over all pages
+    //       if(data.length > 0){
               
-            // var price = data[0].item.deposit;
+    //         // var price = data[0].item.deposit;
 
-            deposit =  api
-                .column(6 )
-                .data()
-                .reduce( function (a, b) { 
-                }, 0 );
+    //         deposit =  api
+    //             .column(6 )
+    //             .data()
+    //             .reduce( function (a, b) { 
+    //             }, 0 );
                   
 
-            deposit = api
-                .column( 6, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b) ;
+    //         deposit = api
+    //             .column( 6, { page: 'current'} )
+    //             .data()
+    //             .reduce( function (a, b) {
+    //                 return intVal(a) + intVal(b) ;
                     
-                }, 0 );
+    //             }, 0 );
 
-            delivery_fee_total = api
-                .column( 7 )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
+    //         delivery_fee_total = api
+    //             .column( 7 )
+    //             .data()
+    //             .reduce( function (a, b) {
+    //                 return intVal(a) + intVal(b);
+    //             }, 0 );
  
-            // Total over this page
-            delivery_fee_pageTotal = api
-                .column( 7, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
+    //         // Total over this page
+    //         delivery_fee_pageTotal = api
+    //             .column( 7, { page: 'current'} )
+    //             .data()
+    //             .reduce( function (a, b) {
+    //                 return intVal(a) + intVal(b);
+    //             }, 0 );
 
-            bus_gate =  api
-                .column(8)
-                .data()
-                .reduce( function (a, b) {
-                   return intVal(a) + intVal(b);
+    //         bus_gate =  api
+    //             .column(8)
+    //             .data()
+    //             .reduce( function (a, b) {
+    //                return intVal(a) + intVal(b);
                     
-                }, 0 );
+    //             }, 0 );
 
-            bus_gate_pageTotal = api
-                .column( 8, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                  return intVal(a)+intVal(b);
+    //         bus_gate_pageTotal = api
+    //             .column( 8, { page: 'current'} )
+    //             .data()
+    //             .reduce( function (a, b) {
+    //               return intVal(a)+intVal(b);
                     
-                }, 0 );
+    //             }, 0 );
 
 
-            other_fees =  api
-                .column(9)
-                .data()
-                .reduce( function (a, b) {
-                   return intVal(a) + intVal(b);
+    //         other_fees =  api
+    //             .column(9)
+    //             .data()
+    //             .reduce( function (a, b) {
+    //                return intVal(a) + intVal(b);
                     
-                }, 0 );
+    //             }, 0 );
 
-            other_fees_pageTotal = api
-                .column( 9, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                  return intVal(a)+intVal(b);
+    //         other_fees_pageTotal = api
+    //             .column( 9, { page: 'current'} )
+    //             .data()
+    //             .reduce( function (a, b) {
+    //               return intVal(a)+intVal(b);
                     
-                }, 0 );
+    //             }, 0 );
 
 
-            remittance_value =  api
-                .column(10)
-                .data()
-                .reduce( function (a, b) {
-                   return intVal(a) + intVal(b);
+    //         remittance_value =  api
+    //             .column(10)
+    //             .data()
+    //             .reduce( function (a, b) {
+    //                return intVal(a) + intVal(b);
                     
-                }, 0 );
+    //             }, 0 );
 
-             remittance_value_pageTotal = api
-                .column( 10, { page: 'current'} )
-                .data()
-                .reduce( function (a, b) {
-                  return intVal(a)+intVal(b);
+    //          remittance_value_pageTotal = api
+    //             .column( 10, { page: 'current'} )
+    //             .data()
+    //             .reduce( function (a, b) {
+    //               return intVal(a)+intVal(b);
                     
-                }, 0 );
+    //             }, 0 );
 
             
 
-            $( api.column( 6 ).footer() ).html(
-                thousands_separators(deposit) ,
-            );
+    //         $( api.column( 6 ).footer() ).html(
+    //             thousands_separators(deposit) ,
+    //         );
 
-            $( api.column( 7 ).footer() ).html(
-                thousands_separators( delivery_fee_pageTotal ),
-            );
+    //         $( api.column( 7 ).footer() ).html(
+    //             thousands_separators( delivery_fee_pageTotal ),
+    //         );
 
-            $( api.column( 8 ).footer() ).html(
-                thousands_separators(bus_gate_pageTotal) ,
-            );
+    //         $( api.column( 8 ).footer() ).html(
+    //             thousands_separators(bus_gate_pageTotal) ,
+    //         );
 
-            $( api.column( 9 ).footer() ).html(
-                thousands_separators(other_fees_pageTotal) ,
-            );
+    //         $( api.column( 9 ).footer() ).html(
+    //             thousands_separators(other_fees_pageTotal) ,
+    //         );
 
             
 
-            $( api.column( 10 ).footer() ).html(
-                thousands_separators( remittance_value_pageTotal ),
-            );
+    //         $( api.column( 10 ).footer() ).html(
+    //             thousands_separators( remittance_value_pageTotal ),
+    //         );
 
-            }
-        },
-        "info":false
-      });
-    }
+    //         }
+    //     },
+    //     "info":false
+    //   });
+    // }
 
     function formatDate(input) {
       console.log(input);
